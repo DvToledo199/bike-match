@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: bikematch-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-bikematch}
+      POSTGRES_USER: ${POSTGRES_USER:-bikematch}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bikematch}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bikematch} -d ${POSTGRES_DB:-bikematch}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

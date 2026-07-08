@@ -1,0 +1,12 @@
+{
+  "app": {
+    "title": "BikeMatch",
+    "tagline": "Mountain bike suspension kinematics, explained"
+  },
+  "health": {
+    "loading": "Checking backend…",
+    "error": "Could not reach the backend",
+    "status": "Status",
+    "version": "Version"
+  }
+}

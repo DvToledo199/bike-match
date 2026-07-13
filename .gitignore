@@ -1,0 +1,50 @@
+# === Java / Maven (backend) ===
+target/
+*.class
+*.jar
+!**/.mvn/wrapper/maven-wrapper.jar
+*.war
+*.log
+hs_err_pid*
+replay_pid*
+
+# === Node / Vite (frontend) ===
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# === Environment variables (never commit secrets) ===
+.env
+.env.*
+!.env.example
+
+# === IDEs and editors ===
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+!.vscode/extensions.json
+.settings/
+.classpath
+.project
+.factorypath
+*.swp
+*~
+
+# === AI assistant files ===
+# Conversations and questions with the AI are NOT stored here: they live in the
+# home folder (~/.claude), never in the repo, so they can never be committed.
+# CLAUDE.md (the context file that guides the AI) is intentionally shared: it
+# shows deliberate, well-managed AI use. Only the personal, machine-local tool
+# settings under .claude/ are kept out.
+.claude/
+
+# === OS files ===
+.DS_Store
+Thumbs.db

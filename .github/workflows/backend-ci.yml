@@ -1,0 +1,39 @@
+name: Backend CI
+
+on: [push, pull_request]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    # The Spring context (and its tests) needs a real PostgreSQL to start,
+    # so the job spins one up as a service container, mirroring docker-compose.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: bikematch
+          POSTGRES_USER: bikematch
+          POSTGRES_PASSWORD: bikematch
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U bikematch -d bikematch"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build and test the backend
+        working-directory: backend
+        run: ./mvnw verify

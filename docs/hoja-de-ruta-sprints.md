@@ -45,7 +45,7 @@
 - [ ] Solver monopivote: posición del eje en cada paso del barrido (arco alrededor del pivote) + tests unitarios con casos geométricos simples
 - [ ] Curva de leverage + trayectoria del eje + recorrido total + test contra el fixture de Linkage (tolerancia ±3%)
 - [ ] Pedal kickback simplificado + test
-- [ ] Descriptores (progresión %, pendiente por tercios) + clasificación por reglas ("progresiva/lineal…") + tests
+- [ ] Descriptores desde el punto de sag (progresión útil, LR en sag, retroceso del eje…) + clasificación por reglas ("progresiva/lineal…") + tests
 - [ ] Sanity check: recorrido calculado vs. declarado → aviso si difiere >10%
 - [ ] Endpoint `POST /api/kinematics/preview` (sin BD): recibe puntos + calibración + parámetros, devuelve curvas y descriptores + test de aceptación
 - [ ] Front (IA): pantalla de subir foto, marcarla con puntos guiados según tipo de suspensión, e inputs de calibración (eye-to-eye)

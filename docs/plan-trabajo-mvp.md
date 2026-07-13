@@ -19,7 +19,7 @@ El usuario marca puntos en píxeles sobre la foto; el motor necesita distancias 
 - **Sanity check integrado:** el motor calcula el recorrido trasero; si difiere mucho del recorrido declarado por el usuario (>±10%), avisar de que los puntos o la calibración están mal. Esto convierte un punto débil (precisión del marcado) en una funcionalidad de calidad.
 
 ### 1.3 Datos mínimos a pedir por bici
-Marca, modelo, año, categoría (Enduro / e-Enduro / DH), tipo de suspensión, recorrido trasero declarado (mm), medidas del amortiguador (eye-to-eye y carrera, p. ej. 230×65), tamaño de rueda, dientes del plato (para el kickback), foto lateral. **Opcional:** tabla de geometría.
+Marca, modelo, año, categoría (Enduro / e-Enduro / DH), tipo de suspensión, recorrido trasero declarado (mm), medidas del amortiguador (eye-to-eye y carrera, p. ej. 230×65), tamaño de rueda, tipo de cassette (12v / DH 7-8v) con plato por defecto asociado (32/36, editable) — el motor elige internamente el piñón de cálculo del kickback —, foto lateral. **Opcional:** tabla de geometría.
 
 ### 1.4 Stack y versiones (evitar problemas de compatibilidad)
 - **Java 21 LTS + Spring Boot 3.x** (la versión que uses en el curso; no mezclar con tutoriales de Boot 2: los imports son `jakarta.*`, no `javax.*`).
@@ -126,9 +126,9 @@ Cumple el reparto que pide el enunciado: negocio (1, 2, 4, 5, 7, 8), auth y role
 ## 6. Modelo de datos (borrador)
 
 - **users**: id, email (único), password_hash, role (`USER`/`MODERATOR`), created_at.
-- **bikes**: id, owner_id → users, brand, model, year, category (enum), suspension_type (enum), travel_declared_mm, shock_eye_to_eye_mm, shock_stroke_mm, wheel_size, chainring_teeth, photo_url, status (`PRIVATE` / `PENDING` / `PUBLIC` / `REJECTED`), created_at.
+- **bikes**: id, owner_id → users, brand, model, year, category (enum), suspension_type (enum), travel_declared_mm, shock_eye_to_eye_mm, shock_stroke_mm, wheel_size, cassette_type (enum), chainring_teeth, photo_url, status (`PRIVATE` / `PENDING` / `PUBLIC` / `REJECTED`), created_at.
 - **bikes.linkage_points** (jsonb): puntos etiquetados con coordenadas normalizadas + datos de calibración. Es jsonb porque el conjunto de puntos varía según la topología.
-- **kinematics_results**: bike_id (1:1), curves (jsonb: arrays de las curvas), descriptors (jsonb: progresión %, pendientes por tramos, etc.), engine_version, computed_at. Se calcula una vez al crear/editar y se persiste (no recalcular en cada GET). `engine_version` permite recalcular todo si el motor mejora.
+- **kinematics_results**: bike_id (1:1), curves (jsonb: arrays de las curvas), descriptors (jsonb: progresión útil, LR en sag, retroceso del eje, condiciones de medida —sag y desarrollo—, etc.), engine_version, computed_at. Se calcula una vez al crear/editar y se persiste (no recalcular en cada GET). `engine_version` permite recalcular todo si el motor mejora.
 - **votes**: user_id + bike_id (PK compuesta / unique) → relación **N:M**, created_at.
 - *(stretch)* **comments**.
 
@@ -140,12 +140,12 @@ Relaciones que pide el enunciado: 1:N (users→bikes, bikes→results) y N:M (vo
 
 **Pipeline:** puntos normalizados → calibración a mm → solver según topología → barrido del recorrido → curvas → descriptores → clasificaciones por reglas.
 
-- **Entrada del motor** (ya en mm, tras calibrar): puntos etiquetados según topología (pivote principal, anclajes de amortiguador, eje trasero, eje de pedalier; en Horst: pivote Horst, unión bieleta-tirante, pivote de bieleta), carrera del amortiguador, plato, rueda.
+- **Entrada del motor** (ya en mm, tras calibrar): puntos etiquetados según topología (pivote principal, anclajes de amortiguador, eje trasero, eje de pedalier; en Horst: pivote Horst, unión bieleta-tirante, pivote de bieleta), carrera del amortiguador, plato y piñón de cálculo, rueda, % de sag (30% por defecto).
 - **Barrido:** discretizar la carrera del amortiguador en ~100 pasos; en cada paso resolver la posición del eje trasero.
 - **Monopivote:** el eje gira en arco alrededor del pivote principal. Relación ángulo ↔ longitud de amortiguador por triángulos (ley del coseno). Salidas directas: trayectoria del eje, recorrido vertical, leverage ratio por paso (Δrecorrido/Δcarrera).
 - **4 barras:** en cada paso, posicionar los eslabones por **intersección de circunferencias** (las longitudes de barra son constantes). Geometría cerrada, sin optimizador numérico: el proyecto de referencia usa scipy porque es Python; en Java la vía geométrica es más simple, más rápida y más fácil de testear.
 - **Pedal kickback:** derivado del crecimiento de la distancia pedalier–eje + dientes de plato/piñón. Documentar los supuestos simplificadores.
-- **Descriptores de curva:** LR inicial y final, % de progresión, pendiente por tercios (inicio/medio/final), detección de inflexiones, recorrido calculado (para el sanity check contra el declarado).
+- **Descriptores de curva** (la curva se analiza partida en el punto de sag; detalle en `base-conocimiento-cinematica.md`): LR inicial / en sag / final / medio, progresión total y **progresión útil** (sag→final), retroceso máximo del eje (mm) y tramo donde ocurre, pendiente por tramos (0→sag y sag→100%), detección de inflexiones y tramos regresivos, recorrido calculado (para el sanity check contra el declarado). El resultado incluye las condiciones de medida (sag y desarrollo).
 - **Validación:** fixtures de 2–3 bicis contrastadas con Linkage, tolerancia ±2–3%, como tests automáticos. La Canyon Strive:ON ya analizada a fondo es candidata ideal de primer fixture.
 - **Anti-squat / anti-rise: fuera de v1** (requieren asumir centro de gravedad y línea de cadena; el proyecto de referencia pide `cog_height` justo por esto). Al README como trabajo futuro.
 

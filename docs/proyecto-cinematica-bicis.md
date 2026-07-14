@@ -61,6 +61,7 @@ Esta es una decisión de diseño clave, para evitar el principal riesgo (que la 
 - **La IA no decide la física.** Todo lo que se puede calcular o clasificar (si una bici es más progresiva o más lineal, etc.) lo hace el motor mediante reglas sobre los números que ya ha calculado. Eso es fiable y no depende de la IA.
 - **La IA (un modelo de lenguaje) se encarga solo de "traducir":** coge los números y clasificaciones que produjo el motor, más las respuestas del usuario sobre sus preferencias, y redacta un análisis en lenguaje natural y personalizado. También formula las preguntas al usuario (peso, estilo de conducción ágil o estable, si suele hacer saltos/topes, si prefiere suspensiones progresivas o lineales, etc.).
 - Como los números calculados se muestran junto al texto, si la redacción de la IA se desviara, se detectaría a simple vista.
+- **Un resultado central de esa traducción en la v1 es la recomendación del tipo de amortiguador** (muelle / aire y volumen de cámara) que casa con el cuadro. Se genera a partir de los descriptores de la curva de leverage y las reglas de emparejamiento de la base de conocimiento (sección 3), **sin necesidad de la gráfica de fuerzas**. El futuro simulador de emparejamiento (ver "Fuera de alcance") solo añadirá la comparación visual de esas curvas.
 - **No hay que "entrenar" ningún modelo** (eso sería demasiado costoso para el plazo). Se trabaja con *prompting* (darle al modelo el contexto y los números ya calculados) y con reglas codificadas.
 
 ### Flujo del usuario
@@ -101,6 +102,7 @@ Estas ideas se descartan para la versión inicial pero pueden mencionarse como l
 - **Extracción automática de la geometría** desde las webs oficiales de cada marca (scraping): frágil y de mantenimiento costoso.
 - La **parte de geometría como foco principal**.
 - Cálculos que requieren asumir datos adicionales (como el centro de gravedad), por ejemplo anti-squat / anti-rise.
+- **Simulador de emparejamiento de amortiguadores:** comparar, sobre un mismo cuadro, las curvas de fuerza en rueda con resortes genéricos (muelle lineal, aire de cámara grande, aire de cámara reducida) dimensionados para el sag estándar de la disciplina, sin pedir ningún dato al usuario — con un resorte lineal, la forma de la curva de fuerza se deriva directamente de la de leverage. Queda fuera de v1 por el trabajo extra de modelado y validación de esas curvas genéricas, no por falta de datos. Prioridad: después de anti-squat / anti-rise.
 - Sistemas de incentivos más elaborados.
 
 ---

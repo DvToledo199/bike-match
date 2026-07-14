@@ -15,7 +15,9 @@ in `docs/`.
 - `backend/`  — Spring Boot REST API (Java 21). Hand-written; the core of the project.
 - `frontend/` — React + Vite (JavaScript). May be AI-generated, but must stay explainable.
 - `docker/`   — docker-compose for local infrastructure (PostgreSQL 16).
-- `docs/`     — project brief, work plan and sprint roadmap.
+- `docs/`     — project brief, work plan, sprint roadmap and the kinematics
+  knowledge base (`base-conocimiento-cinematica.md`, source of truth for how
+  the engine's numbers are interpreted by the AI layer).
 
 ## Running locally
 

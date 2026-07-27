@@ -3,27 +3,26 @@ package com.bikematch.kinematics;
 import java.util.List;
 
 /**
- * Orange Stage 6 29" 2020 — pure single-pivot reference bike.
- * Points re-marked by hand on a 1800x1200 px side photo (magnifier marker);
- * shock 210x55, manufacturer rear travel 150 mm; reference curves from
- * bikechecker.com (LR ~2.775 -> ~2.675). Coordinates keep the photo's
- * orientation: y grows downwards.
+ * Orange Surge 27.5" 2020 — pure single-pivot reference bike, second engine
+ * fixture (a flatter, lower leverage curve than the Stage 6). Points marked by
+ * hand on a small 500x280 px side photo; shock 230x65, rear travel ~164 mm
+ * (read from the reference graph); reference curves from bikechecker.com
+ * (LR ~2.55 -> ~2.50). Coordinates keep the photo's orientation: y grows downwards.
  */
-class OrangeStage6Fixture implements ReferenceBike {
+class OrangeSurgeFixture implements ReferenceBike {
 
-    private final double eyeToEyeMm = 210.0;
+    private final double eyeToEyeMm = 230.0;
 
-    // Points marked on the photo, in pixels
-    private final Point2D pivot = new Point2D(804.9, 795.8);
-    private final Point2D shockFrame = new Point2D(922.5, 640.0);
-    private final Point2D shockSwingarm = new Point2D(760.4, 660.6);
-    private final Point2D bottomBracket = new Point2D(778.4, 855.4);
-    private final Point2D rearAxle = new Point2D(409.0, 826.1);
-    private final Point2D frontAxle = new Point2D(1432.5, 815.0);
+    private final Point2D pivot = new Point2D(208.3, 167.8);
+    private final Point2D shockFrame = new Point2D(250.9, 114.4);
+    private final Point2D shockSwingarm = new Point2D(192.8, 121.3);
+    private final Point2D bottomBracket = new Point2D(198.7, 190.3);
+    private final Point2D rearAxle = new Point2D(86.0, 187.3);
+    private final Point2D frontAxle = new Point2D(408.5, 190.0);
 
     @Override
     public double declaredTravelMm() {
-        return 150.0;
+        return 164.0;
     }
 
     @Override
@@ -39,7 +38,7 @@ class OrangeStage6Fixture implements ReferenceBike {
                 new MarkedPoint(PointType.FRONT_AXLE, inMillimetres(frontAxle, mmPerPixel))
         );
 
-        KinematicsParameters parameters = new KinematicsParameters(55, 32, 50, 150, 30);
+        KinematicsParameters parameters = new KinematicsParameters(65, 32, 50, 164, 30);
         return new KinematicsInput(points, parameters);
     }
 

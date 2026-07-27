@@ -37,7 +37,8 @@ public class MonopivotSolver {
             double compression = stroke * i / steps;
             double shockLength = restShockLength - compression;
             double angle = pivotAngle(pivotToFrame, pivotToSwingarm, shockLength);
-            double rotation = angle - restAngle;
+            // Compression closes the pivot angle, so the swingarm turns the opposite way.
+            double rotation = restAngle - angle;
             axlePath.add(axle.rotateAround(pivot, rotation));
         }
         return axlePath;

@@ -1,12 +1,14 @@
-package com.bikematch.kinematics;
+package com.bikematch.kinematics.curve;
+
+import com.bikematch.kinematics.geometry.Point2D;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** The leverage-ratio curve, derived from a solver's axle sweep. */
-record LeverageCurve(List<LeverageSample> samples) {
+public record LeverageCurve(List<LeverageSample> samples) {
 
-    static LeverageCurve from(List<Point2D> axlePath, double shockStrokeMm) {
+    public static LeverageCurve from(List<Point2D> axlePath, double shockStrokeMm) {
         double shockStep = shockStrokeMm / (axlePath.size() - 1);
         double restY = axlePath.get(0).y();
 

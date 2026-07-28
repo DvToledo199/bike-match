@@ -1,4 +1,6 @@
-package com.bikematch.kinematics;
+package com.bikematch.kinematics.solver;
+
+import com.bikematch.kinematics.model.KinematicsInput;
 
 /**
  * A real bike with known reference curves, used to validate the engine.

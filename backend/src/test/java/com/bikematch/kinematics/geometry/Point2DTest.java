@@ -1,4 +1,4 @@
-package com.bikematch.kinematics;
+package com.bikematch.kinematics.geometry;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;

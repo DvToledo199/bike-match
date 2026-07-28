@@ -1,4 +1,6 @@
-package com.bikematch.kinematics;
+package com.bikematch.kinematics.model;
+
+import com.bikematch.kinematics.geometry.Point2D;
 
 import org.junit.jupiter.api.Test;
 import java.util.List;

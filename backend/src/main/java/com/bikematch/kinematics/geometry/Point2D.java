@@ -1,4 +1,4 @@
-package com.bikematch.kinematics;
+package com.bikematch.kinematics.geometry;
 
 /**
  * x and y are expressed in millimeters (mm)

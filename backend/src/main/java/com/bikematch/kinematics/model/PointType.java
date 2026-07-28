@@ -1,4 +1,4 @@
-package com.bikematch.kinematics;
+package com.bikematch.kinematics.model;
 
 /**
  * The role a marked point plays in the suspension kinematics.

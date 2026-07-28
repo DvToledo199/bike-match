@@ -1,4 +1,9 @@
-package com.bikematch.kinematics;
+package com.bikematch.kinematics.solver;
+
+import com.bikematch.kinematics.curve.LeverageCurve;
+import com.bikematch.kinematics.curve.LeverageSample;
+import com.bikematch.kinematics.geometry.Point2D;
+import com.bikematch.kinematics.model.KinematicsInput;
 
 import org.junit.jupiter.api.Test;
 import java.util.List;

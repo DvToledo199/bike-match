@@ -1,4 +1,8 @@
-package com.bikematch.kinematics;
+package com.bikematch.kinematics.solver;
+
+import com.bikematch.kinematics.geometry.Point2D;
+import com.bikematch.kinematics.model.KinematicsInput;
+import com.bikematch.kinematics.model.PointType;
 
 import java.util.ArrayList;
 import java.util.List;

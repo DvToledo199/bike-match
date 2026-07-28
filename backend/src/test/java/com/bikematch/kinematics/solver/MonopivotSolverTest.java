@@ -1,4 +1,10 @@
-package com.bikematch.kinematics;
+package com.bikematch.kinematics.solver;
+
+import com.bikematch.kinematics.geometry.Point2D;
+import com.bikematch.kinematics.model.KinematicsInput;
+import com.bikematch.kinematics.model.KinematicsParameters;
+import com.bikematch.kinematics.model.MarkedPoint;
+import com.bikematch.kinematics.model.PointType;
 
 import org.junit.jupiter.api.Test;
 import java.util.List;

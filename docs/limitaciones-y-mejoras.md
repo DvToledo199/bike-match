@@ -6,8 +6,8 @@ La idea es no perder de vista ningún atajo: cada entrada dice **qué** se dejó
 **por qué** se aceptó ahora, qué **impacto** tiene y **dónde** se sigue (issue de
 GitHub cuando aplica).
 
-> Convención: cada vez que tomemos un atajo consciente, se añade aquí una entrada.
-> Este archivo lo leemos David y la IA; es la fuente única de "cosas a mejorar".
+> Convención: cada vez que se toma un atajo consciente, se añade aquí una entrada.
+> Es la referencia interna del proyecto para las mejoras técnicas pendientes.
 
 ---
 

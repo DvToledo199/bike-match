@@ -13,7 +13,8 @@ import java.util.List;
  * fixture (a flatter, lower leverage curve than the Stage 6). Points marked by
  * hand on a small 500x280 px side photo; shock 230x65, rear travel ~164 mm
  * (read from the reference graph); reference curves from bikechecker.com
- * (LR ~2.55 -> ~2.50). Coordinates keep the photo's orientation: y grows downwards.
+ * (LR ~2.55 -> ~2.50; pedal kickback ~34 deg at full travel, gear 34/50).
+ * Coordinates keep the photo's orientation: y grows downwards.
  */
 class OrangeSurgeFixture implements ReferenceBike {
 
@@ -44,7 +45,8 @@ class OrangeSurgeFixture implements ReferenceBike {
                 new MarkedPoint(PointType.FRONT_AXLE, inMillimetres(frontAxle, mmPerPixel))
         );
 
-        KinematicsParameters parameters = new KinematicsParameters(65, 32, 50, 164, 30);
+        // Chainring 34 / cog 50: the gear of the bikechecker.com pedal-kickback reference graph.
+        KinematicsParameters parameters = new KinematicsParameters(65, 34, 50, 164, 30);
         return new KinematicsInput(points, parameters);
     }
 

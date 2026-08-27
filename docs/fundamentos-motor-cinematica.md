@@ -100,8 +100,10 @@ amortiguador: la suspensión ha llegado a su tope.
   máximo (mm) y el tramo donde ocurre.
 - **Recorrido total calculado:** desplazamiento vertical del eje entre el inicio y el
   final del barrido.
-- **Pedal kickback:** derivado del crecimiento de la distancia pedalier–eje y del
-  desarrollo usado (plato × piñón). Se informa siempre con sus condiciones de cálculo.
+- **Pedal kickback:** los grados de giro de las bielas, obtenidos como el crecimiento de
+  la distancia pedalier–eje ÷ radio del plato. En la v1 el valor lo fija el plato (el piñón
+  se registra como condición de cálculo, no influye en el número; el modelo con efecto del
+  piñón es trabajo futuro, #31). Se informa siempre con sus condiciones de cálculo.
 - **Descriptores:** la curva de leverage se analiza **partida en el punto de sag** (30 %
   por defecto) para extraer métricas como la progresión útil. Los criterios de
   interpretación viven en `base-conocimiento-cinematica.md`.

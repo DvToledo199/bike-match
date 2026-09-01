@@ -104,9 +104,11 @@ amortiguador: la suspensión ha llegado a su tope.
   la distancia pedalier–eje ÷ radio del plato. En la v1 el valor lo fija el plato (el piñón
   se registra como condición de cálculo, no influye en el número; el modelo con efecto del
   piñón es trabajo futuro, #31). Se informa siempre con sus condiciones de cálculo.
-- **Descriptores:** la curva de leverage se analiza **partida en el punto de sag** (30 %
-  por defecto) para extraer métricas como la progresión útil. Los criterios de
-  interpretación viven en `base-conocimiento-cinematica.md`.
+- **Descriptores:** de la curva de leverage se extraen sus números (LR inicial/en sag/final/
+  medio, progresión total y útil) y su **forma en tres fases** (tercio inicial/medio/final,
+  cada una progresiva/lineal/regresiva; el tercio final es la zona de tope). La progresión
+  útil se mide desde el sag (30 % por defecto). Los criterios de interpretación viven en
+  `base-conocimiento-cinematica.md`.
 
 ## 7. Verificación
 

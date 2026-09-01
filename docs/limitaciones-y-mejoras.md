@@ -52,6 +52,18 @@ GitHub cuando aplica).
 - **Dónde:** issue #17 (recortar a [-1, 1] el ruido de coma flotante; fail-fast / avisar
   en geometría realmente imposible).
 
+### 5. Clasificación de forma por tercios fijos (v1)
+- **Qué:** la forma de la curva se lee en tres tercios fijos (inicial/medio/final). El punto
+  de transición real (dónde cambia de verdad la pendiente) no se detecta con precisión, y una
+  jorobita local dentro de un tercio se promedia.
+- **Por qué ahora:** los tercios son robustos al ruido de marcado y captan lo importante
+  (incluida la zona de tope = tercio final); detectar el punto exacto punto-a-punto sería
+  sensible al ruido → falsos positivos.
+- **Impacto:** la forma es correcta "a grandes rasgos"; no da el % exacto donde ocurre el
+  cambio ni caza micro-tramos.
+- **Dónde:** issue #35 (transición variable + inflexiones + robustez al ruido, para fotos
+  de más resolución).
+
 ---
 
 ## Alcance (decisiones de producto, no atajos)

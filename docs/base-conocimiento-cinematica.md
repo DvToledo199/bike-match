@@ -45,6 +45,8 @@ Material de referencia para la capa de IA de BikeMatch. El motor de la aplicaci�
 
 **Taxonomía de formas** (la forma importa tanto como la cifra):
 
+El motor lee la forma en **tres fases** —tercio inicial, medio y final del recorrido—, y cada tercio se clasifica como **progresiva** (el LR baja), **lineal** (apenas cambia, ±0,1) o **regresiva** (el LR sube). El **tercio final es la zona de tope**. Las formas clásicas de abajo son patrones de esas tres fases (p. ej. progresiva-progresiva-progresiva = "progresiva continua"; progresiva-lineal-regresiva = una que se aplana y se ablanda al final), y hay bicis que se describen bien en tres fases distintas.
+
 - **Lineal descendente continua:** comportamiento uniforme; fácil de regular; el apoyo no cambia por sorpresa.
 - **Progresiva continua (pendiente suave y constante):** la forma más agradecida; se adapta bien a casi cualquier amortiguador.
 - **Cae fuerte al inicio y se aplana (progresiva→lineal):** muy sensible arriba; pero si el sag cae ya en la zona plana, la progresión útil real es baja aunque la total parezca alta. Avisar del riesgo de topes.

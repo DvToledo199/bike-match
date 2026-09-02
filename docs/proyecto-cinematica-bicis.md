@@ -52,7 +52,7 @@ Es la parte central y la más exigente del proyecto.
 - Es **código determinista, sin IA**: son cálculos matemáticos, no una interpretación.
 - **Importante sobre la "forma" de las curvas:** dos bicicletas pueden tener el mismo dato resumido (por ejemplo, el mismo porcentaje de progresión) y comportarse de forma muy distinta según la forma de la curva (una recta, una que empieza pronunciada y se aplana, una que empieza plana y se acentúa al final). Por eso el motor no saca un único número, sino **varios descriptores de la propia curva** (pendiente por tramos, puntos de inflexión, etc.). De esta forma la "forma" también son datos calculados, no algo que haya que interpretar mirando una imagen.
 - El cálculo concreto **depende del sistema de suspensión** (por eso hay que decidir qué sistemas se soportan; ver "Decisiones pendientes").
-- Los resultados se **validan contra un programa existente** (*Linkage*) para comprobar que el cálculo es correcto.
+- Los resultados se **validan contra un programa existente** (*BikeChecker*) para comprobar que el cálculo es correcto.
 
 ### Papel de la inteligencia artificial
 

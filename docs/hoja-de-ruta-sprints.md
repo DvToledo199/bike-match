@@ -40,10 +40,10 @@
 
 **Objetivo:** demo de punta a punta con UNA bici real: foto → marcar puntos → curvas correctas. (La "parte difícil primero" que dijo el profe.)
 
-- [ ] Elegir la bici de validación (un monopivote sencillo) y sacar sus curvas en Linkage → esa es la "verdad" contra la que testear
+- [ ] Elegir la bici de validación (un monopivote sencillo) y sacar sus curvas de BikeChecker → esa es la "verdad" contra la que testear
 - [ ] Modelo de entrada del motor en Java: punto 2D, tipos de punto, parámetros (carrera, plato, rueda) — dominio puro, sin Spring
 - [ ] Solver monopivote: posición del eje en cada paso del barrido (arco alrededor del pivote) + tests unitarios con casos geométricos simples
-- [ ] Curva de leverage + trayectoria del eje + recorrido total + test contra el fixture de Linkage (tolerancia ±3%)
+- [ ] Curva de leverage + trayectoria del eje + recorrido total + test contra el fixture de BikeChecker (tolerancia ±3%)
 - [ ] Pedal kickback simplificado + test
 - [ ] Descriptores desde el punto de sag (progresión útil, LR en sag, retroceso del eje…) + clasificación por reglas ("progresiva/lineal…") + tests
 - [ ] Sanity check: recorrido calculado vs. declarado → aviso si difiere >10%
@@ -52,7 +52,7 @@
 - [ ] Front (IA): gráficas de las curvas que devuelve el endpoint
 - [ ] Demo completa con tu foto real
 
-**Hecho cuando:** le enseñas al mentor una foto convertida en curvas que cuadran con Linkage.
+**Hecho cuando:** le enseñas al mentor una foto convertida en curvas que cuadran con BikeChecker.
 
 ---
 

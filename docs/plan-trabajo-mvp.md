@@ -91,7 +91,7 @@ Backend y frontend avanzan juntos, historia a historia. Nunca "todo el backend y
 **F0 — Arranque (días 1–3).** Historias de usuario redactadas y **validadas con el mentor** (lo exige el enunciado antes de programar). GitHub Project montado con backlog priorizado. Decisiones de la sección 1 cerradas. Esqueletos back y front compilando, docker-compose con Postgres, migración V1, CI mínima (GitHub Actions: `mvn verify`), y un hello-world **desplegado** (back y front). Desplegar el día 3, no el día 25: el despliegue siempre da guerra.
 
 **F1 — La parte difícil primero (semana 1).** Objetivo: flujo foto → puntos → curvas demostrable de punta a punta.
-- Motor monopivote como módulo de dominio puro + tests validados contra Linkage.
+- Motor monopivote como módulo de dominio puro + tests validados contra BikeChecker.
 - Pantalla de subir foto + marcar puntos guiado + calibración (front con IA).
 - Endpoint que recibe puntos y parámetros y devuelve las curvas; gráfica en el front.
 - Esto desriesga el proyecto entero: si algo no funciona como se espera, se descubre en la semana 1, con margen para reaccionar.
@@ -146,7 +146,7 @@ Relaciones que pide el enunciado: 1:N (users→bikes, bikes→results) y N:M (vo
 - **4 barras:** en cada paso, posicionar los eslabones por **intersección de circunferencias** (las longitudes de barra son constantes). Geometría cerrada, sin optimizador numérico: el proyecto de referencia usa scipy porque es Python; en Java la vía geométrica es más simple, más rápida y más fácil de testear.
 - **Pedal kickback:** derivado del crecimiento de la distancia pedalier–eje + dientes de plato/piñón. Documentar los supuestos simplificadores.
 - **Descriptores de curva** (la curva se analiza partida en el punto de sag; detalle en `base-conocimiento-cinematica.md`): LR inicial / en sag / final / medio, progresión total y **progresión útil** (sag→final), retroceso máximo del eje (mm) y tramo donde ocurre, pendiente por tramos (0→sag y sag→100%), detección de inflexiones y tramos regresivos, recorrido calculado (para el sanity check contra el declarado). El resultado incluye las condiciones de medida (sag y desarrollo).
-- **Validación:** fixtures de 2–3 bicis contrastadas con Linkage, tolerancia ±2–3%, como tests automáticos. La Canyon Strive:ON ya analizada a fondo es candidata ideal de primer fixture.
+- **Validación:** fixtures de 2–3 bicis contrastadas con BikeChecker, tolerancia ±2–3%, como tests automáticos.
 - **Anti-squat / anti-rise: fuera de v1** (requieren asumir centro de gravedad y línea de cadena; el proyecto de referencia pide `cog_height` justo por esto). Al README como trabajo futuro.
 - **Curvas de fuerza — simulador de emparejamiento de amortiguadores: fuera de v1, con prioridad posterior a anti-squat / anti-rise.** No queda fuera por falta de datos del usuario: con resortes genéricos (muelle lineal, aire de cámara grande/reducida) normalizados al sag de la disciplina, la fuerza en rueda se deriva de la curva de leverage sin pedir nada. Queda fuera por el modelado y la validación extra de esas curvas genéricas. La recomendación de tipo de amortiguador de la v1 **no** lo necesita: sale de los descriptores del LR y las reglas de emparejamiento de la base de conocimiento (§3 de `base-conocimiento-cinematica.md`).
 

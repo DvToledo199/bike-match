@@ -37,9 +37,12 @@ GitHub cuando aplica).
 - **Por qué ahora:** es inherente a marcar a mano sobre foto; para la v1 lo asumimos.
 - **Impacto:** limita la precisión del kickback (y del crecimiento de cadena). Se agrava
   con fotos de referencia pequeñas (la Surge es 500×280 px, ~3,9 mm/px).
-- **Dónde:** investigación dedicada en
-  [`docs/investigaciones/sensibilidad-marcado-pivote.md`](investigaciones/sensibilidad-marcado-pivote.md);
-  relacionado con #31.
+- **Dónde:** investigación **completada** →
+  [`sensibilidad-marcado-pivote-INFORME.md`](investigaciones/sensibilidad-marcado-pivote-INFORME.md).
+  **Conclusión:** no es un fallo del motor, es resolución de foto × precisión de marcado;
+  ninguna solución eficaz toca el motor (guía de resolución mínima, promediar clics,
+  marcado con zoom, mejores fotos) → se aplica en el sprint de marcado/frontend (#6), no
+  ahora. Objetivo: mm/px ≤ ~1,3. Relacionado con #31.
 
 ### 4. Guard numérico del `acos` en el solver
 - **Qué:** con geometría imposible (marcado muy malo), `MonopivotSolver.pivotAngle`
@@ -48,6 +51,18 @@ GitHub cuando aplica).
 - **Impacto:** curvas basura sin aviso si el marcado es incoherente.
 - **Dónde:** issue #17 (recortar a [-1, 1] el ruido de coma flotante; fail-fast / avisar
   en geometría realmente imposible).
+
+### 5. Clasificación de forma por tercios fijos (v1)
+- **Qué:** la forma de la curva se lee en tres tercios fijos (inicial/medio/final). El punto
+  de transición real (dónde cambia de verdad la pendiente) no se detecta con precisión, y una
+  jorobita local dentro de un tercio se promedia.
+- **Por qué ahora:** los tercios son robustos al ruido de marcado y captan lo importante
+  (incluida la zona de tope = tercio final); detectar el punto exacto punto-a-punto sería
+  sensible al ruido → falsos positivos.
+- **Impacto:** la forma es correcta "a grandes rasgos"; no da el % exacto donde ocurre el
+  cambio ni caza micro-tramos.
+- **Dónde:** issue #35 (transición variable + inflexiones + robustez al ruido, para fotos
+  de más resolución).
 
 ---
 

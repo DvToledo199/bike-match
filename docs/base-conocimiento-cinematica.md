@@ -45,11 +45,14 @@ Material de referencia para la capa de IA de BikeMatch. El motor de la aplicaci�
 
 **Taxonomía de formas** (la forma importa tanto como la cifra):
 
+El motor lee la forma en **tres fases** —tercio inicial, medio y final del recorrido—, y cada tercio se clasifica como **progresiva** (el LR baja), **lineal** (apenas cambia, ±0,1) o **regresiva** (el LR sube). El **tercio final es la zona de tope**. Las formas clásicas de abajo son patrones de esas tres fases (p. ej. progresiva-progresiva-progresiva = "progresiva continua"; progresiva-lineal-regresiva = una que se aplana y se ablanda al final), y hay bicis que se describen bien en tres fases distintas.
+
 - **Lineal descendente continua:** comportamiento uniforme; fácil de regular; el apoyo no cambia por sorpresa.
 - **Progresiva continua (pendiente suave y constante):** la forma más agradecida; se adapta bien a casi cualquier amortiguador.
 - **Cae fuerte al inicio y se aplana (progresiva→lineal):** muy sensible arriba; pero si el sag cae ya en la zona plana, la progresión útil real es baja aunque la total parezca alta. Avisar del riesgo de topes.
 - **Plana al inicio y cae al final (lineal→progresiva):** firme en la zona de pedaleo, con reserva de final; carácter saltarín.
 - **Con tramo regresivo (el LR sube en algún punto):** el apoyo desaparece justo ahí; la bici "se hunde". Un final regresivo es el peor caso para hacer topes: desaconsejar muelle y sugerir aire con volumen reducido. Un tramo regresivo suave al final (≤ ~0.1 de subida) puede tratarse como "casi lineal" sin alarmar.
+- **Regresiva de principio a fin (el LR sube durante casi todo el recorrido):** es el extremo del caso anterior; combina lo más difícil para la gravedad —cuesta lograr a la vez sensibilidad al pequeño impacto y reserva contra el tope— y solo resulta razonable en bicis muy ligeras de XC de competición. En las categorías que analiza BikeMatch (Enduro/DH) es una señal de alarma clara.
 - **Regresiva→progresiva (curva en lomo):** si el sag coincide con la cima del lomo, el tramo útil es más progresivo de lo que sugiere la cifra global. Es el ejemplo de manual de por qué se analiza desde el sag.
 
 **Emparejamiento con el amortiguador** (regla de composición: comportamiento total ≈ curva del cuadro × curva del resorte):
@@ -57,6 +60,7 @@ Material de referencia para la capa de IA de BikeMatch. El motor de la aplicaci�
 - **Muelle** = resorte lineal. Pide cuadros con progresión útil ≳15–20% y **sin** tramo regresivo final. En cuadros muy progresivos funciona de maravilla (sensibilidad de muelle + reserva del cuadro).
 - **Aire de cámara reducida** = resorte muy progresivo. Rescata cuadros lineales o regresivos.
 - **Aire de cámara grande** = resorte poco progresivo. Casa con cuadros de progresión media-alta; los reductores de volumen (spacers) permiten afinar entre medias.
+- **La cara B del aire.** Su progresión final —la que protege del tope y se afina con esos reductores de volumen— no sale gratis: el resorte de aire tiende a un **inicio algo más rígido** (por la fricción de sus sellos, tacto más "seco") y a un **hundimiento a media carrera** que resta apoyo. Un cuadro con buen apoyo medio y algo de progresión propia compensa esas dos carencias; cuando se busca máxima sensibilidad en el arranque del recorrido, el muelle parte con ventaja.
 - Dos caminos distintos pueden llevar al mismo sitio: cuadro lineal + aire progresivo ≈ cuadro progresivo + aire de gran cámara. Por eso la pregunta correcta no es "¿qué cuadro es mejor?" sino "¿qué combinación te deja en el comportamiento que buscas?".
 - **Hidráulico:** un LR medio alto tiende a necesitar compresión más firme; en cuadros muy progresivos, la parte final del recorrido ya frena por sí sola y conviene no pasarse de compresión de alta velocidad.
 

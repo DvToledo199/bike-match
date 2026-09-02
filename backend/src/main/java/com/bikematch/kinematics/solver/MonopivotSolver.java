@@ -8,20 +8,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MonopivotSolver {
-    public double swingarmLength(KinematicsInput input) {
 
+    /** Beyond this overshoot past [-1, 1], the triangle is impossible (bad marking), not FP rounding noise. */
+    private static final double COS_TOLERANCE = 0.001;
+
+    public double swingarmLength(KinematicsInput input) {
         Point2D pivot = input.pointOf(PointType.MAIN_PIVOT);
         Point2D axle = input.pointOf(PointType.REAR_AXLE);
         return pivot.distanceTo(axle);
-
     }
+
     public double pivotAngle(double pivotToFrame, double pivotToSwingarm, double shockLength) {
         double a = pivotToFrame;
         double b = pivotToSwingarm;
         double c = shockLength;
         double cos = (a * a + b * b - c * c) / (2 * a * b);
-        return Math.acos(cos);
+
+        if (cos > 1 + COS_TOLERANCE || cos < -1 - COS_TOLERANCE) {
+            throw new IllegalArgumentException(
+                    "Impossible pivot geometry (cos=" + cos + "): the marked points can't form this shock length");
+        }
+
+        double clamped = Math.max(-1, Math.min(1, cos));
+        return Math.acos(clamped);
     }
+
     public List<Point2D> sweep(KinematicsInput input) {
         Point2D pivot = input.pointOf(PointType.MAIN_PIVOT);
         Point2D axle = input.pointOf(PointType.REAR_AXLE);

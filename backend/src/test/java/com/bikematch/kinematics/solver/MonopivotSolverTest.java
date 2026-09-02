@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MonopivotSolverTest {
 
@@ -32,6 +33,13 @@ class MonopivotSolverTest {
         MonopivotSolver solver = new MonopivotSolver();
         double angleInDegrees = Math.toDegrees(solver.pivotAngle(3, 4, 5));
         assertEquals(90.0, angleInDegrees, 0.0001);
+    }
+
+    @Test
+    void pivotAngleThrowsOnImpossibleGeometry() {
+        MonopivotSolver solver = new MonopivotSolver();
+        // Shock length 100 can't fit a triangle with sides 3 and 4 -> impossible geometry.
+        assertThrows(IllegalArgumentException.class, () -> solver.pivotAngle(3, 4, 100));
     }
     @Test
     void sweepReturnsOnePointForEachStepPlusTheStart() {

@@ -116,7 +116,7 @@ Tres niveles:
 
 1. **Tests unitarios geométricos:** casos con solución conocida a mano.
 2. **Validación contra software de referencia:** las curvas de bicicletas reales se
-   comparan con las del programa *Linkage* (estándar del sector) con tolerancia ±3 %.
+   comparan con curvas de referencia de *BikeChecker* (bikechecker.com) con tolerancia ±3 %.
 3. **Control de coherencia en producción:** si el recorrido calculado difiere más de un
    ±10 % del declarado por el fabricante, el resultado se marca con una alerta (puntos
    probablemente mal marcados o calibración incorrecta) que acompaña a todo el análisis.

@@ -45,18 +45,24 @@ porcentaje de *sag* (punto de trabajo estático; 30 % por defecto).
 ## 3. Calibración: de píxeles a milímetros
 
 La foto expresa posiciones en píxeles, y cada foto tiene una escala distinta. Para
-convertir a milímetros se usa una **distancia real conocida entre dos puntos marcados**:
-la distancia entre ejes (*wheelbase*), publicada por el fabricante en la tabla de
-geometría.
+convertir a milímetros se usa una **distancia real conocida entre dos puntos marcados**.
+La v1 usa la medida **eye-to-eye del amortiguador** (distancia entre sus dos anclajes,
+publicada en su ficha):
 
 ```
-factor de escala (mm/px) = distancia entre ejes real (mm) / distancia entre ejes medida (px)
+factor de escala (mm/px) = eye-to-eye real (mm) / distancia entre anclajes medida (px)
 ```
 
-Se eligió la distancia entre ejes por ser la mayor distancia marcable: **cuanto más larga
-es la referencia, menor es el impacto relativo del error de marcado manual**. La medida
-entre anclajes del amortiguador (*eye-to-eye*, también conocida de ficha) queda como
-verificación cruzada.
+Se usa el eye-to-eye porque sus dos anclajes ya se marcan para el cálculo (sin puntos
+extra) y es un dato igual para todas las tallas (el amortiguador es compartido).
+
+**Precisión y mejora futura:** cuanto más larga es la referencia, menor es el error de
+marcado sobre la escala. Referencias más largas y fáciles de encontrar en la ficha —la
+**distancia entre ejes (wheelbase)** o la **longitud de vainas (chainstay)**— darían una
+escala más precisa; ofrecer varias opciones de calibración (como hace BikeChecker) es una
+mejora prevista (ver `limitaciones-y-mejoras.md`). En cualquier caso, la calibración solo
+afecta a las cifras **absolutas** (recorrido, kickback, retroceso); el leverage, la
+progresión y la forma son proporciones e **independientes de la escala**.
 
 ## 4. El principio geométrico: sólidos rígidos
 

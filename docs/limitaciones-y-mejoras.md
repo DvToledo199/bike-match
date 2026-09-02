@@ -64,6 +64,18 @@ GitHub cuando aplica).
 - **Dónde:** issue #35 (transición variable + inflexiones + robustez al ruido, para fotos
   de más resolución).
 
+### 6. Calibración con una sola referencia (eye-to-eye) en la v1
+- **Qué:** la conversión px→mm usa solo el **eye-to-eye del amortiguador**. No requiere
+  puntos extra y es igual en todas las tallas, pero es una referencia **corta** → más
+  sensible al error de marcado en la escala.
+- **Por qué ahora:** simple y lo que ya hace el código; y la calibración solo afecta a las
+  cifras **absolutas** (recorrido, kickback, retroceso), no al leverage/forma (proporciones);
+  el recorrido además se cruza con el declarado (#17).
+- **Impacto:** menor precisión de escala que con una referencia larga.
+- **Dónde:** mejora futura en #6 (crear bici): ofrecer varias referencias
+  (**vainas / wheelbase / amortiguador**, como BikeChecker) o usar la **wheelbase** por
+  defecto (más larga = más precisa, y fácil de encontrar en la ficha).
+
 ---
 
 ## Alcance (decisiones de producto, no atajos)

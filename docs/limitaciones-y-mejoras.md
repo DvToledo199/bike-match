@@ -78,6 +78,22 @@ GitHub cuando aplica).
 
 ---
 
+## API REST
+
+### 7. La respuesta reutiliza los records del dominio (sin DTOs de salida)
+- **Qué:** `PreviewResponse` agrupa directamente los records del motor (series de
+  curvas, descriptores, `TravelCheck`) en lugar de copiarlos a DTOs de respuesta propios.
+- **Por qué ahora:** en la salida no hay nada que validar ni traducir, y la serialización
+  a JSON ya entrega una copia desprendida (los records son inmutables y el front recibe
+  texto, no el objeto Java). Con un único consumidor controlado (el propio front), una capa
+  de DTOs de salida sería aislamiento para un problema que aún no existe (YAGNI).
+- **Impacto:** el contrato JSON queda atado a la forma interna del motor; renombrar un campo
+  del dominio cambia el JSON y obliga a tocar el front a la vez.
+- **Dónde:** mejora futura si la API se abre a consumidores externos → introducir DTOs de
+  respuesta como capa de traducción estable entre el dominio y el contrato público.
+
+---
+
 ## Alcance (decisiones de producto, no atajos)
 
 - **Anti-squat / anti-rise fuera de la v1:** requieren la altura del centro de gravedad

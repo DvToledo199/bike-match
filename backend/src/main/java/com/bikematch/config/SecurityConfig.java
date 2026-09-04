@@ -17,9 +17,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 /**
  * TEMPORARY security configuration (Sprint 0 skeleton).
  *
- * Only GET /api/health is public so the skeleton can be smoke-tested end to end;
- * every other route stays locked. This whole class will be reworked in the JWT
- * sprint (stateless sessions, auth endpoints, role-based rules).
+ * GET /api/health and POST /api/kinematics/preview are public (health smoke-test and
+ * the kinematics preview the frontend needs before auth exists); CSRF is disabled
+ * because this is a stateless REST API. Every other route stays locked. This whole
+ * class will be reworked in the JWT sprint (stateless sessions, auth endpoints,
+ * role-based rules).
  */
 @Configuration
 @EnableWebSecurity
@@ -29,8 +31,10 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/kinematics/preview").permitAll()
                         .anyRequest().authenticated());
         return http.build();
     }

@@ -1,3 +1,5 @@
+import { hasAllPoints } from './pointDefinitions.js'
+
 export const wizardSteps = [
   {
     id: 'photo',
@@ -22,7 +24,11 @@ export function isStepComplete(stepId, wizardData) {
     return Boolean(wizardData.photo && wizardData.suspensionType)
   }
 
+  if (stepId === 'marking') {
+    return hasAllPoints(wizardData.points)
+  }
+
   // The remaining steps are placeholders until their own implementation issues.
-  // Their real validation rules will be added with #47 and #49.
+  // The parameter validation rule will be added with #49.
   return true
 }

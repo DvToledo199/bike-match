@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import useWizardState from './useWizardState.js'
+import PointMarker from './PointMarker.jsx'
 import PhotoStep from './PhotoStep.jsx'
 import { isStepComplete, wizardSteps } from './wizardSteps.js'
 import styles from './AnalysisWizard.module.css'
@@ -57,6 +58,12 @@ function AnalysisWizard() {
           <PhotoStep
             photo={wizardData.photo}
             suspensionType={wizardData.suspensionType}
+            updateWizardData={updateWizardData}
+          />
+        ) : activeStep.id === 'marking' ? (
+          <PointMarker
+            photo={wizardData.photo}
+            points={wizardData.points}
             updateWizardData={updateWizardData}
           />
         ) : (

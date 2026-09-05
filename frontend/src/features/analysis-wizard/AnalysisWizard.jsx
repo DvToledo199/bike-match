@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import useWizardState from './useWizardState.js'
+import usePreview from './usePreview.js'
 import ParameterStep from './ParameterStep.jsx'
 import PointMarker from './PointMarker.jsx'
 import PhotoStep from './PhotoStep.jsx'
+import PreviewStatus from './PreviewStatus.jsx'
 import { isStepComplete, wizardSteps } from './wizardSteps.js'
 import styles from './AnalysisWizard.module.css'
 
@@ -16,6 +18,7 @@ function AnalysisWizard() {
     goToNextStep,
     goToPreviousStep,
   } = useWizardState(wizardSteps.length)
+  const { data, error, isLoading, requestPreview } = usePreview()
 
   useEffect(() => {
     return () => {
@@ -29,6 +32,16 @@ function AnalysisWizard() {
   const isFirstStep = activeStepIndex === 0
   const isLastStep = activeStepIndex === wizardSteps.length - 1
   const canGoToNextStep = isStepComplete(activeStep.id, wizardData)
+
+  async function handleNextStep() {
+    if (activeStep.id === 'parameters') {
+      goToNextStep()
+      await requestPreview(wizardData)
+      return
+    }
+
+    goToNextStep()
+  }
 
   return (
     <section className={styles.wizard} aria-labelledby="wizard-title">
@@ -73,6 +86,13 @@ function AnalysisWizard() {
             points={wizardData.points}
             updateWizardData={updateWizardData}
           />
+        ) : activeStep.id === 'results' ? (
+          <PreviewStatus
+            data={data}
+            error={error}
+            isLoading={isLoading}
+            onRetry={() => requestPreview(wizardData)}
+          />
         ) : (
           <>
             <p className={styles.stepCount}>
@@ -102,10 +122,12 @@ function AnalysisWizard() {
         <button
           type="button"
           className={styles.primaryButton}
-          onClick={goToNextStep}
-          disabled={isLastStep || !canGoToNextStep}
+          onClick={handleNextStep}
+          disabled={isLastStep || !canGoToNextStep || isLoading}
         >
-          {isLastStep ? t('wizard.finish') : t('wizard.next')}
+          {activeStep.id === 'parameters'
+            ? t('wizard.calculate')
+            : isLastStep ? t('wizard.finish') : t('wizard.next')}
         </button>
       </div>
     </section>

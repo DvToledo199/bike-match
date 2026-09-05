@@ -8,6 +8,7 @@
     "stepCount": "Step {{current}} of {{total}}",
     "back": "Back",
     "next": "Next",
+    "calculate": "Calculate kinematics",
     "finish": "View results",
     "photo": {
       "label": "Photo and suspension",
@@ -148,12 +149,21 @@
       "title": "Your kinematics results",
       "description": "The curves and their explanations will appear here."
     },
+    "preview": {
+      "loadingTitle": "Calculating your bike",
+      "loadingDescription": "We are sending the marks and measurements to the kinematics engine.",
+      "errorTitle": "We could not calculate this bike",
+      "retry": "Try calculation again",
+      "readyTitle": "Calculation ready",
+      "readyDescription": "The curves and descriptors have arrived. They will be displayed here in the next step of the build.",
+      "errors": {
+        "invalidRequest": "Check the marked points and measurements, then try again. One of them does not form a possible bike geometry.",
+        "network": "We could not reach the calculation service. Check that the BikeMatch backend is running, then try again.",
+        "server": "The calculation service had a problem. Try again in a moment.",
+        "unavailable": "The calculation service is not available right now. Try again in a moment.",
+        "unexpected": "Something unexpected happened while preparing the calculation. Try again."
+      }
+    },
     "placeholder": "This step is ready for its next implementation task."
-  },
-  "health": {
-    "loading": "Checking backend…",
-    "error": "Could not reach the backend",
-    "status": "Status",
-    "version": "Version"
   }
 }

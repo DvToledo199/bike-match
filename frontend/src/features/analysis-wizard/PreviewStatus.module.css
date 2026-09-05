@@ -1,0 +1,75 @@
+.status {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-md);
+  padding: var(--space-xl) var(--space-lg);
+  border-left: 3px solid var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+}
+
+.errorStatus {
+  border-left-color: var(--color-danger);
+  background-color: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
+}
+
+.successStatus {
+  border-left-color: var(--color-success);
+  background-color: color-mix(in srgb, var(--color-success) 8%, var(--color-surface));
+}
+
+.title,
+.description {
+  margin: 0;
+}
+
+.title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  letter-spacing: -0.02em;
+}
+
+.description {
+  color: var(--color-text-muted);
+}
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+.retryButton {
+  min-height: 2.75rem;
+  padding: 0 var(--space-lg);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.retryButton:hover,
+.retryButton:focus-visible {
+  border-color: var(--color-primary);
+}
+
+.retryButton:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  outline-offset: 2px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

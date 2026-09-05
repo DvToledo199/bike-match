@@ -1,7 +1,11 @@
-:root {
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
-  color-scheme: light dark;
+/*
+  Global base styles. These are the page-wide defaults; they read their colours,
+  font and spacing from the design tokens (see styles/tokens.css).
+  Component-specific styles live next to their component (e.g. App.css).
+*/
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -10,4 +14,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }

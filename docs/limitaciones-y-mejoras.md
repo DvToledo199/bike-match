@@ -1,6 +1,6 @@
 # Limitaciones conocidas y mejoras pendientes
 
-Registro vivo de los **compromisos técnicos** que asumimos en la versión actual
+Registro vivo de los **compromisos técnicos** que se asumen en la versión actual
 (MVP del curso) y de lo que habría que revisar o mejorar para una versión "seria".
 La idea es no perder de vista ningún atajo: cada entrada dice **qué** se dejó pasar,
 **por qué** se aceptó ahora, qué **impacto** tiene y **dónde** se sigue (issue de
@@ -34,7 +34,7 @@ GitHub cuando aplica).
 ### 3. Sensibilidad extrema al marcado del pivote principal
 - **Qué:** mover el pivote principal ~5 px cambia el kickback de la Surge de 19° a 35°
   (~1,6°/px). El crecimiento de cadena depende directo del arco pivote→eje.
-- **Por qué ahora:** es inherente a marcar a mano sobre foto; para la v1 lo asumimos.
+- **Por qué ahora:** es inherente a marcar a mano sobre foto; para la v1 se asume.
 - **Impacto:** limita la precisión del kickback (y del crecimiento de cadena). Se agrava
   con fotos de referencia pequeñas (la Surge es 500×280 px, ~3,9 mm/px).
 - **Dónde:** investigación **completada** →

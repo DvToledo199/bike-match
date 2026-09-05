@@ -12,7 +12,27 @@
     "photo": {
       "label": "Photo and suspension",
       "title": "Start with a side photo of your bike",
-      "description": "You will upload a photo and choose the suspension type here."
+      "description": "A clear side-on photo makes the point marking more reliable.",
+      "eyebrow": "Step 1 of 4",
+      "inputLabel": "Bike photo",
+      "changeInputLabel": "Choose a different photo",
+      "inputHelp": "JPG, PNG or WebP. Maximum file size: 10 MB.",
+      "previewAlt": "Preview of {{fileName}}",
+      "dimensions": "{{width}} × {{height}} px",
+      "lowResolutionWarning": "This image is smaller than {{minimumPixels}} px on its longest side. Use a larger photo if possible: small images make the marking less reliable.",
+      "suspensionLegend": "Suspension type",
+      "suspensionHelp": "The current analysis supports simple single-pivot designs.",
+      "suspensionTypes": {
+        "singlePivot": "Single pivot",
+        "fourBar": "Four-bar / Horst link",
+        "dualLink": "Dual link / virtual pivot"
+      },
+      "comingSoon": "Coming soon",
+      "errors": {
+        "invalidFormat": "Choose a JPG, PNG or WebP image. SVG files cannot be used as photos.",
+        "fileTooLarge": "Choose an image smaller than {{maximumSize}} MB.",
+        "unreadable": "This image could not be read. Choose a different file."
+      }
     },
     "marking": {
       "label": "Mark points",

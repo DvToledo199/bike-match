@@ -17,3 +17,12 @@ export const wizardSteps = [
   },
 ]
 
+export function isStepComplete(stepId, wizardData) {
+  if (stepId === 'photo') {
+    return Boolean(wizardData.photo && wizardData.suspensionType)
+  }
+
+  // The remaining steps are placeholders until their own implementation issues.
+  // Their real validation rules will be added with #47 and #49.
+  return true
+}

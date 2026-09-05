@@ -1,19 +1,32 @@
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import useWizardState from './useWizardState.js'
-import { wizardSteps } from './wizardSteps.js'
+import PhotoStep from './PhotoStep.jsx'
+import { isStepComplete, wizardSteps } from './wizardSteps.js'
 import styles from './AnalysisWizard.module.css'
 
 function AnalysisWizard() {
   const { t } = useTranslation()
   const {
     activeStepIndex,
+    wizardData,
+    updateWizardData,
     goToNextStep,
     goToPreviousStep,
   } = useWizardState(wizardSteps.length)
 
+  useEffect(() => {
+    return () => {
+      if (wizardData.photo?.previewUrl) {
+        URL.revokeObjectURL(wizardData.photo.previewUrl)
+      }
+    }
+  }, [wizardData.photo?.previewUrl])
+
   const activeStep = wizardSteps[activeStepIndex]
   const isFirstStep = activeStepIndex === 0
   const isLastStep = activeStepIndex === wizardSteps.length - 1
+  const canGoToNextStep = isStepComplete(activeStep.id, wizardData)
 
   return (
     <section className={styles.wizard} aria-labelledby="wizard-title">
@@ -40,17 +53,27 @@ function AnalysisWizard() {
       </nav>
 
       <div className={styles.panel}>
-        <p className={styles.stepCount}>
-          {t('wizard.stepCount', {
-            current: activeStepIndex + 1,
-            total: wizardSteps.length,
-          })}
-        </p>
-        <h1 id="wizard-title" className={styles.title}>
-          {t(`${activeStep.translationKey}.title`)}
-        </h1>
-        <p className={styles.description}>{t(`${activeStep.translationKey}.description`)}</p>
-        <p className={styles.placeholder}>{t('wizard.placeholder')}</p>
+        {activeStep.id === 'photo' ? (
+          <PhotoStep
+            photo={wizardData.photo}
+            suspensionType={wizardData.suspensionType}
+            updateWizardData={updateWizardData}
+          />
+        ) : (
+          <>
+            <p className={styles.stepCount}>
+              {t('wizard.stepCount', {
+                current: activeStepIndex + 1,
+                total: wizardSteps.length,
+              })}
+            </p>
+            <h1 id="wizard-title" className={styles.title}>
+              {t(`${activeStep.translationKey}.title`)}
+            </h1>
+            <p className={styles.description}>{t(`${activeStep.translationKey}.description`)}</p>
+            <p className={styles.placeholder}>{t('wizard.placeholder')}</p>
+          </>
+        )}
       </div>
 
       <div className={styles.actions}>
@@ -66,7 +89,7 @@ function AnalysisWizard() {
           type="button"
           className={styles.primaryButton}
           onClick={goToNextStep}
-          disabled={isLastStep}
+          disabled={isLastStep || !canGoToNextStep}
         >
           {isLastStep ? t('wizard.finish') : t('wizard.next')}
         </button>
@@ -76,4 +99,3 @@ function AnalysisWizard() {
 }
 
 export default AnalysisWizard
-

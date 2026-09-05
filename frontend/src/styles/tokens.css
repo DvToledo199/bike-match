@@ -20,7 +20,9 @@
   --color-primary: #0f9d58;     /* brand accent (green) */
   --color-on-primary: #ffffff;  /* text/icons placed on top of the accent */
   --color-success: #1f7a3a;     /* "all good" state */
+  --color-warning: #9d6c00;     /* attention state */
   --color-danger: #c0392b;      /* error state */
+  --color-image-background: #101214;
 
   /* ---- Spacing scale (t-shirt sizes) ---- */
   --space-xs: 0.25rem;
@@ -54,7 +56,9 @@
     --color-primary: #22c26b;      /* a touch brighter so it pops on dark */
     --color-on-primary: #0b1f12;
     --color-success: #34c759;
+    --color-warning: #ffb020;
     --color-danger: #ff6b5e;
+    --color-image-background: #050607;
     --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35);
   }
 }

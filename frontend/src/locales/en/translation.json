@@ -91,7 +91,57 @@
     "parameters": {
       "label": "Parameters",
       "title": "Add the bike and shock measurements",
-      "description": "You will enter calibration and drivetrain values here."
+      "description": "Use the shock as a ruler for the photo, then add the values needed for the analysis.",
+      "eyebrow": "Step 3 of 4",
+      "calibration": {
+        "title": "Calibrate the photo",
+        "description": "The distance between the two shock mounts tells us how much a pixel represents in the real bike.",
+        "pending": "Enter the shock eye-to-eye measurement to check the scale of this photo.",
+        "invalidReference": "The two shock mounts are in the same place. Go back and correct one of those marks.",
+        "scaleValue": "1 px = {{value}} mm",
+        "highScaleWarning": "Each pixel represents quite a lot of the real bike. A small marking change may noticeably affect the result; a larger side photo would be more reliable.",
+        "usableScale": "This photo has a suitable scale for a first analysis. You can still return to the marks if any cross does not look right."
+      },
+      "analysis": {
+        "title": "Bike and drivetrain values",
+        "description": "These values describe the shock, suspension travel and gears used in the calculation."
+      },
+      "fields": {
+        "eyeToEye": {
+          "label": "Shock eye-to-eye",
+          "help": "Measure from the centre of one shock bolt to the centre of the other.",
+          "unit": "mm"
+        },
+        "shockStroke": {
+          "label": "Shock stroke",
+          "help": "How far the shock shaft can move. This is not the bike's suspension travel.",
+          "unit": "mm"
+        },
+        "chainring": {
+          "label": "Chainring teeth",
+          "help": "The number of teeth on the front chainring used for the kickback estimate.",
+          "unit": "teeth"
+        },
+        "sprocket": {
+          "label": "Sprocket teeth",
+          "help": "The number of teeth on the rear sprocket selected for the calculation.",
+          "unit": "teeth"
+        },
+        "declaredTravel": {
+          "label": "Declared rear travel",
+          "help": "The rear suspension travel stated by the bike manufacturer.",
+          "unit": "mm"
+        },
+        "sag": {
+          "label": "Sag",
+          "help": "The usual resting compression of the suspension. 30% is a common starting point.",
+          "unit": "%"
+        }
+      },
+      "errors": {
+        "required": "Enter {{field}}.",
+        "range": "{{field}} must be between {{minimum}} and {{maximum}}."
+      }
     },
     "results": {
       "label": "Results",

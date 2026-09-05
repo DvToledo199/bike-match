@@ -1,4 +1,5 @@
 import { hasAllPoints } from './pointDefinitions.js'
+import { getCalibration, hasValidParameters } from './parameterValidation.js'
 
 export const wizardSteps = [
   {
@@ -28,7 +29,11 @@ export function isStepComplete(stepId, wizardData) {
     return hasAllPoints(wizardData.points)
   }
 
-  // The remaining steps are placeholders until their own implementation issues.
-  // The parameter validation rule will be added with #49.
+  if (stepId === 'parameters') {
+    return hasValidParameters(wizardData.parameters)
+      && getCalibration(wizardData.points, wizardData.parameters.eyeToEyeMm)?.isValid
+  }
+
+  // The results step is a placeholder until its own implementation issue.
   return true
 }

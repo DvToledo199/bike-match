@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import styles from './HealthCheck.module.css'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
 
@@ -19,19 +20,27 @@ function HealthCheck() {
   }, [])
 
   if (error) {
-    return <p className="health health--error">{t('health.error')}</p>
+    return (
+      <p className={`${styles.card} ${styles.inline} ${styles.error}`}>
+        {t('health.error')}
+      </p>
+    )
   }
 
   if (!health) {
-    return <p className="health">{t('health.loading')}</p>
+    return (
+      <p className={`${styles.card} ${styles.inline}`}>
+        {t('health.loading')}
+      </p>
+    )
   }
 
   return (
-    <dl className="health health--ok">
-      <dt>{t('health.status')}</dt>
-      <dd>{health.status}</dd>
-      <dt>{t('health.version')}</dt>
-      <dd>{health.version}</dd>
+    <dl className={`${styles.card} ${styles.grid} ${styles.ok}`}>
+      <dt className={styles.label}>{t('health.status')}</dt>
+      <dd className={`${styles.value} ${styles.okValue}`}>{health.status}</dd>
+      <dt className={styles.label}>{t('health.version')}</dt>
+      <dd className={`${styles.value} ${styles.okValue}`}>{health.version}</dd>
     </dl>
   )
 }

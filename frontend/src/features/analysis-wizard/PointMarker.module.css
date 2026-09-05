@@ -50,17 +50,28 @@
   cursor: crosshair;
 }
 
+.marker:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
+  outline-offset: -3px;
+}
+
 .markerPoint {
   pointer-events: none;
 }
 
-.markerPoint circle {
-  fill: var(--color-primary);
-  stroke: var(--color-surface);
+.markerPoint line {
+  stroke: var(--color-primary);
   stroke-width: 3;
+  stroke-linecap: round;
 }
 
+.markerPoint circle {
+  fill: var(--color-primary);
+}
+
+.markerPoint[data-selected='true'] line,
 .markerPoint[data-selected='true'] circle {
+  stroke: var(--color-warning);
   fill: var(--color-warning);
 }
 
@@ -69,7 +80,83 @@
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
-  text-anchor: middle;
+  stroke: var(--color-image-background);
+  stroke-width: 3px;
+  paint-order: stroke;
+  text-anchor: start;
+}
+
+.precisionControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+}
+
+.controlGroup {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.controlLabel {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.controlButtons,
+.panButtons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.controlButton,
+.panButton,
+.resetButton {
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.resetButton {
+  padding: 0 var(--space-sm);
+}
+
+.controlButton:hover:not(:disabled),
+.panButton:hover,
+.resetButton:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.controlButton:focus-visible,
+.panButton:focus-visible,
+.resetButton:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  outline-offset: 2px;
+}
+
+.controlButton:disabled,
+.resetButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.zoomValue {
+  min-width: 3.5rem;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  text-align: center;
 }
 
 .pointList {
@@ -136,6 +223,10 @@
 }
 
 @media (max-width: 34rem) {
+  .precisionControls {
+    display: grid;
+  }
+
   .pointList {
     grid-template-columns: 1fr;
   }

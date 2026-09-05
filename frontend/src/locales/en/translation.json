@@ -37,7 +37,42 @@
     "marking": {
       "label": "Mark points",
       "title": "Mark the six key points",
-      "description": "You will place each pivot and axle over the photo here."
+      "description": "Follow the guide and click the exact centre of each part on the photo.",
+      "eyebrow": "Step 2 of 4",
+      "progress": "{{marked}} of {{total}} points marked",
+      "nowMarking": "Now marking: {{point}}",
+      "instructions": "Click the exact centre of this point on the photo. You can select any point below to move it again.",
+      "allPointsMarked": "All six points are set. Select any point below, then click the photo to move it.",
+      "canvasLabel": "Bike photo used to mark suspension points",
+      "pointListLabel": "Points to mark",
+      "marked": "Marked",
+      "toMark": "To mark",
+      "points": {
+        "mainPivot": {
+          "label": "Main pivot",
+          "description": "The centre of the pivot around which the swingarm rotates."
+        },
+        "shockFrame": {
+          "label": "Frame-side shock mount",
+          "description": "The centre of the shock mounting bolt fixed to the frame."
+        },
+        "shockSwingarm": {
+          "label": "Swingarm-side shock mount",
+          "description": "The centre of the shock mounting bolt attached to the swingarm."
+        },
+        "bottomBracket": {
+          "label": "Bottom bracket",
+          "description": "The centre of the crank axle."
+        },
+        "rearAxle": {
+          "label": "Rear axle",
+          "description": "The centre of the rear wheel axle."
+        },
+        "frontAxle": {
+          "label": "Front axle",
+          "description": "The centre of the front wheel axle."
+        }
+      }
     },
     "parameters": {
       "label": "Parameters",

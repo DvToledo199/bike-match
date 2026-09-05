@@ -1,0 +1,142 @@
+.content {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.eyebrow,
+.progress {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.title {
+  margin: var(--space-sm) 0 0;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  letter-spacing: -0.02em;
+}
+
+.description,
+.pointDescription,
+.instructions {
+  margin: var(--space-sm) 0 0;
+  color: var(--color-text-muted);
+}
+
+.guidance {
+  padding: var(--space-md);
+  border-left: 3px solid var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+}
+
+.pointName {
+  margin: var(--space-xs) 0 0;
+  font-size: 1.125rem;
+}
+
+.markerFrame {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-image-background);
+}
+
+.marker {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.markerPoint {
+  pointer-events: none;
+}
+
+.markerPoint circle {
+  fill: var(--color-primary);
+  stroke: var(--color-surface);
+  stroke-width: 3;
+}
+
+.markerPoint[data-selected='true'] circle {
+  fill: var(--color-warning);
+}
+
+.markerPoint text {
+  fill: var(--color-on-primary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.pointList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pointButton {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pointButton:hover,
+.pointButton[data-selected='true'] {
+  border-color: var(--color-primary);
+}
+
+.pointButton:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  outline-offset: 2px;
+}
+
+.pointNumber {
+  display: grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.pointLabel {
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.pointStatus {
+  grid-column: 2;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.pointStatus[data-marked='true'] {
+  color: var(--color-success);
+}
+
+@media (max-width: 34rem) {
+  .pointList {
+    grid-template-columns: 1fr;
+  }
+}

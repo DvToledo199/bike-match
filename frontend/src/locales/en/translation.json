@@ -3,6 +3,34 @@
     "title": "BikeMatch",
     "tagline": "Mountain bike suspension kinematics, explained"
   },
+  "wizard": {
+    "progressLabel": "Analysis progress",
+    "stepCount": "Step {{current}} of {{total}}",
+    "back": "Back",
+    "next": "Next",
+    "finish": "View results",
+    "photo": {
+      "label": "Photo and suspension",
+      "title": "Start with a side photo of your bike",
+      "description": "You will upload a photo and choose the suspension type here."
+    },
+    "marking": {
+      "label": "Mark points",
+      "title": "Mark the six key points",
+      "description": "You will place each pivot and axle over the photo here."
+    },
+    "parameters": {
+      "label": "Parameters",
+      "title": "Add the bike and shock measurements",
+      "description": "You will enter calibration and drivetrain values here."
+    },
+    "results": {
+      "label": "Results",
+      "title": "Your kinematics results",
+      "description": "The curves and their explanations will appear here."
+    },
+    "placeholder": "This step is ready for its next implementation task."
+  },
   "health": {
     "loading": "Checking backend…",
     "error": "Could not reach the backend",

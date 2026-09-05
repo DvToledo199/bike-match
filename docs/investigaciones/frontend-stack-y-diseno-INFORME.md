@@ -6,7 +6,7 @@
 > ningún PR. Los datos de versión y estado de mantenimiento de cada librería se verificaron
 > contra su documentación oficial y npm **a fecha de septiembre de 2026**; conviene
 > re-confirmarlos con un *spike* (prueba corta y desechable) cuando arranque el sprint.
-> Este informe **recomienda; la decisión final es de David.**
+> Este informe **recomienda; la decisión final es del responsable del proyecto.**
 
 ---
 
@@ -58,7 +58,7 @@ Vite 8**, **react-i18next** (i18n con inglés base), **oxlint** como linter y **
 estilado: se elegirán aquí.
 
 **Estrella polar de todo el informe** (restricciones del proyecto): es un **MVP de curso** que
-debe quedar **EXPLICABLE** —David tiene que poder defender cada parte en una entrevista—, con
+debe quedar **EXPLICABLE** —cada parte debe poder defenderse en una entrevista—, con
 **dependencias mínimas** y añadidas **solo cuando el sprint las necesita**. React + Vite ya
 está fijado en `CLAUDE.md`. Todas las librerías candidatas son de **licencia permisiva**
 (MIT en su mayoría, ISC/BSD alguna), así que **la licencia no distingue** entre opciones y no
@@ -83,7 +83,7 @@ cambiar** respecto a lo ya fijado.
 da un servidor de desarrollo instantáneo y un build simple; React aporta el modelo de
 componentes más extendido (útil para el "sé explicarlo" y para el CV). Las alternativas son
 buenas en abstracto, pero aquí **cambiar cuesta y no aporta**: obliga a rehacer el esqueleto,
-a aprender un segundo ecosistema desde cero (David parte de **cero** en frontend) y a
+a aprender un segundo ecosistema desde cero (se parte de **cero** en frontend) y a
 contradecir el enunciado del curso. SvelteKit además arrastra funcionalidad *full-stack* (SSR,
 enrutado de servidor) que este front —una SPA que llama a una API— no necesita.
 
@@ -236,7 +236,7 @@ mínimo a mano. El alcance visual de la v1 es pequeño: un asistente por pasos (
   que no se vea anticuado. Es además la dirección que ya trae el esqueleto (CSS plano).
 - **Tailwind v4** (estable desde inicio de 2025, con **plugin oficial de Vite** y build muy
   rápido) es una alternativa legítima: acelera mucho el diseño. El *pero* es de explicabilidad:
-  el JSX se llena de clases utilitarias y David tiene que poder defender ese enfoque; si se
+  el JSX se llena de clases utilitarias y hay que poder defender ese enfoque; si se
   siente cómodo con él, es una opción sólida.
 - **CSS-in-JS** añade coste en runtime y concepto, y algunas de sus librerías están en modo
   mantenimiento con la llegada de React 19 → poco recomendable para este MVP.
@@ -264,18 +264,18 @@ mínimo a mano. El alcance visual de la v1 es pequeño: un asistente por pasos (
 
 > **Recomendación (frente 4): CSS Modules + design tokens** como base —lo más explicable, cero
 > dependencias nuevas, ya es la dirección del esqueleto y da de sobra para una estética moderna.
-> **Alternativa: Tailwind v4** si se prioriza velocidad de diseño y David está cómodo
+> **Alternativa: Tailwind v4** si se prioriza velocidad de diseño y se está cómodo
 > defendiendo las utilidades. Un **headless** (Headless UI si se va con Tailwind; Radix o Base
 > UI si no) **solo** cuando aparezca un *widget* accesible complejo; hasta entonces, HTML nativo.
 > **Descartar para este MVP:** CSS-in-JS y los kits de componentes completos.
 
 ---
 
-## 5. Stack recomendado de conjunto — para que David elija
+## 5. Stack recomendado de conjunto
 
 Presentado como conjunto coherente (framework + gráficas + marcado + estilo), con su
-**alternativa** por si David prefiere otra vía. **No es una decisión tomada**: es la
-recomendación razonada para que David decida.
+**alternativa** por si se prefiere otra vía. **No es una decisión tomada**: es la
+recomendación razonada para la decisión final.
 
 | Capa | Recomendación principal | Alternativa | ¿Dependencia nueva? |
 |---|---|---|---|
@@ -291,8 +291,8 @@ recomendación razonada para que David decida.
   recomendados son nativos (SVG y CSS Modules) → respeta "dependencias mínimas y solo cuando el
   sprint las necesita".
 - **Todo optimizado para *explicable*.** Recharts se lee como HTML, el marcado en SVG es
-  inspeccionable elemento a elemento, y CSS Modules es CSS de siempre. Encaja con que David
-  tiene que defender cada parte.
+  inspeccionable elemento a elemento, y CSS Modules es CSS de siempre. Encaja con la exigencia
+  de poder defender cada parte.
 - **Sinergia entre frentes:** el "saber dibujar en SVG" del marcado (frente 3) se reutiliza para
   la trayectoria del eje (frente 2).
 - **Sube de nivel sin rehacer:** si algo se queda corto, hay una alternativa clara por capa
@@ -348,4 +348,4 @@ puntos en SVG sobre la foto (zoom por `viewBox` + ajuste con teclado, que hace b
 mitigaciones de sensibilidad del pivote); y estilar con CSS Modules + tokens para una estética
 moderna y explicable —con Chart.js, react-konva y Tailwind como alternativas claras por capa si
 algo se queda corto. Todo pensado para que quede EXPLICABLE y con deps mínimas; la decisión es
-de David.**
+del responsable del proyecto.**

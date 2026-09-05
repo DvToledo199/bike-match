@@ -1,0 +1,25 @@
+.home {
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.title::after {
+  content: '';
+  display: block;
+  width: 3rem;
+  height: 4px;
+  margin: var(--space-md) auto 0;
+  border-radius: 999px;
+  background-color: var(--color-primary);
+}
+
+.tagline {
+  margin-top: var(--space-md);
+  color: var(--color-text-muted);
+}

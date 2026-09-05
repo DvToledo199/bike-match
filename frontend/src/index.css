@@ -1,19 +1,9 @@
-/*
-  Global base styles. These are the page-wide defaults; they read their colours,
-  font and spacing from the design tokens (see styles/tokens.css).
-  Component-specific styles live next to their component (e.g. App.css).
-*/
-
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);

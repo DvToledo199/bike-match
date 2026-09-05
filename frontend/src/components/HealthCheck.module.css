@@ -1,0 +1,43 @@
+.card {
+  margin-top: var(--space-xl);
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.grid {
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  gap: var(--space-xs) var(--space-lg);
+  text-align: left;
+}
+
+.label {
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.value {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.ok {
+  border-color: color-mix(in srgb, var(--color-success) 45%, var(--color-border));
+}
+
+.okValue {
+  color: var(--color-success);
+}
+
+.error {
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 45%, var(--color-border));
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-surface));
+}

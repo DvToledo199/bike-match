@@ -1,36 +1,77 @@
 .app {
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
   text-align: center;
-  padding: 2rem;
+}
+
+.app h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Small accent bar under the title — shows the primary token doing its job. */
+.app h1::after {
+  content: '';
+  display: block;
+  width: 3rem;
+  height: 4px;
+  margin: var(--space-md) auto 0;
+  border-radius: 999px;
+  background-color: var(--color-primary);
 }
 
 .tagline {
-  opacity: 0.7;
+  margin-top: var(--space-md);
+  color: var(--color-text-muted);
 }
 
+/* Shared "card" look for every backend-health state. */
 .health {
+  margin-top: var(--space-xl);
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+/* The "ok" state is a definition list laid out as a 2-column grid. */
+dl.health {
   display: inline-grid;
   grid-template-columns: auto auto;
-  gap: 0.25rem 1rem;
-  margin-top: 2rem;
-  padding: 1rem 1.5rem;
-  border: 1px solid currentColor;
-  border-radius: 8px;
-}
-
-.health dt {
-  font-weight: 600;
-  text-align: right;
-}
-
-.health dd {
-  margin: 0;
+  gap: var(--space-xs) var(--space-lg);
   text-align: left;
 }
 
+dl.health dt {
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+dl.health dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The loading / error states are single-line paragraphs. */
+p.health {
+  display: inline-block;
+}
+
 .health--ok {
-  color: #2e7d32;
+  border-color: color-mix(in srgb, var(--color-success) 45%, var(--color-border));
+}
+
+.health--ok dd {
+  color: var(--color-success);
 }
 
 .health--error {
-  color: #c62828;
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 45%, var(--color-border));
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-surface));
 }

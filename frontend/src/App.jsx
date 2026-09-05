@@ -1,10 +1,10 @@
 import Layout from './components/Layout.jsx'
-import HomePage from './features/home/HomePage.jsx'
+import AnalysisWizard from './features/analysis-wizard/AnalysisWizard.jsx'
 
 function App() {
   return (
     <Layout>
-      <HomePage />
+      <AnalysisWizard />
     </Layout>
   )
 }

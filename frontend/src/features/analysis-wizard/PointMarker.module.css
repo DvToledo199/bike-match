@@ -42,6 +42,24 @@
   background-color: var(--color-image-background);
 }
 
+.markerFrame:focus-within {
+  outline: 3px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+.keyboardCursor {
+  fill: transparent;
+  stroke: white;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 1px black);
+  pointer-events: none;
+}
+
+.keyboardCursor line,
+.keyboardCursor circle {
+  vector-effect: non-scaling-stroke;
+}
+
 .marker {
   display: block;
   width: 100%;
@@ -51,7 +69,7 @@
 }
 
 .marker:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
+  outline: 3px solid var(--color-text);
   outline-offset: -3px;
 }
 
@@ -142,7 +160,7 @@
 .controlButton:focus-visible,
 .panButton:focus-visible,
 .resetButton:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
 }
 
@@ -190,7 +208,7 @@
 }
 
 .pointButton:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
 }
 

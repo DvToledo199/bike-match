@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import useWizardState from './useWizardState.js'
 import usePreview from './usePreview.js'
@@ -19,6 +19,15 @@ function AnalysisWizard() {
     goToPreviousStep,
   } = useWizardState(wizardSteps.length)
   const { data, error, isLoading, requestPreview, cancelPreview } = usePreview()
+  const panelRef = useRef(null)
+  const previousStep = useRef(activeStepIndex)
+
+  useEffect(() => {
+    if (previousStep.current !== activeStepIndex) {
+      panelRef.current?.focus()
+      previousStep.current = activeStepIndex
+    }
+  }, [activeStepIndex])
 
   useEffect(() => {
     return () => {
@@ -67,7 +76,7 @@ function AnalysisWizard() {
         </ol>
       </nav>
 
-      <div className={styles.panel}>
+      <div className={styles.panel} ref={panelRef} tabIndex={-1} aria-labelledby="wizard-title">
         {activeStep.id === 'photo' ? (
           <PhotoStep
             photo={wizardData.photo}

@@ -12,7 +12,8 @@ function ParameterField({ field, error, onBlur, onChange, value }) {
   const helpId = `${fieldId}-help`
   const errorId = `${fieldId}-error`
   const fieldLabel = t(`${field.translationKey}.label`)
-  const describedBy = error ? `${helpId} ${errorId}` : helpId
+  const unitId = `${fieldId}-unit`
+  const describedBy = error ? `${helpId} ${unitId} ${errorId}` : `${helpId} ${unitId}`
 
   return (
     <div className={styles.field}>
@@ -34,7 +35,7 @@ function ParameterField({ field, error, onBlur, onChange, value }) {
           aria-describedby={describedBy}
           aria-invalid={Boolean(error)}
         />
-        <span className={styles.unit} aria-hidden="true">{t(`${field.translationKey}.unit`)}</span>
+        <span id={unitId} className={styles.unit}>{t(`${field.translationKey}.unit`)}</span>
       </div>
       {error && (
         <p id={errorId} className={styles.error} role="alert">

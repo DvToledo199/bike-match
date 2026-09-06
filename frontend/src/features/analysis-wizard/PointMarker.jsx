@@ -42,6 +42,7 @@ function PointMarker({ photo, points, updateWizardData }) {
   const [selectedPointType, setSelectedPointType] = useState(pointDefinitions[0].type)
   const [zoom, setZoom] = useState(1)
   const [viewCenter, setViewCenter] = useState(() => getPhotoCenter(photo))
+  const [keyboardCursor, setKeyboardCursor] = useState(null)
   const selectedPoint = pointDefinitions.find((point) => point.type === selectedPointType)
   const viewBox = getViewBox(photo, zoom, viewCenter)
   const markedPointCount = pointDefinitions.filter((point) => points[point.type]).length
@@ -50,8 +51,11 @@ function PointMarker({ photo, points, updateWizardData }) {
   const previousPoint = pointDefinitions[Math.max(0, selectedPointIndex - 1)]
   const pointToUndo = points[selectedPointType] ? selectedPoint : previousPoint
   const canUndoPoint = Boolean(points[pointToUndo.type])
+  const cursor = keyboardCursor?.type === selectedPointType
+    ? keyboardCursor : points[selectedPointType] ?? viewCenter
 
   function handleMarkerPointerDown(event) {
+    if (event.button !== 0) return
     const markerBounds = event.currentTarget.getBoundingClientRect()
 
     if (!markerBounds.width || !markerBounds.height) return
@@ -68,6 +72,11 @@ function PointMarker({ photo, points, updateWizardData }) {
       0,
       photo.height,
     )
+    placePoint(x, y)
+  }
+
+  function placePoint(x, y) {
+    setKeyboardCursor(null)
     const pointWasAlreadyMarked = Boolean(points[selectedPointType])
     const nextPoints = {
       ...points,
@@ -83,6 +92,11 @@ function PointMarker({ photo, points, updateWizardData }) {
   }
 
   function handleMarkerKeyDown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      placePoint(cursor.x, cursor.y)
+      return
+    }
     const movements = {
       ArrowUp: { x: 0, y: -1 },
       ArrowDown: { x: 0, y: 1 },
@@ -90,24 +104,27 @@ function PointMarker({ photo, points, updateWizardData }) {
       ArrowRight: { x: 1, y: 0 },
     }
     const movement = movements[event.key]
-    const currentPoint = points[selectedPointType]
+    const currentPoint = cursor
 
-    if (!movement || !currentPoint) return
+    if (!movement) return
 
     event.preventDefault()
     const distance = event.shiftKey ? fastNudgePixels : regularNudgePixels
     const nextPoint = {
       ...currentPoint,
+      type: selectedPointType,
       x: clamp(currentPoint.x + movement.x * distance, 0, photo.width),
       y: clamp(currentPoint.y + movement.y * distance, 0, photo.height),
     }
 
-    updateWizardData({
-      points: {
-        ...points,
-        [selectedPointType]: nextPoint,
-      },
-    })
+    setKeyboardCursor(nextPoint)
+    if (points[selectedPointType]) {
+      updateWizardData({ points: { ...points, [selectedPointType]: nextPoint } })
+    }
+    if (nextPoint.x < viewBox.x || nextPoint.x > viewBox.x + viewBox.width
+      || nextPoint.y < viewBox.y || nextPoint.y > viewBox.y + viewBox.height) {
+      setViewCenter(getConstrainedCenter(photo, zoom, nextPoint))
+    }
   }
 
   function changeZoom(direction) {
@@ -139,6 +156,7 @@ function PointMarker({ photo, points, updateWizardData }) {
     delete nextPoints[pointToUndo.type]
 
     updateWizardData({ points: nextPoints })
+    setKeyboardCursor(null)
     setSelectedPointType(pointToUndo.type)
   }
 
@@ -151,13 +169,13 @@ function PointMarker({ photo, points, updateWizardData }) {
       </div>
 
       <div className={styles.guidance}>
-        <p className={styles.progress}>
+        <p className={styles.progress} role="status">
           {t('wizard.marking.progress', {
             marked: markedPointCount,
             total: pointDefinitions.length,
           })}
         </p>
-        <h2 className={styles.pointName}>
+        <h2 className={styles.pointName} aria-live="polite">
           {t('wizard.marking.nowMarking', {
             point: t(`${selectedPoint.translationKey}.label`),
           })}
@@ -231,6 +249,7 @@ function PointMarker({ photo, points, updateWizardData }) {
           viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
           style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
           aria-label={t('wizard.marking.canvasLabel')}
+          role="application"
           aria-describedby="marker-instructions marker-keyboard-hint"
           tabIndex="0"
           onPointerDown={handleMarkerPointerDown}
@@ -242,6 +261,13 @@ function PointMarker({ photo, points, updateWizardData }) {
             height={photo.height}
             preserveAspectRatio="none"
           />
+          {!points[selectedPointType] && keyboardCursor?.type === selectedPointType && (
+            <g className={styles.keyboardCursor} aria-hidden="true">
+              <circle cx={cursor.x} cy={cursor.y} r={12 / zoom} />
+              <line x1={cursor.x - 16 / zoom} y1={cursor.y} x2={cursor.x + 16 / zoom} y2={cursor.y} />
+              <line x1={cursor.x} y1={cursor.y - 16 / zoom} x2={cursor.x} y2={cursor.y + 16 / zoom} />
+            </g>
+          )}
           {pointDefinitions.map((point, index) => {
             const markedPoint = points[point.type]
             if (!markedPoint) return null
@@ -274,7 +300,7 @@ function PointMarker({ photo, points, updateWizardData }) {
                 type="button"
                 className={styles.pointButton}
                 data-selected={isSelected}
-                onClick={() => setSelectedPointType(point.type)}
+                onClick={() => { setKeyboardCursor(null); setSelectedPointType(point.type) }}
                 aria-pressed={isSelected}
               >
                 <span className={styles.pointNumber}>{index + 1}</span>

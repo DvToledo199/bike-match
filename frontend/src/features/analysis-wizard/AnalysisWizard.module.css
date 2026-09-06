@@ -121,7 +121,7 @@
 
 .primaryButton:focus-visible,
 .secondaryButton:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
 }
 

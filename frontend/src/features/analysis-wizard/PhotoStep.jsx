@@ -37,7 +37,6 @@ function PhotoStep({ photo, suspensionType, updateWizardData }) {
 
   async function handlePhotoChange(event) {
     const [file] = event.target.files ?? []
-    event.target.value = ''
 
     if (!file) return
 
@@ -67,6 +66,12 @@ function PhotoStep({ photo, suspensionType, updateWizardData }) {
     }
   }
 
+  function handlePhotoInputClick(event) {
+    // Clearing immediately before the chooser opens lets the user select the same file again.
+    // The newly selected file then remains visible in the native input after the change.
+    event.currentTarget.value = ''
+  }
+
   function handleSuspensionTypeChange(event) {
     updateWizardData({ suspensionType: event.target.value })
   }
@@ -93,6 +98,7 @@ function PhotoStep({ photo, suspensionType, updateWizardData }) {
           type="file"
           accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
           onChange={handlePhotoChange}
+          onClick={handlePhotoInputClick}
           aria-describedby={error ? 'bike-photo-help bike-photo-error' : 'bike-photo-help'}
         />
         {error && <p id="bike-photo-error" className={styles.error} role="alert">{error}</p>}

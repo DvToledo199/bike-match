@@ -110,47 +110,14 @@
   border-radius: 50%;
 }
 
-.dataTable {
+.chartSummary {
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  border-left: 3px solid var(--color-border);
+  background-color: var(--color-bg);
   color: var(--color-text);
-}
-
-.dataTable summary {
-  width: fit-content;
-  color: var(--color-primary);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.dataTable summary:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
-  outline-offset: 2px;
-}
-
-.tableScroll {
-  overflow-x: auto;
-  margin-top: var(--space-md);
-}
-
-.tableScroll table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.tableScroll caption {
-  padding-bottom: var(--space-sm);
-  color: var(--color-text-muted);
-  text-align: left;
-}
-
-.tableScroll th,
-.tableScroll td {
-  padding: var(--space-sm);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.tableScroll th {
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
 }
 
 @media (max-width: 34rem) {

@@ -7,7 +7,10 @@ Documento de trabajo. Orden operativo: qué cerrar antes de codificar, cómo tra
 ## 1. Decisiones a cerrar ANTES de escribir código
 
 ### 1.1 Sistemas de suspensión de la v1
-- **v1: monopivote (con y sin bieleta que acciona el amortiguador) + 4 barras / Horst link.**
+- **Sprint 1 implementado: monopivote simple, sin bieleta que modifique el accionamiento
+  del amortiguador.** Cuatro barras / Horst link es Sprint 4 (#19). El monopivote con
+  bieleta necesita otro modelo: no anunciarlo como compatible. La hoja de ruta
+  vigente prevalece sobre el plan inicial.
 - Dato útil del proyecto de referencia (bikinematicsolver): un solver que cubra monopivote + 4 barras maneja **~80% de las bicis del mercado**, por muchos nombres comerciales que existan (los sistemas de marca son casi todos variantes de estas dos topologías).
 - **Fuera de v1:** high pivot con polea (el autor de referencia lo dejó a medias: es notablemente más complejo), VPP/switch infinity y sistemas de más de 4 barras.
 

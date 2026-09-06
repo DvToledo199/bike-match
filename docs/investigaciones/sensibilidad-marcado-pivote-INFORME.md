@@ -1,5 +1,9 @@
 # Informe — sensibilidad del kickback al marcado del pivote
 
+> **Informe histórico, no especificación de interfaz.** Decisión posterior de David:
+> no exigir cinco clics ni promediar marcas. Usar cruz por punto, zoom y deshacer.
+> La guía vigente es `../frontend-arranque.md`.
+
 > Responde al encargo [`sensibilidad-marcado-pivote.md`](sensibilidad-marcado-pivote.md).
 > Todo el análisis se hizo **fuera del código de producción**, con una réplica en
 > Python del motor (paquete `com.bikematch.kinematics`) validada contra las curvas de

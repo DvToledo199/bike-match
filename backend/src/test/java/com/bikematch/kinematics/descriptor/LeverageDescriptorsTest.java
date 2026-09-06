@@ -96,6 +96,12 @@ class LeverageDescriptorsTest {
         assertEquals(SegmentTrend.REGRESSIVE, d.initialTrend());
         assertEquals(SegmentTrend.REGRESSIVE, d.middleTrend());
         assertEquals(SegmentTrend.REGRESSIVE, d.finalTrend());
+        assertEquals(ProgressionBand.REGRESSIVE, d.progressionBand());
+    }
+
+    @Test
+    void zeroProgressionRemainsLinear() {
+        assertEquals(ProgressionBand.LINEAR, LeverageDescriptors.from(curve(2.5, 2.5, 2.5, 2.5), 30).progressionBand());
     }
 
     @Test

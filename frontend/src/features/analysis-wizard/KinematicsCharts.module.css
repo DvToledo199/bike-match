@@ -120,6 +120,13 @@
   font-weight: 600;
 }
 
+.axisLabels {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
 @media (max-width: 34rem) {
   .chartCard {
     padding: var(--space-md);
@@ -127,5 +134,9 @@
 
   .chartArea {
     height: 18rem;
+  }
+
+  .squareChartArea {
+    height: auto;
   }
 }

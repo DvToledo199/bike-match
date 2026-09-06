@@ -10,26 +10,10 @@ import {
 import { useTranslation } from 'react-i18next'
 import KinematicsDescriptors from './KinematicsDescriptors.jsx'
 import styles from './KinematicsCharts.module.css'
+import { chartAxisSize, chartMargin, getEqualScaleDomains, relativeAxlePath } from './chartGeometry.js'
 
 function formatNumber(value, decimals = 1) {
   return Number(value).toFixed(decimals)
-}
-
-function getEqualScaleDomains(points) {
-  const xValues = points.map((point) => point.x)
-  const yValues = points.map((point) => point.y)
-  const minimumX = Math.min(...xValues)
-  const maximumX = Math.max(...xValues)
-  const minimumY = Math.min(...yValues)
-  const maximumY = Math.max(...yValues)
-  const span = Math.max(maximumX - minimumX, maximumY - minimumY, 1) * 1.15
-  const centerX = (minimumX + maximumX) / 2
-  const centerY = (minimumY + maximumY) / 2
-
-  return {
-    xDomain: [centerX - span / 2, centerX + span / 2],
-    yDomain: [centerY - span / 2, centerY + span / 2],
-  }
 }
 
 function ChartTooltip({ active, config, label, payload }) {
@@ -88,27 +72,31 @@ function CurveChart({ config, data, domains, square }) {
 
       <div className={`${styles.chartArea} ${square ? styles.squareChartArea : ''}`}>
         <ResponsiveContainer width="100%" aspect={square ? 1 : undefined} height={square ? undefined : '100%'}>
-          <LineChart data={data} margin={{ top: 20, right: 20, bottom: 60, left: 60 }}>
+          <LineChart data={data} margin={chartMargin}>
             <CartesianGrid stroke="var(--color-border)" strokeDasharray="4 4" />
             <XAxis
               type="number"
               dataKey={config.xKey}
               domain={domains?.xDomain}
+              height={chartAxisSize}
+              allowDataOverflow={square}
+              tickCount={5}
               tick={{ fill: 'var(--color-text-muted)', fontSize: 15, fontWeight: 600 }}
               tickFormatter={(value) => formatNumber(value)}
-              label={{ value: t(config.xAxisKey), position: 'insideBottom', offset: -38, fill: 'var(--color-text)', fontSize: 15, fontWeight: 700 }}
             />
             <YAxis
               type="number"
               dataKey={config.yKey}
               domain={domains?.yDomain}
+              width={chartAxisSize}
+              allowDataOverflow={square}
+              tickCount={5}
               tick={{ fill: 'var(--color-text-muted)', fontSize: 15, fontWeight: 600 }}
               tickFormatter={(value) => formatNumber(value, config.decimals)}
-              label={{ value: t(config.yAxisKey), angle: -90, position: 'insideLeft', offset: -42, fill: 'var(--color-text)', fontSize: 15, fontWeight: 700 }}
             />
             <Tooltip content={<ChartTooltip config={config} />} cursor={{ stroke: 'var(--color-text-muted)', strokeWidth: 1 }} />
             <Line
-              type="monotone"
+              type="linear"
               dataKey={config.yKey}
               stroke={config.color}
               strokeWidth={4}
@@ -119,7 +107,7 @@ function CurveChart({ config, data, domains, square }) {
           </LineChart>
         </ResponsiveContainer>
       </div>
-
+      <p className={styles.axisLabels}>{t('wizard.charts.axes', { x: t(config.xAxisKey), y: t(config.yAxisKey) })}</p>
       <ChartSummary config={config} data={data} />
     </section>
   )
@@ -127,7 +115,8 @@ function CurveChart({ config, data, domains, square }) {
 
 function KinematicsCharts({ data }) {
   const { t } = useTranslation()
-  const axleDomains = getEqualScaleDomains(data.axlePath)
+  const axlePoints = relativeAxlePath(data.axlePath)
+  const axleDomains = getEqualScaleDomains(axlePoints)
   const charts = [
     {
       id: 'leverage',
@@ -162,7 +151,7 @@ function KinematicsCharts({ data }) {
     {
       id: 'axle',
       color: 'var(--color-chart-axle)',
-      data: data.axlePath,
+      data: axlePoints,
       xKey: 'x',
       yKey: 'y',
       decimals: 1,

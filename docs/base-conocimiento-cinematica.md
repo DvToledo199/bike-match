@@ -37,7 +37,8 @@ Material de referencia para la capa de IA de BikeMatch. El motor de la aplicaci�
 
 | Progresión útil | Etiqueta | Lectura rápida |
 |---|---|---|
-| < 5% | Lineal | Predecible y constante; apoyo uniforme; hará topes con facilidad si no lo compensa el amortiguador |
+| < 0% | Regresiva | El LR al final supera al del sag; no debe etiquetarse como lineal. Es una tendencia geométrica, no una garantía del comportamiento del amortiguador |
+| 0% a < 5% | Lineal | Predecible y constante; apoyo uniforme; hará topes con facilidad si no lo compensa el amortiguador |
 | 5–12% | Ligeramente progresiva | Versátil con aire; con muelle irá justa de reserva final |
 | 12–20% | Progresión media | El punto dulce de polivalencia: admite aire y, en la parte alta de la banda, muelle |
 | 20–30% | Alta | Mucha reserva final, tacto con "pop"; territorio natural del muelle |

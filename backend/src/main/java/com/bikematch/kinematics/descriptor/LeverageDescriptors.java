@@ -102,6 +102,7 @@ public record LeverageDescriptors(
 
     /** The magnitude band of the useful progression (base-conocimiento §3). */
     private static ProgressionBand classifyBand(double usefulProgressionPercent) {
+        if (usefulProgressionPercent < 0) return ProgressionBand.REGRESSIVE;
         if (usefulProgressionPercent < 5) return ProgressionBand.LINEAR;
         if (usefulProgressionPercent < 12) return ProgressionBand.SLIGHTLY_PROGRESSIVE;
         if (usefulProgressionPercent < 20) return ProgressionBand.MEDIUM;

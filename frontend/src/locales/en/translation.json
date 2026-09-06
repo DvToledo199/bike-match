@@ -14,7 +14,7 @@
     "photo": {
       "label": "Photo and suspension",
       "title": "Start with a side photo of your bike",
-      "description": "A clear side-on photo makes the point marking more reliable.",
+      "description": "Use a clear, level side-on photo with the bike at full extension. It may face either direction; avoid perspective or tilted shots.",
       "eyebrow": "Step 1 of 4",
       "inputLabel": "Bike photo",
       "changeInputLabel": "Choose a different photo",
@@ -124,7 +124,7 @@
         },
         "sprocket": {
           "label": "Sprocket teeth",
-          "help": "The number of teeth on the rear sprocket selected for the calculation.",
+          "help": "Recorded as context. The simplified v1 kickback model does not yet use the rear sprocket.",
           "unit": "teeth"
         },
         "declaredTravel": {
@@ -153,6 +153,7 @@
       "title": "Your kinematics curves",
       "description": "Read each curve with its units, inspect an exact value with the pointer, or check its start and end values below.",
       "curveLabel": "Kinematics curve",
+      "axes": "Horizontal: {{x}} · Vertical: {{y}}",
       "wheelTravelAxis": "Wheel travel (mm)",
       "tooltip": {
         "wheelTravel": "Wheel travel: {{value}} mm",
@@ -175,9 +176,9 @@
       },
       "axle": {
         "title": "Axle path",
-        "description": "The rear axle movement. Both axes use the same millimetre scale, so the path is not stretched or distorted.",
-        "xAxis": "Horizontal position (mm)",
-        "yAxis": "Vertical position (mm)",
+        "description": "Movement from the starting position (0, 0), with equal scales. Left is rearward, right is forward, and up is compression.",
+        "xAxis": "Forward displacement (mm)",
+        "yAxis": "Upward displacement (mm)",
         "summary": "Starts at X {{startX}} mm, Y {{startY}} mm and ends at X {{endX}} mm, Y {{endY}} mm."
       }
     },
@@ -196,6 +197,7 @@
         "usefulProgression": "Useful progression"
       },
       "progressionBands": {
+        "REGRESSIVE": "Regressive progression",
         "LINEAR": "Linear progression",
         "SLIGHTLY_PROGRESSIVE": "Slightly progressive",
         "MEDIUM": "Medium progression",
@@ -225,7 +227,7 @@
       "kickback": {
         "title": "Pedal kickback level",
         "description": "A level based on the strongest pedal rotation estimated across the suspension travel.",
-        "conditions": "Calculated at {{sag}}% sag with a {{chainring}}T chainring and {{sprocket}}T sprocket.",
+        "conditions": "Estimated across the full travel using a {{chainring}}T chainring. The recorded {{sprocket}}T sprocket does not affect the v1 estimate. Sag ({{sag}}%) is used for leverage descriptors, not kickback.",
         "levels": {
           "low": "Low",
           "medium": "Medium",

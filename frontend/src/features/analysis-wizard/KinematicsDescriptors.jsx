@@ -1,17 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import styles from './KinematicsDescriptors.module.css'
+import { getKickbackLevel } from './chartGeometry.js'
 
 function formatNumber(value, decimals = 1) {
   return Number(value).toFixed(decimals)
-}
-
-function getKickbackLevel(kickbackCurve) {
-  const peakKickback = Math.max(...kickbackCurve.map((sample) => Math.abs(sample.kickbackDegrees)))
-
-  if (peakKickback < 20) return 'low'
-  if (peakKickback < 35) return 'medium'
-  if (peakKickback < 45) return 'high'
-  return 'veryHigh'
 }
 
 function Metric({ label, value }) {

@@ -4,6 +4,25 @@
   flex-direction: column;
 }
 
+.skipLink {
+  position: fixed;
+  z-index: 1;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  transform: translateY(-150%);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform var(--transition-fast);
+}
+
+.skipLink:focus-visible {
+  transform: translateY(0);
+}
+
 .header {
   padding: var(--space-sm) var(--space-lg);
   background-color: var(--color-surface);

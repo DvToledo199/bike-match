@@ -17,7 +17,7 @@
   --color-text: #16191d;        /* main text */
   --color-text-muted: #5b626c;  /* secondary / less important text */
   --color-border: #e3e6ea;      /* hairlines and card borders */
-  --color-primary: #0f9d58;     /* brand accent (green) */
+  --color-primary: #087f45;     /* brand accent (green), AA with white text */
   --color-on-primary: #ffffff;  /* text/icons placed on top of the accent */
   --color-success: #1f7a3a;     /* "all good" state */
   --color-warning: #9d6c00;     /* attention state */
@@ -44,6 +44,7 @@
 
   /* ---- Elevation (soft shadow for cards) ---- */
   --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.06);
+  --transition-fast: 160ms ease;
 
   /* Let native controls (scrollbars, inputs) follow both themes. */
   color-scheme: light dark;

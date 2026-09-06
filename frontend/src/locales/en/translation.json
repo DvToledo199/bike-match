@@ -1,7 +1,8 @@
 {
   "app": {
     "title": "BikeMatch",
-    "tagline": "Mountain bike suspension kinematics, explained"
+    "tagline": "Mountain bike suspension kinematics, explained",
+    "skipToContent": "Skip to main content"
   },
   "wizard": {
     "progressLabel": "Analysis progress",

@@ -9,6 +9,8 @@ import java.util.List;
 public record LeverageCurve(List<LeverageSample> samples) {
 
     public static LeverageCurve from(List<Point2D> axlePath, double shockStrokeMm) {
+        CurveChecks.compressionPath(axlePath);
+        CurveChecks.positiveFinite(shockStrokeMm, "Shock stroke");
         double shockStep = shockStrokeMm / (axlePath.size() - 1);
         double restY = axlePath.get(0).y();
 
@@ -17,6 +19,7 @@ public record LeverageCurve(List<LeverageSample> samples) {
             double wheelTravel = restY - axlePath.get(i).y();
             double wheelStep = axlePath.get(i - 1).y() - axlePath.get(i).y();
             double ratio = wheelStep / shockStep;
+            CurveChecks.positiveFinite(ratio, "Leverage ratio");
             samples.add(new LeverageSample(wheelTravel, ratio));
         }
         return new LeverageCurve(samples);

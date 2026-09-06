@@ -14,6 +14,7 @@ import com.bikematch.kinematics.solver.MonopivotSolver;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.EnumSet;
 
 @Service
 public class KinematicsService {
@@ -22,9 +23,22 @@ public class KinematicsService {
 
     /** Turns the request (points in pixels + calibration) into the engine's input (points in mm). */
     private KinematicsInput toKinematicsInput(PreviewRequest request) {
+        EnumSet<PointType> types = EnumSet.noneOf(PointType.class);
+        for (PointDto point : request.points()) {
+            if (!types.add(point.type())) {
+                throw new IllegalArgumentException("Duplicate point: " + point.type());
+            }
+        }
+        if (!types.equals(EnumSet.allOf(PointType.class))) {
+            throw new IllegalArgumentException("Mark each of the six required points exactly once");
+        }
         Point2D shockFrame = pixelPointOf(request.points(), PointType.SHOCK_FRAME);
         Point2D shockSwingarm = pixelPointOf(request.points(), PointType.SHOCK_SWINGARM);
-        double mmPerPixel = request.eyeToEyeMm() / shockFrame.distanceTo(shockSwingarm);
+        double referenceDistance = shockFrame.distanceTo(shockSwingarm);
+        if (!Double.isFinite(referenceDistance) || referenceDistance < 0.01) {
+            throw new IllegalArgumentException("The two shock mounts must be distinct");
+        }
+        double mmPerPixel = request.eyeToEyeMm() / referenceDistance;
 
         List<MarkedPoint> points = request.points().stream()
                 .map(dto -> new MarkedPoint(dto.type(),

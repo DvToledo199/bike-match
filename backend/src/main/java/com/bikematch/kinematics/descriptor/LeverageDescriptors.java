@@ -2,6 +2,7 @@ package com.bikematch.kinematics.descriptor;
 
 import com.bikematch.kinematics.curve.LeverageCurve;
 import com.bikematch.kinematics.curve.LeverageSample;
+import com.bikematch.kinematics.curve.CurveChecks;
 
 import java.util.List;
 
@@ -37,7 +38,21 @@ public record LeverageDescriptors(
     private static final double FLAT_BAND = 0.1;
 
     public static LeverageDescriptors from(LeverageCurve curve, double sagPercent) {
+        if (curve == null || curve.samples() == null || curve.samples().size() < 2) {
+            throw new IllegalArgumentException("Leverage descriptors need at least two samples");
+        }
+        if (!Double.isFinite(sagPercent) || sagPercent <= 0 || sagPercent >= 100) {
+            throw new IllegalArgumentException("Sag must be strictly between 0 and 100 percent");
+        }
         List<LeverageSample> samples = curve.samples();
+        for (int i = 0; i < samples.size(); i++) {
+            LeverageSample sample = samples.get(i);
+            if (sample == null) throw new IllegalArgumentException("A leverage sample is missing");
+            CurveChecks.positiveFinite(sample.ratio(), "Leverage ratio");
+            CurveChecks.finite(sample.wheelTravelMm(), "Wheel travel");
+            if (sample.wheelTravelMm() < 0) throw new IllegalArgumentException("Wheel travel cannot be negative");
+            if (i > 0) CurveChecks.positiveFinite(sample.wheelTravelMm() - samples.get(i - 1).wheelTravelMm(), "Sample spacing");
+        }
         LeverageSample first = samples.get(0);
         LeverageSample last = samples.get(samples.size() - 1);
 
@@ -55,6 +70,10 @@ public record LeverageDescriptors(
 
         double slopeInitialToSag = (lrAtSag - lrInitial) / (atSag.wheelTravelMm() - first.wheelTravelMm());
         double slopeSagToEnd = (lrFinal - lrAtSag) / (last.wheelTravelMm() - atSag.wheelTravelMm());
+        CurveChecks.finite(totalProgression, "Total progression");
+        CurveChecks.finite(usefulProgression, "Useful progression");
+        CurveChecks.finite(slopeInitialToSag, "Initial-to-sag slope (sample spacing)");
+        CurveChecks.finite(slopeSagToEnd, "Sag-to-end slope (sample spacing)");
 
         // Shape read over three equal thirds of the travel.
         double lrAtThird1 = nearestToTravel(samples, totalTravelMm / 3.0).ratio();
@@ -107,8 +126,9 @@ public record LeverageDescriptors(
     private static double meanRatio(List<LeverageSample> samples) {
         double sum = 0;
         for (LeverageSample sample : samples) {
-            sum += sample.ratio();
+            sum += sample.ratio() / samples.size();
         }
-        return sum / samples.size();
+        CurveChecks.finite(sum, "Average leverage ratio");
+        return sum;
     }
 }

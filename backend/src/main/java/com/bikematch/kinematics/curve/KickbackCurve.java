@@ -19,6 +19,9 @@ public record KickbackCurve(List<KickbackSample> samples) {
     private static final double CHAIN_PITCH_MM = 12.7;
 
     public static KickbackCurve from(List<Point2D> axlePath, Point2D bottomBracket, int chainringTeeth) {
+        CurveChecks.compressionPath(axlePath);
+        CurveChecks.positiveFinite(chainringTeeth, "Chainring teeth");
+        if (bottomBracket == null) throw new IllegalArgumentException("Bottom bracket is required");
         double chainringPitchRadius = chainringTeeth * CHAIN_PITCH_MM / (2 * Math.PI);
         double restChainLength = bottomBracket.distanceTo(axlePath.get(0));
         double restY = axlePath.get(0).y();
@@ -29,6 +32,7 @@ public record KickbackCurve(List<KickbackSample> samples) {
             double wheelTravel = restY - axle.y();
             double chainGrowth = bottomBracket.distanceTo(axle) - restChainLength;
             double kickbackDegrees = Math.toDegrees(chainGrowth / chainringPitchRadius);
+            CurveChecks.finite(kickbackDegrees, "Pedal kickback");
             samples.add(new KickbackSample(wheelTravel, kickbackDegrees));
         }
         return new KickbackCurve(samples);

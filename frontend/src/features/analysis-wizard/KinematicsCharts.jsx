@@ -8,6 +8,7 @@ import {
   YAxis,
 } from 'recharts'
 import { useTranslation } from 'react-i18next'
+import KinematicsDescriptors from './KinematicsDescriptors.jsx'
 import styles from './KinematicsCharts.module.css'
 
 function formatNumber(value, decimals = 1) {
@@ -190,6 +191,7 @@ function KinematicsCharts({ data }) {
           square={chart.id === 'axle'}
         />
       ))}
+      <KinematicsDescriptors data={data} />
     </div>
   )
 }

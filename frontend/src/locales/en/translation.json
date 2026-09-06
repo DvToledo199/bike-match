@@ -179,6 +179,64 @@
         "summary": "Starts at X {{startX}} mm, Y {{startY}} mm and ends at X {{endX}} mm, Y {{endY}} mm."
       }
     },
+    "descriptors": {
+      "eyebrow": "At a glance",
+      "title": "What these curves mean",
+      "description": "These highlights are calculated from the curves above. They describe tendencies, not laboratory measurements.",
+      "leverage": {
+        "title": "Leverage and progression",
+        "description": "The leverage ratio shows how wheel movement acts on the shock. Useful progression focuses on the part of the travel after sag.",
+        "initial": "Initial ratio",
+        "atSag": "Ratio at sag",
+        "final": "Final ratio",
+        "average": "Average ratio",
+        "totalProgression": "Total progression",
+        "usefulProgression": "Useful progression"
+      },
+      "progressionBands": {
+        "LINEAR": "Linear progression",
+        "SLIGHTLY_PROGRESSIVE": "Slightly progressive",
+        "MEDIUM": "Medium progression",
+        "HIGH": "High progression",
+        "VERY_HIGH": "Very high progression"
+      },
+      "shape": {
+        "title": "Suspension shape",
+        "description": "Each third of the travel is read separately. The final third is the bottom-out zone.",
+        "phases": {
+          "initial": "Initial third",
+          "middle": "Middle third",
+          "final": "Final third"
+        }
+      },
+      "trends": {
+        "PROGRESSIVE": "Progressive",
+        "LINEAR": "Linear",
+        "REGRESSIVE": "Regressive"
+      },
+      "axle": {
+        "title": "Rear axle movement",
+        "description": "How far the rear axle moves backwards as the suspension compresses.",
+        "maxRearward": "Maximum rearward movement",
+        "atTravel": "At wheel travel"
+      },
+      "kickback": {
+        "title": "Pedal kickback level",
+        "description": "A level based on the strongest pedal rotation estimated across the suspension travel.",
+        "conditions": "Calculated at {{sag}}% sag with a {{chainring}}T chainring and {{sprocket}}T sprocket.",
+        "levels": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High",
+          "veryHigh": "Very high"
+        }
+      },
+      "travel": {
+        "title": "Travel check",
+        "withinTolerance": "The calculated travel is {{calculated}} mm, close to the declared {{declared}} mm ({{deviation}}% difference).",
+        "outsideTolerance": "The calculated travel is {{calculated}} mm while the declared travel is {{declared}} mm ({{deviation}}% difference). Review the marks and shock measurement before trusting this result."
+      }
+    },
     "preview": {
       "loadingTitle": "Calculating your bike",
       "loadingDescription": "We are sending the marks and measurements to the kinematics engine.",

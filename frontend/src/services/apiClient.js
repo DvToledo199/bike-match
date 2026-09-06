@@ -12,10 +12,17 @@ async function readResponseBody(response) {
   const contentType = response.headers.get('content-type') ?? ''
 
   if (!contentType.includes('json')) {
-    return null
+    throw new ApiError('invalidResponse')
   }
 
-  return response.json().catch(() => null)
+  try {
+    const body = await response.json()
+    if (!body || typeof body !== 'object') throw new ApiError('invalidResponse')
+    return body
+  } catch (error) {
+    if (error.name === 'AbortError') throw error
+    throw new ApiError('invalidResponse')
+  }
 }
 
 function getErrorKind(response, body) {
@@ -31,25 +38,32 @@ function getErrorKind(response, body) {
 }
 
 export async function requestApi(path, options = {}) {
-  let response
-
+  const { signal, timeoutMs = 15000, ...fetchOptions } = options
+  const controller = new AbortController()
+  let timedOut = false
+  const cancel = () => controller.abort()
+  signal?.addEventListener('abort', cancel, { once: true })
+  if (signal?.aborted) cancel()
+  const timer = setTimeout(() => { timedOut = true; cancel() }, timeoutMs)
   try {
-    response = await fetch(`${apiBaseUrl}${path}`, {
-      ...options,
+    const response = await fetch(`${apiBaseUrl}${path}`, {
+      ...fetchOptions,
+      signal: controller.signal,
       headers: {
         Accept: 'application/json',
         ...options.headers,
       },
     })
-  } catch {
+    if (!response.ok) {
+      throw new ApiError(getErrorKind(response, null), response.status)
+    }
+    return await readResponseBody(response)
+  } catch (error) {
+    if (controller.signal.aborted) throw new ApiError(timedOut ? 'timeout' : 'aborted')
+    if (error instanceof ApiError) throw error
     throw new ApiError('network')
+  } finally {
+    clearTimeout(timer)
+    signal?.removeEventListener('abort', cancel)
   }
-
-  const body = await readResponseBody(response)
-
-  if (!response.ok) {
-    throw new ApiError(getErrorKind(response, body), response.status)
-  }
-
-  return body
 }

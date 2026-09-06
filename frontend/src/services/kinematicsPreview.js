@@ -1,13 +1,15 @@
 import { requestApi } from './apiClient.js'
+import { validatePreview } from './previewValidation.js'
 
 function toNumber(value) {
   return Number(value)
 }
 
-export function requestKinematicsPreview(wizardData) {
+export async function requestKinematicsPreview(wizardData, signal) {
   const { parameters, points } = wizardData
 
-  return requestApi('/api/kinematics/preview', {
+  const response = await requestApi('/api/kinematics/preview', {
+    signal,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -24,4 +26,5 @@ export function requestKinematicsPreview(wizardData) {
       },
     }),
   })
+  return validatePreview(response)
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './PhotoStep.module.css'
 
@@ -34,11 +34,17 @@ function readImageDimensions(imageUrl) {
 function PhotoStep({ photo, suspensionType, updateWizardData }) {
   const { t } = useTranslation()
   const [error, setError] = useState('')
+  const inputRef = useRef(null)
+  const selection = useRef(0)
+  useEffect(() => () => { selection.current += 1 }, [])
 
   async function handlePhotoChange(event) {
     const [file] = event.target.files ?? []
 
     if (!file) return
+    const currentSelection = ++selection.current
+    // The visible filename comes from the accepted photo, not this temporary input.
+    event.target.value = ''
 
     if (!isAcceptedImage(file)) {
       setError(t('wizard.photo.errors.invalidFormat'))
@@ -54,6 +60,11 @@ function PhotoStep({ photo, suspensionType, updateWizardData }) {
 
     try {
       const { width, height } = await readImageDimensions(previewUrl)
+      if (currentSelection !== selection.current) {
+        URL.revokeObjectURL(previewUrl)
+        return
+      }
+      if (!width || !height || width > 100000 || height > 100000) throw new Error('Invalid dimensions')
 
       updateWizardData({
         photo: { file, previewUrl, width, height },
@@ -62,14 +73,8 @@ function PhotoStep({ photo, suspensionType, updateWizardData }) {
       setError('')
     } catch {
       URL.revokeObjectURL(previewUrl)
-      setError(t('wizard.photo.errors.unreadable'))
+      if (currentSelection === selection.current) setError(t('wizard.photo.errors.unreadable'))
     }
-  }
-
-  function handlePhotoInputClick(event) {
-    // Clearing immediately before the chooser opens lets the user select the same file again.
-    // The newly selected file then remains visible in the native input after the change.
-    event.currentTarget.value = ''
   }
 
   function handleSuspensionTypeChange(event) {
@@ -88,17 +93,18 @@ function PhotoStep({ photo, suspensionType, updateWizardData }) {
       </div>
 
       <div className={styles.section}>
-        <label className={styles.label} htmlFor="bike-photo">
+        <button type="button" className={styles.fileInput} onClick={() => inputRef.current?.click()}
+          aria-describedby={error ? 'bike-photo-help bike-photo-error' : 'bike-photo-help'}>
           {t(photo ? 'wizard.photo.changeInputLabel' : 'wizard.photo.inputLabel')}
-        </label>
+        </button>
         <p id="bike-photo-help" className={styles.helpText}>{t('wizard.photo.inputHelp')}</p>
         <input
           id="bike-photo"
-          className={styles.fileInput}
+          ref={inputRef}
+          hidden
           type="file"
           accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
           onChange={handlePhotoChange}
-          onClick={handlePhotoInputClick}
           aria-describedby={error ? 'bike-photo-help bike-photo-error' : 'bike-photo-help'}
         />
         {error && <p id="bike-photo-error" className={styles.error} role="alert">{error}</p>}

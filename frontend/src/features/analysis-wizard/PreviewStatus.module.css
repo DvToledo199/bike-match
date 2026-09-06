@@ -12,11 +12,6 @@
   background-color: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
 }
 
-.successStatus {
-  border-left-color: var(--color-success);
-  background-color: color-mix(in srgb, var(--color-success) 8%, var(--color-surface));
-}
-
 .title,
 .description {
   margin: 0;

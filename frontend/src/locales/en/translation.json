@@ -149,13 +149,46 @@
       "title": "Your kinematics results",
       "description": "The curves and their explanations will appear here."
     },
+    "charts": {
+      "title": "Your kinematics curves",
+      "description": "Read each curve with its units, inspect an exact value with the pointer, or open its data table below.",
+      "curveLabel": "Kinematics curve",
+      "wheelTravelAxis": "Wheel travel (mm)",
+      "viewDataTable": "View {{chart}} data table",
+      "tooltip": {
+        "wheelTravel": "Wheel travel: {{value}} mm",
+        "leverage": "Leverage ratio: {{value}}",
+        "kickback": "Pedal kickback: {{value}}°",
+        "axleX": "Horizontal position: {{value}} mm",
+        "axleY": "Vertical position: {{value}} mm"
+      },
+      "leverage": {
+        "title": "Leverage ratio",
+        "description": "How much wheel movement acts on the shock through the suspension travel.",
+        "axis": "Leverage ratio",
+        "tableCaption": "Leverage ratio at each wheel-travel sample"
+      },
+      "kickback": {
+        "title": "Pedal kickback",
+        "description": "Pedal rotation caused by chain growth as the rear suspension moves.",
+        "axis": "Pedal kickback (°)",
+        "tableCaption": "Pedal kickback at each wheel-travel sample"
+      },
+      "axle": {
+        "title": "Axle path",
+        "description": "The rear axle movement. Both axes use the same millimetre scale, so the path is not stretched or distorted.",
+        "xAxis": "Horizontal position (mm)",
+        "yAxis": "Vertical position (mm)",
+        "tableCaption": "Rear axle horizontal and vertical position at each sample"
+      }
+    },
     "preview": {
       "loadingTitle": "Calculating your bike",
       "loadingDescription": "We are sending the marks and measurements to the kinematics engine.",
+      "loadingChartsTitle": "Preparing your curves",
+      "loadingChartsDescription": "The calculation is ready. We are loading the visual view now.",
       "errorTitle": "We could not calculate this bike",
       "retry": "Try calculation again",
-      "readyTitle": "Calculation ready",
-      "readyDescription": "The curves and descriptors have arrived. They will be displayed here in the next step of the build.",
       "errors": {
         "invalidRequest": "Check the marked points and measurements, then try again. One of them does not form a possible bike geometry.",
         "network": "We could not reach the calculation service. Check that the BikeMatch backend is running, then try again.",

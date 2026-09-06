@@ -111,24 +111,12 @@
   background-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
 }
 
-.scaleResult {
-  padding: var(--space-md);
-  border-left: 3px solid var(--color-success);
-  background-color: color-mix(in srgb, var(--color-success) 8%, var(--color-surface));
-}
-
-.scaleResult[data-warning='true'] {
-  border-left-color: var(--color-warning);
-  background-color: color-mix(in srgb, var(--color-warning) 12%, var(--color-surface));
-}
-
-.scaleValue {
+.scaleWarning {
   margin: 0;
-  font-weight: 700;
-}
-
-.scaleExplanation {
-  font-size: 0.875rem;
+  padding: var(--space-md);
+  border-left: 3px solid var(--color-warning);
+  background-color: color-mix(in srgb, var(--color-warning) 12%, var(--color-surface));
+  color: var(--color-text);
 }
 
 @media (max-width: 34rem) {

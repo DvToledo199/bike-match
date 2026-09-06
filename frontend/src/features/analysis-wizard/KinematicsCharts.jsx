@@ -49,32 +49,25 @@ function ChartTooltip({ active, config, label, payload }) {
   )
 }
 
-function DataTable({ config, data }) {
+function ChartSummary({ config, data }) {
   const { t } = useTranslation()
+  const firstPoint = data[0]
+  const lastPoint = data[data.length - 1]
 
   return (
-    <details className={styles.dataTable}>
-      <summary>{t('wizard.charts.viewDataTable', { chart: t(config.titleKey) })}</summary>
-      <div className={styles.tableScroll}>
-        <table>
-          <caption>{t(config.tableCaptionKey)}</caption>
-          <thead>
-            <tr>
-              <th scope="col">{t(config.xAxisKey)}</th>
-              <th scope="col">{t(config.yAxisKey)}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((point, index) => (
-              <tr key={index}>
-                <td>{formatNumber(point[config.xKey])}</td>
-                <td>{formatNumber(point[config.yKey], config.decimals)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </details>
+    <p className={styles.chartSummary}>
+      {config.id === 'axle'
+        ? t(config.summaryKey, {
+          startX: formatNumber(firstPoint.x),
+          startY: formatNumber(firstPoint.y),
+          endX: formatNumber(lastPoint.x),
+          endY: formatNumber(lastPoint.y),
+        })
+        : t(config.summaryKey, {
+          start: formatNumber(firstPoint[config.yKey], config.decimals),
+          end: formatNumber(lastPoint[config.yKey], config.decimals),
+        })}
+    </p>
   )
 }
 
@@ -100,17 +93,17 @@ function CurveChart({ config, data, domains, square }) {
               type="number"
               dataKey={config.xKey}
               domain={domains?.xDomain}
-              tick={{ fill: 'var(--color-text-muted)', fontSize: 14, fontWeight: 600 }}
+              tick={{ fill: 'var(--color-text-muted)', fontSize: 15, fontWeight: 600 }}
               tickFormatter={(value) => formatNumber(value)}
-              label={{ value: t(config.xAxisKey), position: 'insideBottom', offset: -38, fill: 'var(--color-text)', fontSize: 14, fontWeight: 700 }}
+              label={{ value: t(config.xAxisKey), position: 'insideBottom', offset: -38, fill: 'var(--color-text)', fontSize: 15, fontWeight: 700 }}
             />
             <YAxis
               type="number"
               dataKey={config.yKey}
               domain={domains?.yDomain}
-              tick={{ fill: 'var(--color-text-muted)', fontSize: 14, fontWeight: 600 }}
+              tick={{ fill: 'var(--color-text-muted)', fontSize: 15, fontWeight: 600 }}
               tickFormatter={(value) => formatNumber(value, config.decimals)}
-              label={{ value: t(config.yAxisKey), angle: -90, position: 'insideLeft', offset: -42, fill: 'var(--color-text)', fontSize: 14, fontWeight: 700 }}
+              label={{ value: t(config.yAxisKey), angle: -90, position: 'insideLeft', offset: -42, fill: 'var(--color-text)', fontSize: 15, fontWeight: 700 }}
             />
             <Tooltip content={<ChartTooltip config={config} />} cursor={{ stroke: 'var(--color-text-muted)', strokeWidth: 1 }} />
             <Line
@@ -126,7 +119,7 @@ function CurveChart({ config, data, domains, square }) {
         </ResponsiveContainer>
       </div>
 
-      <DataTable config={config} data={data} />
+      <ChartSummary config={config} data={data} />
     </section>
   )
 }
@@ -148,7 +141,7 @@ function KinematicsCharts({ data }) {
       yAxisKey: 'wizard.charts.leverage.axis',
       tooltipLabelKey: 'wizard.charts.tooltip.wheelTravel',
       tooltipValueKey: 'wizard.charts.tooltip.leverage',
-      tableCaptionKey: 'wizard.charts.leverage.tableCaption',
+      summaryKey: 'wizard.charts.leverage.summary',
     },
     {
       id: 'kickback',
@@ -163,7 +156,7 @@ function KinematicsCharts({ data }) {
       yAxisKey: 'wizard.charts.kickback.axis',
       tooltipLabelKey: 'wizard.charts.tooltip.wheelTravel',
       tooltipValueKey: 'wizard.charts.tooltip.kickback',
-      tableCaptionKey: 'wizard.charts.kickback.tableCaption',
+      summaryKey: 'wizard.charts.kickback.summary',
     },
     {
       id: 'axle',
@@ -178,7 +171,7 @@ function KinematicsCharts({ data }) {
       yAxisKey: 'wizard.charts.axle.yAxis',
       tooltipLabelKey: 'wizard.charts.tooltip.axleX',
       tooltipValueKey: 'wizard.charts.tooltip.axleY',
-      tableCaptionKey: 'wizard.charts.axle.tableCaption',
+      summaryKey: 'wizard.charts.axle.summary',
     },
   ]
 

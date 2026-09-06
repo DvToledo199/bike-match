@@ -51,7 +51,7 @@
       "toMark": "To mark",
       "precisionControls": "Precision controls",
       "correctionLabel": "Correction",
-      "previousPoint": "Previous point",
+      "previousPoint": "Undo point",
       "zoomLabel": "Zoom",
       "zoomIn": "Zoom in",
       "zoomOut": "Zoom out",
@@ -99,9 +99,7 @@
         "description": "The distance between the two shock mounts tells us how much a pixel represents in the real bike.",
         "pending": "Enter the shock eye-to-eye measurement to check the scale of this photo.",
         "invalidReference": "The two shock mounts are in the same place. Go back and correct one of those marks.",
-        "scaleValue": "1 px = {{value}} mm",
-        "highScaleWarning": "Each pixel represents quite a lot of the real bike. A small marking change may noticeably affect the result; a larger side photo would be more reliable.",
-        "usableScale": "This photo has a suitable scale for a first analysis. You can still return to the marks if any cross does not look right."
+        "highScaleWarning": "This photo may be too small for reliable marks. A larger side photo would give a more trustworthy result."
       },
       "analysis": {
         "title": "Bike and drivetrain values",
@@ -151,10 +149,9 @@
     },
     "charts": {
       "title": "Your kinematics curves",
-      "description": "Read each curve with its units, inspect an exact value with the pointer, or open its data table below.",
+      "description": "Read each curve with its units, inspect an exact value with the pointer, or check its start and end values below.",
       "curveLabel": "Kinematics curve",
       "wheelTravelAxis": "Wheel travel (mm)",
-      "viewDataTable": "View {{chart}} data table",
       "tooltip": {
         "wheelTravel": "Wheel travel: {{value}} mm",
         "leverage": "Leverage ratio: {{value}}",
@@ -166,20 +163,20 @@
         "title": "Leverage ratio",
         "description": "How much wheel movement acts on the shock through the suspension travel.",
         "axis": "Leverage ratio",
-        "tableCaption": "Leverage ratio at each wheel-travel sample"
+        "summary": "Starts at {{start}} and ends at {{end}}."
       },
       "kickback": {
         "title": "Pedal kickback",
         "description": "Pedal rotation caused by chain growth as the rear suspension moves.",
         "axis": "Pedal kickback (°)",
-        "tableCaption": "Pedal kickback at each wheel-travel sample"
+        "summary": "Starts at {{start}}° and ends at {{end}}°."
       },
       "axle": {
         "title": "Axle path",
         "description": "The rear axle movement. Both axes use the same millimetre scale, so the path is not stretched or distorted.",
         "xAxis": "Horizontal position (mm)",
         "yAxis": "Vertical position (mm)",
-        "tableCaption": "Rear axle horizontal and vertical position at each sample"
+        "summary": "Starts at X {{startX}} mm, Y {{startY}} mm and ends at X {{endX}} mm, Y {{endY}} mm."
       }
     },
     "preview": {
@@ -187,6 +184,8 @@
       "loadingDescription": "We are sending the marks and measurements to the kinematics engine.",
       "loadingChartsTitle": "Preparing your curves",
       "loadingChartsDescription": "The calculation is ready. We are loading the visual view now.",
+      "chartErrorTitle": "We could not display the curves",
+      "chartErrorDescription": "The calculation is still available. Try loading the visual view again.",
       "errorTitle": "We could not calculate this bike",
       "retry": "Try calculation again",
       "errors": {

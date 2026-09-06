@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { hasAllPoints, pointDefinitions } from './pointDefinitions.js'
 import styles from './PointMarker.module.css'
 
-const zoomLevels = [1, 1.5, 2, 3, 4]
+const zoomLevels = [1, 1.5, 2, 3, 4, 6, 8]
 const regularNudgePixels = 0.5
 const fastNudgePixels = 2
 
@@ -46,6 +46,10 @@ function PointMarker({ photo, points, updateWizardData }) {
   const viewBox = getViewBox(photo, zoom, viewCenter)
   const markedPointCount = pointDefinitions.filter((point) => points[point.type]).length
   const allPointsMarked = hasAllPoints(points)
+  const selectedPointIndex = pointDefinitions.findIndex((point) => point.type === selectedPointType)
+  const previousPoint = pointDefinitions[Math.max(0, selectedPointIndex - 1)]
+  const pointToUndo = points[selectedPointType] ? selectedPoint : previousPoint
+  const canUndoPoint = Boolean(points[pointToUndo.type])
 
   function handleMarkerPointerDown(event) {
     const markerBounds = event.currentTarget.getBoundingClientRect()
@@ -129,10 +133,13 @@ function PointMarker({ photo, points, updateWizardData }) {
   }
 
   function goToPreviousPoint() {
-    const selectedIndex = pointDefinitions.findIndex((point) => point.type === selectedPointType)
-    const previousIndex = Math.max(0, selectedIndex - 1)
+    if (!canUndoPoint) return
 
-    setSelectedPointType(pointDefinitions[previousIndex].type)
+    const nextPoints = { ...points }
+    delete nextPoints[pointToUndo.type]
+
+    updateWizardData({ points: nextPoints })
+    setSelectedPointType(pointToUndo.type)
   }
 
   return (
@@ -172,7 +179,7 @@ function PointMarker({ photo, points, updateWizardData }) {
               type="button"
               className={styles.resetButton}
               onClick={goToPreviousPoint}
-              disabled={selectedPointType === pointDefinitions[0].type}
+              disabled={!canUndoPoint}
             >
               {t('wizard.marking.previousPoint')}
             </button>

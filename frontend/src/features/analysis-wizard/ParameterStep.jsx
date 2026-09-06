@@ -104,19 +104,10 @@ function ParameterStep({ parameters, points, updateWizardData }) {
         {calibration && !calibration.isValid && (
           <p className={styles.error} role="alert">{t('wizard.parameters.calibration.invalidReference')}</p>
         )}
-        {calibration?.isValid && (
-          <div className={styles.scaleResult} data-warning={calibration.isHighScale}>
-            <p className={styles.scaleValue}>
-              {t('wizard.parameters.calibration.scaleValue', {
-                value: calibration.mmPerPixel.toFixed(2),
-              })}
-            </p>
-            <p className={styles.scaleExplanation}>
-              {t(calibration.isHighScale
-                ? 'wizard.parameters.calibration.highScaleWarning'
-                : 'wizard.parameters.calibration.usableScale')}
-            </p>
-          </div>
+        {calibration?.isValid && calibration.isHighScale && (
+          <p className={styles.scaleWarning} role="status">
+            {t('wizard.parameters.calibration.highScaleWarning')}
+          </p>
         )}
       </section>
 

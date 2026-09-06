@@ -140,6 +140,7 @@
       },
       "errors": {
         "required": "Enter {{field}}.",
+        "integer": "{{field}} must be a whole number.",
         "range": "{{field}} must be between {{minimum}} and {{maximum}}."
       }
     },
@@ -248,6 +249,8 @@
       "errorTitle": "We could not calculate this bike",
       "retry": "Try calculation again",
       "errors": {
+        "timeout": "The calculation took too long. Try again; your marks and measurements are still here.",
+        "invalidResponse": "The service returned incomplete or invalid results. Your marks are safe; try again.",
         "invalidRequest": "Check the marked points and measurements, then try again. One of them does not form a possible bike geometry.",
         "network": "We could not reach the calculation service. Check that the BikeMatch backend is running, then try again.",
         "server": "The calculation service had a problem. Try again in a moment.",

@@ -1,8 +1,10 @@
-import { Component, lazy, Suspense } from 'react'
+import { Component } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './PreviewStatus.module.css'
 
-const KinematicsCharts = lazy(() => import('./KinematicsCharts.jsx'))
+// Keep the small MVP in one load: a rejected lazy import is cached by React and
+// cannot be recovered by merely recalculating the bike.
+import KinematicsCharts from './KinematicsCharts.jsx'
 
 class ChartLoadBoundary extends Component {
   constructor(props) {
@@ -61,17 +63,7 @@ function PreviewStatus({ data, error, isLoading, onRetry }) {
           </section>
         )}
       >
-        <Suspense
-          fallback={(
-          <section className={styles.status} aria-live="polite">
-            <span className={styles.spinner} aria-hidden="true" />
-            <h1 id="wizard-title" className={styles.title}>{t('wizard.preview.loadingChartsTitle')}</h1>
-            <p className={styles.description}>{t('wizard.preview.loadingChartsDescription')}</p>
-          </section>
-        )}
-        >
-          <KinematicsCharts data={data} />
-        </Suspense>
+        <KinematicsCharts data={data} />
       </ChartLoadBoundary>
     )
   }

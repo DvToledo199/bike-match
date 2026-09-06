@@ -15,6 +15,7 @@ export const parameterFields = [
   },
   {
     name: 'chainringTeeth',
+    integer: true,
     minimum: 20,
     maximum: 60,
     step: '1',
@@ -22,6 +23,7 @@ export const parameterFields = [
   },
   {
     name: 'sprocketTeeth',
+    integer: true,
     minimum: 10,
     maximum: 60,
     step: '1',
@@ -52,6 +54,8 @@ export function getParameterErrors(parameters) {
       errors[field.name] = 'required'
     } else if (!Number.isFinite(parsedValue) || parsedValue < field.minimum || parsedValue > field.maximum) {
       errors[field.name] = 'range'
+    } else if (field.integer && !Number.isInteger(parsedValue)) {
+      errors[field.name] = 'integer'
     }
 
     return errors
@@ -76,7 +80,7 @@ export function getCalibration(points, eyeToEyeMm) {
     shockFrame.y - shockSwingarm.y,
   )
 
-  if (referenceDistancePixels < 0.01) {
+  if (!Number.isFinite(referenceDistancePixels) || referenceDistancePixels < 0.01) {
     return { isValid: false }
   }
 

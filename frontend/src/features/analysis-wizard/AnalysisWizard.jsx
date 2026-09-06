@@ -18,7 +18,7 @@ function AnalysisWizard() {
     goToNextStep,
     goToPreviousStep,
   } = useWizardState(wizardSteps.length)
-  const { data, error, isLoading, requestPreview } = usePreview()
+  const { data, error, isLoading, requestPreview, cancelPreview } = usePreview()
 
   useEffect(() => {
     return () => {
@@ -114,7 +114,7 @@ function AnalysisWizard() {
         <button
           type="button"
           className={styles.secondaryButton}
-          onClick={goToPreviousStep}
+          onClick={() => { cancelPreview(); goToPreviousStep() }}
           disabled={isFirstStep}
         >
           {t('wizard.back')}

@@ -1,5 +1,10 @@
 # Hoja de ruta por sprints — mini-tareas ordenadas
 
+> Estado revisado el 7 de septiembre de 2026. Sprint actual: **1**. Implementación
+> y correcciones de auditoría verificadas; falta la demo real contra referencia (#54).
+> Despliegue y aprobación del mentor no se dan por hechos. Antes de Sprint 2 hay que
+> unificar las historias #1 (username) y #5 (email), decidiendo el identificador de acceso.
+
 **Regla de oro contra la saturación:** solo existe el sprint actual. No mires los demás. Haz la primera tarea sin marcar, márcala, pasa a la siguiente. Si una tarea te lleva más de un día, pártela en dos.
 
 **Si un sprint se retrasa 2–3 días:** se come el colchón del Sprint 4, nunca los Sprints 2 y 3.
@@ -11,25 +16,25 @@
 **Objetivo:** historias validadas por el mentor + esqueleto desplegado en una URL pública. Aquí NO se escribe lógica de negocio.
 
 ### Decisiones (una tarde, con timebox)
-- [ ] Nombre provisional del repo (máx. 30 min; se puede renombrar luego)
-- [ ] Idioma: código/API/BD/commits en inglés; UI en inglés con todos los textos en un archivo i18n desde el día 1
-- [ ] Confirmar stack exacto: versión de Spring Boot que usa el curso, Java 21, React + Vite
+- [x] Nombre provisional del repo (máx. 30 min; se puede renombrar luego)
+- [x] Idioma: código/API/BD/commits en inglés; UI en inglés con todos los textos en un archivo i18n desde el día 1
+- [x] Confirmar stack exacto: versión de Spring Boot que usa el curso, Java 21, React + Vite
 
 ### Planificación
 - [ ] Repasar las 8+2 historias de usuario del plan, retocarlas a tu gusto y pasarlas al formato del curso
 - [ ] Enviárselas al mentor y conseguir el OK (el enunciado lo exige antes de programar)
 
 ### Repo y tablero
-- [ ] Crear el repo (carpetas: `/backend`, `/frontend`, `/docs`, `/docker`)
-- [ ] Subir a `/docs` el enunciado y el plan de trabajo
-- [ ] Crear GitHub Project (columnas: Backlog / To do / In progress / Done) y una issue por historia, priorizadas
+- [x] Crear el repo (carpetas: `/backend`, `/frontend`, `/docs`, `/docker`)
+- [x] Subir a `/docs` el enunciado y el plan de trabajo
+- [x] Crear GitHub Project (columnas: Backlog / Ready / In progress / In review / Done) y una issue por historia, priorizadas
 
 ### Esqueletos (primer PR: aquí empieza la evidencia del flujo git)
-- [ ] Generar el backend con Spring Initializr (web, validation, jpa, security, postgresql, flyway) y que arranque
-- [ ] docker-compose con Postgres + la app conecta + migración V1 (tabla users vacía vale)
-- [ ] Crear el front con Vite: una página que llama a `GET /api/health` del back y muestra la respuesta (aquí se resuelve CORS)
-- [ ] GitHub Actions: workflow que ejecuta `mvn verify` en cada push
-- [ ] Desplegar el back (Render/Railway) y el front (Vercel/Netlify) tal cual están
+- [x] Generar el backend con Spring Initializr (web, validation, jpa, security, postgresql, flyway) y que arranque
+- [x] docker-compose con Postgres + la app conecta + migración V1 (tabla users vacía vale)
+- [x] Crear el front con Vite: una página que llama a `GET /api/health` del back y muestra la respuesta (aquí se resuelve CORS)
+- [x] GitHub Actions: workflow que ejecuta `mvn verify` en cada push
+- [ ] Desplegar el back y el front: pendiente separado en #82; proveedor por decidir
 - [ ] Todo esto en una branch, con su issue y su PR mergeada
 
 **Hecho cuando:** el mentor ha validado las historias y una URL pública responde.
@@ -40,16 +45,16 @@
 
 **Objetivo:** demo de punta a punta con UNA bici real: foto → marcar puntos → curvas correctas. (La "parte difícil primero" que dijo el profe.)
 
-- [ ] Elegir la bici de validación (un monopivote sencillo) y sacar sus curvas de BikeChecker → esa es la "verdad" contra la que testear
-- [ ] Modelo de entrada del motor en Java: punto 2D, tipos de punto, parámetros (carrera, plato, rueda) — dominio puro, sin Spring
-- [ ] Solver monopivote: posición del eje en cada paso del barrido (arco alrededor del pivote) + tests unitarios con casos geométricos simples
-- [ ] Curva de leverage + trayectoria del eje + recorrido total + test contra el fixture de BikeChecker (tolerancia ±3%)
-- [ ] Pedal kickback simplificado + test
-- [ ] Descriptores desde el punto de sag (progresión útil, LR en sag, retroceso del eje…) + clasificación por reglas ("progresiva/lineal…") + tests
-- [ ] Sanity check: recorrido calculado vs. declarado → aviso si difiere >10%
-- [ ] Endpoint `POST /api/kinematics/preview` (sin BD): recibe puntos + calibración + parámetros, devuelve curvas y descriptores + test de aceptación
-- [ ] Front (IA): pantalla de subir foto, marcarla con puntos guiados según tipo de suspensión, e inputs de calibración (eye-to-eye)
-- [ ] Front (IA): gráficas de las curvas que devuelve el endpoint
+- [x] Elegir la bici de validación (un monopivote sencillo) y sacar sus curvas de BikeChecker → esa es la "verdad" contra la que testear
+- [x] Modelo de entrada del motor en Java: punto 2D, tipos de punto, parámetros (carrera, plato, rueda) — dominio puro, sin Spring
+- [x] Solver monopivote: posición del eje en cada paso del barrido (arco alrededor del pivote) + tests unitarios con casos geométricos simples
+- [x] Curva de leverage + trayectoria del eje + recorrido total + test contra el fixture de BikeChecker (tolerancia ±3%)
+- [x] Pedal kickback simplificado + test
+- [x] Descriptores desde el punto de sag (progresión útil, LR en sag, retroceso del eje…) + clasificación por reglas ("progresiva/lineal…") + tests
+- [x] Sanity check: recorrido calculado vs. declarado → aviso si difiere >10%
+- [x] Endpoint `POST /api/kinematics/preview` (sin BD): recibe puntos + calibración + parámetros, devuelve curvas y descriptores + test de aceptación
+- [x] Front (IA): pantalla de subir foto, marcarla con puntos guiados según tipo de suspensión, e inputs de calibración (eye-to-eye)
+- [x] Front (IA): gráficas de las curvas que devuelve el endpoint
 - [ ] Demo completa con tu foto real
 
 **Hecho cuando:** le enseñas al mentor una foto convertida en curvas que cuadran con BikeChecker.
@@ -104,6 +109,6 @@ En este orden; lo que no salga, al README como trabajo futuro (queda bien, es vi
 
 ## Ritual de cada día (10 min)
 
-1. Abre el GitHub Project, mira solo la columna "In progress" / "To do" del sprint actual.
+1. Abre el GitHub Project, mira solo la columna "In progress" / "Ready" del sprint actual.
 2. Una tarea = una branch = una issue = un PR pequeño.
 3. Al acabar el día: marca lo hecho, apunta en una línea dónde lo dejaste (te lo agradecerás mañana).

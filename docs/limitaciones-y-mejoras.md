@@ -40,17 +40,16 @@ GitHub cuando aplica).
 - **Dónde:** investigación **completada** →
   [`sensibilidad-marcado-pivote-INFORME.md`](investigaciones/sensibilidad-marcado-pivote-INFORME.md).
   **Conclusión:** no es un fallo del motor, es resolución de foto × precisión de marcado;
-  ninguna solución eficaz toca el motor (guía de resolución mínima, promediar clics,
-  marcado con zoom, mejores fotos) → se aplica en el sprint de marcado/frontend (#6), no
-  ahora. Objetivo: mm/px ≤ ~1,3. Relacionado con #31.
+  se aplican mejor foto, zoom y corrección visual. David descartó promediar cinco
+  clics: un punto se marca una vez, con cruz visible y deshacer inmediato.
+  Objetivo orientativo: mm/px ≤ ~1,3. Relacionado con #31 y #54.
 
-### 4. Guard numérico del `acos` en el solver
-- **Qué:** con geometría imposible (marcado muy malo), `MonopivotSolver.pivotAngle`
-  puede pasar a `Math.acos` un valor fuera de [-1, 1] → `NaN` silencioso.
-- **Por qué ahora:** las bicis válidas no lo tocan; no bloquea nada.
-- **Impacto:** curvas basura sin aviso si el marcado es incoherente.
-- **Dónde:** issue #17 (recortar a [-1, 1] el ruido de coma flotante; fail-fast / avisar
-  en geometría realmente imposible).
+### 4. Guard numérico del `acos` — corregido
+- El solver tolera solo ruido de coma flotante; rechaza geometría imposible.
+  La auditoría añadió controles de longitudes, divisores y resultados finitos,
+  puntos completos y errores HTTP 400 explicados (#33).
+- Esto no identifica todos los errores humanos que aún forman una geometría
+  matemáticamente posible: sigue siendo necesaria la revisión visual.
 
 ### 5. Clasificación de forma por tercios fijos (v1)
 - **Qué:** la forma de la curva se lee en tres tercios fijos (inicial/medio/final). El punto
@@ -68,9 +67,10 @@ GitHub cuando aplica).
 - **Qué:** la conversión px→mm usa solo el **eye-to-eye del amortiguador**. No requiere
   puntos extra y es igual en todas las tallas, pero es una referencia **corta** → más
   sensible al error de marcado en la escala.
-- **Por qué ahora:** simple y lo que ya hace el código; y la calibración solo afecta a las
-  cifras **absolutas** (recorrido, kickback, retroceso), no al leverage/forma (proporciones);
-  el recorrido además se cruza con el declarado (#17).
+- **Por qué ahora:** simple y sin puntos extra. La escala afecta recorrido, kickback
+  y retroceso, y **también puede cambiar leverage y el tramo de curva**, porque la
+  carrera se introduce aparte en mm y no se escala con la foto. El recorrido se
+  contrasta además con el declarado (#17).
 - **Impacto:** menor precisión de escala que con una referencia larga.
 - **Dónde:** mejora futura en #6 (crear bici): ofrecer varias referencias
   (**vainas / wheelbase / amortiguador**, como BikeChecker) o usar la **wheelbase** por
@@ -95,6 +95,17 @@ GitHub cuando aplica).
 ---
 
 ## Alcance (decisiones de producto, no atajos)
+
+- **Orientación:** se normaliza izquierda/derecha, no perspectiva ni inclinación.
+  Se necesita foto lateral, nivelada y suspensión extendida. No se rota usando la
+  línea de ejes porque puede haber ruedas de tamaños diferentes.
+- **Prueba final pendiente:** #54 requiere foto real de David comparada con una
+  referencia y desviaciones documentadas; los tests no la sustituyen.
+- **Antes de publicar:** configurar secretos, TLS, CORS y límites de tamaño/tasa
+  de peticiones, y repetir la revisión de seguridad. El aislamiento local y cero
+  avisos conocidos no certifican un despliegue público como seguro.
+- **Rendimiento:** gráficas en la carga inicial (~190 kB gzip de JS) para evitar
+  reintentos atrapados por imports diferidos. Se mantiene el aviso de tamaño de Vite.
 
 - **Anti-squat / anti-rise fuera de la v1:** requieren la altura del centro de gravedad
   del conjunto bici+ciclista, dato que no está en la foto. Documentado en

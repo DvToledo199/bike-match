@@ -1,17 +1,17 @@
 # Arranque del frontend — paquete de traspaso
 
-> **Cómo usar este archivo:** abre un chat NUEVO de Claude Code en este repo para **construir
-> el frontend** y dile *"Lee `docs/frontend-arranque.md`"*. Reúne TODO lo ya decidido para
-> arrancar sin repetir el análisis. El estudio completo que respalda las decisiones está en
+> **Guía vigente, revisada el 6 de septiembre de 2026.** El frontend del Sprint 1 ya
+> está implementado. Lee esta guía y el README antes de ampliarlo. El estudio histórico está en
 > [`investigaciones/frontend-stack-y-diseno-INFORME.md`](investigaciones/frontend-stack-y-diseno-INFORME.md).
 
 ---
 
 ## 0. Contexto en una frase
-El **backend ya está hecho**: motor de cinemática (dominio puro) + endpoint REST
-**`POST /api/kinematics/preview`** (público, **sin base de datos**). Falta el **frontend**:
-subir una foto lateral → **marcar puntos** → meter parámetros → llamar al endpoint → **dibujar
-las curvas y los descriptores**. Es el **MVP final de un bootcamp**: debe quedar **EXPLICABLE**.
+El Sprint 1 implementa motor monopivote simple y endpoint REST
+**`POST /api/kinematics/preview`** (público, no persiste datos), junto con el frontend:
+foto lateral → **marcar puntos** → parámetros → **curvas y descriptores**.
+Falta cerrar la prueba real de #54. El arranque de Spring sí necesita PostgreSQL.
+El proyecto debe quedar **EXPLICABLE**; cuentas, persistencia e IA son posteriores.
 
 ## 1. Perfil de David y forma de trabajar (IMPORTANTE)
 - **David** es estudiante de bootcamp. El **backend lo ha hecho él a mano**; en **frontend parte
@@ -21,7 +21,8 @@ las curvas y los descriptores**. Es el **MVP final de un bootcamp**: debe quedar
   entrevista). Prioriza **claridad** sobre "rápido". Explica el porqué de cada pieza.
 - **Idioma:** código, identificadores y commits en **inglés**; el texto de la UI vive en
   **react-i18next** (inglés como idioma base) — nunca cadenas fijas en el JSX.
-- **Git:** una tarea = una rama = un PR pequeño. David revisa y hace merge; incluye `Closes #N`.
+- **Git:** una tarea = una rama = un PR pequeño con `Closes #N`; integrar tras verificar
+  cuando David lo autorice (ha autorizado este flujo para las correcciones de auditoría).
 - **Diseño:** David dirige **reaccionando a lo que ve** (no sabe teoría de diseño). Ver §6.
 
 ## 2. Stack decidido (CERRADO — no re-decidir)
@@ -29,27 +30,28 @@ las curvas y los descriptores**. Es el **MVP final de un bootcamp**: debe quedar
 |---|---|---|
 | Framework / build | **React + Vite** (JavaScript) | Ya fijado en `CLAUDE.md`; esqueleto ya montado |
 | Idiomas (i18n) | **react-i18next** | Ya instalado, inglés base |
-| Gráficas | **Recharts** | **Única dependencia nueva imprescindible** |
+| Gráficas | **Recharts** | Instalada y verificada con React 19 |
+| Pruebas | **Vitest + Testing Library + jsdom** | Solo desarrollo/CI; regresiones de auditoría |
 | Marcado sobre foto | **SVG** (zoom por `viewBox` + ajuste con teclado) | Nativo, cero deps |
 | Estilo | **CSS Modules + design tokens** | Nativo, cero deps |
 | Componentes accesibles | **HTML nativo** | *Headless* (Base UI/Radix/Headless UI) **solo** si aparece un widget complejo |
 
-**Dos fricciones conocidas a confirmar con un *spike* de ~30 min al arrancar** (ver informe §2 y §5):
-1. **React 19.2 + Recharts** puede necesitar una *override* de `react-is` en `package.json`.
-2. Ergonomía del **zoom en SVG** para el marcado.
+React 19 y Recharts están verificados con las versiones del lockfile, sin override
+de `react-is`. Zoom SVG hasta 800%; desplazamiento por botones para el MVP.
 
 **Vías de "subir de nivel" sin rehacer** (por si algo se queda corto): gráficas → Chart.js;
 marcado → react-konva; estilo → Tailwind v4. No hacen falta ahora.
 
 ## 3. Qué construir (alcance v1)
-Un **asistente por pasos**: parámetros → subir foto → marcar puntos → resultados.
+Un **asistente por pasos**: foto y suspensión → marcado → parámetros y calibración → resultados.
 - **Foto del usuario:** aceptar **JPG / PNG / WebP** (formatos de foto normales). **Nunca SVG**
   (el SVG es solo la capa de dibujo de encima, no el formato de la foto).
 - **Marcado:** 6 puntos (`MAIN_PIVOT`, `SHOCK_FRAME`, `SHOCK_SWINGARM`, `BOTTOM_BRACKET`,
   `REAR_AXLE`, `FRONT_AXLE`) sobre una capa **SVG** encima de la foto. Requisitos de precisión
   (críticos — ver [`sensibilidad-marcado-pivote-INFORME.md`](investigaciones/sensibilidad-marcado-pivote-INFORME.md)):
-  **zoom**, **ajuste fino con flechas del teclado**, **promediar varios clics** en pivote +
-  pedalier, y **avisar si la foto es de baja resolución** (mm/px alto).
+  **zoom**, **ajuste fino con flechas**, creación con Enter y aviso de baja resolución.
+  **Un solo marcado por punto, nunca cinco clics obligatorios.** Las cruces siguen
+  visibles; **Undo point** elimina inmediatamente cruz y coordenadas, hasta el primero.
 - **Calibración v1:** eye-to-eye del amortiguador (distancia entre sus dos anclajes, en mm).
 - **Resultados:** 3 gráficas (leverage, kickback, trayectoria del eje) + tarjetas de
   descriptores + banda de progresión + las 3 fases de forma + retroceso + aviso de recorrido.
@@ -85,7 +87,7 @@ es lo natural — el backend calibra px→mm internamente con el eye-to-eye):
 {
   "leverageCurve":  [ { "wheelTravelMm": 1.6, "ratio": 2.55 }, "… ~100" ],
   "kickbackCurve":  [ { "wheelTravelMm": 1.6, "kickbackDegrees": 0.4 }, "… ~100" ],
-  "axlePath":       [ { "x": 331.9, "y": 726.8 }, "… ~100 (en mm)" ],
+  "axlePath":       [ { "x": 0.0, "y": 0.0 }, "… ~100 (en mm)" ],
   "leverageDescriptors": {
     "lrInitial": 2.55, "lrAtSag": 2.53, "lrFinal": 2.50, "lrMean": 2.52,
     "totalProgressionPercent": 2.0, "usefulProgressionPercent": 1.2,
@@ -100,9 +102,19 @@ es lo natural — el backend calibra px→mm internamente con el eye-to-eye):
 }
 ```
 - **`SegmentTrend`**: `PROGRESSIVE` / `LINEAR` / `REGRESSIVE`.
-- **`ProgressionBand`**: `LINEAR` / `SLIGHTLY_PROGRESSIVE` / `MEDIUM` / `HIGH` / `VERY_HIGH`.
+- **`ProgressionBand`**: `REGRESSIVE` / `LINEAR` / `SLIGHTLY_PROGRESSIVE` / `MEDIUM` / `HIGH` / `VERY_HIGH`.
 - **La trayectoria del eje** (`axlePath`) es una curva **2D** (x e y en mm): dibujarla con la
   **misma escala mm en ambos ejes**, o sale distorsionada (informe §0 y §2).
+  Backend: origen en el eje trasero inicial, frente +x y abajo +y. La gráfica invierte
+  y para mostrar subida positiva. El área útil es cuadrada, no solo el contenedor.
+  Foto lateral, nivelada y extendida; orientación izquierda/derecha normalizada.
+  Se rechaza una línea de ejes ambigua o inclinada más de 15°, sin corregir perspectiva.
+  El JSON anterior es ilustrativo, no una respuesta completa reutilizable.
+- **Límites:** eye-to-eye 100–300 mm, carrera 20–120 mm, plato 20–60 dientes enteros,
+  piñón 10–60 enteros, recorrido 50–250 mm y sag 10–50%. Los seis tipos de punto
+  aparecen una sola vez; coordenadas finitas entre 0 y 100000 px.
+- **Kickback v1:** plato y crecimiento recto de cadena; piñón solo como contexto,
+  sag para descriptores de leverage. Las etiquetas alimentarán la futura IA.
 - **Errores → 400** con cuerpo `ProblemDetail` (`{ type, title, status, detail }`): validación
   de entrada (`@Valid`) y punto obligatorio ausente / geometría imposible.
 
@@ -137,8 +149,5 @@ progresión y 3 fases como **chips** (nunca solo color); TravelCheck como **aler
   `docs/fundamentos-motor-cinematica.md`.
 - **Límites/atajos conscientes:** `docs/limitaciones-y-mejoras.md`.
 - **Roadmap / enunciado / guía:** `docs/hoja-de-ruta-sprints.md`, `docs/enunciado.md`, `CLAUDE.md`.
-- **Esqueleto actual en `frontend/`** (verificar al arrancar): React 19.2 + Vite 8 +
-  react-i18next + oxlint + CSS plano; sin librería de gráficas/lienzo/estilado todavía.
-- **Correr en local:** `docker compose -f docker/docker-compose.yml up -d` (BD, para el backend)
-  → `cd backend && ./mvnw spring-boot:run` → `cd frontend && npm install && npm run dev`
-  (`http://localhost:5173`).
+- **Arranque, pruebas y configuración:** [README raíz](../README.md) y
+  [README frontend](../frontend/README.md); `npm ci` reproduce el lockfile.

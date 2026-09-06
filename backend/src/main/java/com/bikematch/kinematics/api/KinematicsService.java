@@ -40,9 +40,22 @@ public class KinematicsService {
         }
         double mmPerPixel = request.eyeToEyeMm() / referenceDistance;
 
+        Point2D rearAxle = pixelPointOf(request.points(), PointType.REAR_AXLE);
+        Point2D frontAxle = pixelPointOf(request.points(), PointType.FRONT_AXLE);
+        double axleDx = frontAxle.x() - rearAxle.x();
+        double axleDy = frontAxle.y() - rearAxle.y();
+        if (Math.abs(axleDx) < 1 || Math.abs(axleDy / axleDx) > Math.tan(Math.toRadians(15))) {
+            throw new IllegalArgumentException("Use a level side photo with clearly separated wheel axles");
+        }
+        // Canonical coordinates: rear axle at rest = origin, front = positive x,
+        // image-down = positive y. Reflect only: wheel sizes can differ, so the
+        // wheel-axle line must not be used to invent a rotation of the ground.
+        double facing = Math.signum(axleDx);
+
         List<MarkedPoint> points = request.points().stream()
                 .map(dto -> new MarkedPoint(dto.type(),
-                        new Point2D(dto.x() * mmPerPixel, dto.y() * mmPerPixel)))
+                        new Point2D(facing * (dto.x() - rearAxle.x()) * mmPerPixel,
+                                (dto.y() - rearAxle.y()) * mmPerPixel)))
                 .toList();
 
         KinematicsParametersDto params = request.parameters();

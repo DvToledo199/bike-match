@@ -1,0 +1,164 @@
+.charts {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.introduction {
+  padding: var(--space-lg);
+  border-left: 3px solid var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+}
+
+.title,
+.description,
+.chartTitle,
+.chartDescription,
+.chartEyebrow,
+.tooltipLabel,
+.tooltipValue {
+  margin: 0;
+}
+
+.title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  letter-spacing: -0.02em;
+}
+
+.description,
+.chartDescription {
+  margin-top: var(--space-sm);
+  color: var(--color-text-muted);
+}
+
+.chartCard {
+  display: grid;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.chartEyebrow {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.chartTitle {
+  margin-top: var(--space-xs);
+  font-size: 1.375rem;
+}
+
+.chartColor {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  margin-top: var(--space-xs);
+  border: 2px solid var(--color-surface);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--color-border);
+}
+
+.chartArea {
+  width: 100%;
+  height: 22rem;
+}
+
+.squareChartArea {
+  max-width: 34rem;
+  height: auto;
+  margin-inline: auto;
+}
+
+.tooltip {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 12rem;
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text);
+}
+
+.tooltipLabel {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.tooltipValue {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.tooltipMarker {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.dataTable {
+  color: var(--color-text);
+}
+
+.dataTable summary {
+  width: fit-content;
+  color: var(--color-primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dataTable summary:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  outline-offset: 2px;
+}
+
+.tableScroll {
+  overflow-x: auto;
+  margin-top: var(--space-md);
+}
+
+.tableScroll table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.tableScroll caption {
+  padding-bottom: var(--space-sm);
+  color: var(--color-text-muted);
+  text-align: left;
+}
+
+.tableScroll th,
+.tableScroll td {
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tableScroll th {
+  font-size: 0.875rem;
+}
+
+@media (max-width: 34rem) {
+  .chartCard {
+    padding: var(--space-md);
+  }
+
+  .chartArea {
+    height: 18rem;
+  }
+}

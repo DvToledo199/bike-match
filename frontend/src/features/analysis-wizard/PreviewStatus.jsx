@@ -1,5 +1,8 @@
+import { lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './PreviewStatus.module.css'
+
+const KinematicsCharts = lazy(() => import('./KinematicsCharts.jsx'))
 
 function PreviewStatus({ data, error, isLoading, onRetry }) {
   const { t } = useTranslation()
@@ -28,10 +31,17 @@ function PreviewStatus({ data, error, isLoading, onRetry }) {
 
   if (data) {
     return (
-      <section className={`${styles.status} ${styles.successStatus}`} aria-live="polite">
-        <h1 id="wizard-title" className={styles.title}>{t('wizard.preview.readyTitle')}</h1>
-        <p className={styles.description}>{t('wizard.preview.readyDescription')}</p>
-      </section>
+      <Suspense
+        fallback={(
+          <section className={styles.status} aria-live="polite">
+            <span className={styles.spinner} aria-hidden="true" />
+            <h1 id="wizard-title" className={styles.title}>{t('wizard.preview.loadingChartsTitle')}</h1>
+            <p className={styles.description}>{t('wizard.preview.loadingChartsDescription')}</p>
+          </section>
+        )}
+      >
+        <KinematicsCharts data={data} />
+      </Suspense>
     )
   }
 

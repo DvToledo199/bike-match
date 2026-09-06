@@ -1,6 +1,7 @@
 package com.bikematch.kinematics.solver;
 
 import com.bikematch.kinematics.geometry.Point2D;
+import com.bikematch.kinematics.curve.CurveChecks;
 import com.bikematch.kinematics.model.KinematicsInput;
 import com.bikematch.kinematics.model.PointType;
 
@@ -19,10 +20,14 @@ public class MonopivotSolver {
     }
 
     public double pivotAngle(double pivotToFrame, double pivotToSwingarm, double shockLength) {
+        CurveChecks.positiveFinite(pivotToFrame, "Pivot-to-frame distance");
+        CurveChecks.positiveFinite(pivotToSwingarm, "Pivot-to-swingarm distance");
+        CurveChecks.positiveFinite(shockLength, "Shock length");
         double a = pivotToFrame;
         double b = pivotToSwingarm;
         double c = shockLength;
         double cos = (a * a + b * b - c * c) / (2 * a * b);
+        CurveChecks.finite(cos, "Pivot angle");
 
         if (cos > 1 + COS_TOLERANCE || cos < -1 - COS_TOLERANCE) {
             throw new IllegalArgumentException(
@@ -45,6 +50,10 @@ public class MonopivotSolver {
         double restAngle = pivotAngle(pivotToFrame, pivotToSwingarm, restShockLength);
 
         double stroke = input.parameters().shockStrokeMm();
+        CurveChecks.positiveFinite(stroke, "Shock stroke");
+        if (stroke >= restShockLength) {
+            throw new IllegalArgumentException("Shock stroke must be shorter than eye-to-eye length");
+        }
         int steps = 100;
 
         List<Point2D> axlePath = new ArrayList<>();

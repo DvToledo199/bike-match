@@ -1,6 +1,7 @@
 package com.bikematch.kinematics.check;
 
 import com.bikematch.kinematics.geometry.Point2D;
+import com.bikematch.kinematics.curve.CurveChecks;
 
 import java.util.List;
 
@@ -17,8 +18,11 @@ public record TravelCheck(
     private static final double TOLERANCE_PERCENT = 10.0;
 
     public static TravelCheck from(List<Point2D> axlePath, double declaredTravelMm) {
+        CurveChecks.compressionPath(axlePath);
+        CurveChecks.positiveFinite(declaredTravelMm, "Declared travel");
         double calculatedTravelMm = axlePath.get(0).y() - axlePath.get(axlePath.size() - 1).y();
         double deviationPercent = Math.abs(calculatedTravelMm - declaredTravelMm) / declaredTravelMm * 100.0;
+        CurveChecks.finite(deviationPercent, "Travel deviation");
         boolean withinTolerance = deviationPercent <= TOLERANCE_PERCENT;
         return new TravelCheck(calculatedTravelMm, declaredTravelMm, deviationPercent, withinTolerance);
     }

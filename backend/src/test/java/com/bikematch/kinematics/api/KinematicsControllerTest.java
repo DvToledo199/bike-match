@@ -2,6 +2,9 @@ package com.bikematch.kinematics.api;
 
 import com.bikematch.config.SecurityConfig;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -45,6 +48,36 @@ class KinematicsControllerTest {
               }
             }
             """;
+
+    static Stream<String> invalidRequests() {
+        return Stream.of(
+                VALID_REQUEST.replace("192.8, \"y\": 121.3", "250.9, \"y\": 114.4"),
+                VALID_REQUEST.replace("\"sagPercent\": 30", "\"sagPercent\": 100"),
+                VALID_REQUEST.replace("\"sagPercent\": 30", "\"sagPercent\": 150"),
+                VALID_REQUEST.replace("\"sagPercent\": 30", "\"sagPercent\": 0"),
+                VALID_REQUEST.replace("\"chainringTeeth\": 34", "\"chainringTeeth\": 34.9"),
+                VALID_REQUEST.replace("\"chainringTeeth\": 34", "\"chainringTeeth\": 0"),
+                VALID_REQUEST.replace("\"shockStrokeMm\": 65", "\"shockStrokeMm\": -1"),
+                VALID_REQUEST.replace("\"eyeToEyeMm\": 230.0", "\"eyeToEyeMm\": 1e200"),
+                VALID_REQUEST.replace("\"x\": 208.3", "\"x\": 1e200"),
+                VALID_REQUEST.replace("\"x\": 208.3", "\"x\": null"),
+                VALID_REQUEST.replace("\"x\": 208.3,", ""),
+                VALID_REQUEST.replace("\"x\": 208.3", "\"x\": \"NaN\""),
+                VALID_REQUEST.replace("\"FRONT_AXLE\"", "\"MAIN_PIVOT\""),
+                VALID_REQUEST.replace("{\"type\": \"FRONT_AXLE\",     \"x\": 408.5, \"y\": 190.0}", "null"),
+                VALID_REQUEST.replace("\"FRONT_AXLE\"", "\"UNKNOWN\""),
+                "{\"points\":"
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidRequests")
+    void invalidInputReturnsAnExplained400InsteadOfNaNOrAnOpaque403(String body) throws Exception {
+        mockMvc.perform(post("/api/kinematics/preview")
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").isNotEmpty());
+    }
 
     @Test
     void validRequestReturnsTheFullPreview() throws Exception {

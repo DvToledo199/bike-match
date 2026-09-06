@@ -1,6 +1,7 @@
 package com.bikematch.kinematics.descriptor;
 
 import com.bikematch.kinematics.geometry.Point2D;
+import com.bikematch.kinematics.curve.CurveChecks;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public record AxlePathDescriptors(double maxRearwardMm, double atTravelPercent) {
 
     public static AxlePathDescriptors from(List<Point2D> axlePath) {
+        CurveChecks.compressionPath(axlePath);
         Point2D rest = axlePath.get(0);
         double totalTravelMm = rest.y() - axlePath.get(axlePath.size() - 1).y();
 

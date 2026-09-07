@@ -8,6 +8,10 @@
 
 Es el resumen de trabajo del proyecto. Recoge la idea, las decisiones que ya se han tomado y lo que queda por decidir. Está redactado para que alguien que no ha participado en las conversaciones previas pueda entender todas las ideas. No pretende enseñar cómo funciona la suspensión de una bicicleta; solo dar el contexto suficiente para que las decisiones se entiendan.
 
+La evolución posterior a la V1 —catálogo abierto, perfiles, comentarios, rangos y
+futuro modelo gratuito/de pago— se concreta en
+[`vision-producto-v2.md`](vision-producto-v2.md).
+
 ---
 
 ## Contexto

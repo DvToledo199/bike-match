@@ -6,9 +6,10 @@ futura explicación con IA; **IA, cuentas y persistencia aún no están implemen
 
 ## Estado
 
-Sprint 1: motor monopivote simple y asistente React operativos. El preview no guarda
-la foto ni datos en la base de datos. PostgreSQL es necesario para arrancar Spring
-y Flyway. La prueba final de foto real contra referencia sigue en [#54](https://github.com/DvToledo199/bike-match/issues/54).
+Sprint 1 completado: motor monopivote simple y asistente React operativos, incluida
+la validación manual de una foto real contra Linkage Design ([#54](https://github.com/DvToledo199/bike-match/issues/54)).
+Comienza Sprint 2: cuentas y persistencia. El preview actual no guarda la foto ni
+datos en la base de datos. PostgreSQL es necesario para arrancar Spring y Flyway.
 No soporta monopivotes con bieleta que modifica el accionamiento del amortiguador,
 cuatro barras ni pivotes virtuales. Son estimaciones, no mediciones de laboratorio.
 
@@ -82,9 +83,11 @@ afecta al cálculo**. No calcula anti-squat ni anti-rise.
 ## Seguimiento
 
 Una tarea = una issue = una rama = un PR pequeño. Código y commits en inglés;
-explicaciones de aprendizaje en español. Completar #54 antes de cuentas/persistencia.
+explicaciones de aprendizaje en español. La evolución comunitaria se mantiene en una
+[visión de producto separada](docs/vision-producto-v2.md) para no mezclarla con la V1.
 
 - [Hoja de ruta](docs/hoja-de-ruta-sprints.md)
+- [Visión de producto V2](docs/vision-producto-v2.md)
 - [Limitaciones](docs/limitaciones-y-mejoras.md)
 - [Informe completo histórico en JSON](docs/auditorias/2026-09-06-informe.json)
 - [Correcciones, pruebas y pendientes](docs/auditorias/2026-09-06-correcciones.md)

@@ -1,9 +1,10 @@
 # Hoja de ruta por sprints — mini-tareas ordenadas
 
-> Estado revisado el 7 de septiembre de 2026. Sprint actual: **1**. Implementación
-> y correcciones de auditoría verificadas; falta la demo real contra referencia (#54).
-> Despliegue y aprobación del mentor no se dan por hechos. Antes de Sprint 2 hay que
-> unificar las historias #1 (username) y #5 (email), decidiendo el identificador de acceso.
+> Estado revisado el 7 de septiembre de 2026. Sprint actual: **2**. Sprint 1 y su
+> demo real contra referencia (#54) están completados. Despliegue y aprobación del
+> mentor no se dan por hechos. La visión comunitaria está en
+> [`vision-producto-v2.md`](vision-producto-v2.md). El primer paso es unificar #1 y
+> #5: propuesta de email privado para login y username único para el perfil público.
 
 **Regla de oro contra la saturación:** solo existe el sprint actual. No mires los demás. Haz la primera tarea sin marcar, márcala, pasa a la siguiente. Si una tarea te lleva más de un día, pártela en dos.
 
@@ -55,7 +56,7 @@
 - [x] Endpoint `POST /api/kinematics/preview` (sin BD): recibe puntos + calibración + parámetros, devuelve curvas y descriptores + test de aceptación
 - [x] Front (IA): pantalla de subir foto, marcarla con puntos guiados según tipo de suspensión, e inputs de calibración (eye-to-eye)
 - [x] Front (IA): gráficas de las curvas que devuelve el endpoint
-- [ ] Demo completa con tu foto real
+- [x] Demo completa con tu foto real (Orange Stage 6, issue #54)
 
 **Hecho cuando:** le enseñas al mentor una foto convertida en curvas que cuadran con BikeChecker.
 
@@ -65,6 +66,7 @@
 
 **Objetivo:** usuarios reales se registran y guardan sus bicis.
 
+- [ ] Confirmar email de acceso + username público y consolidar #1 dentro de #5
 - [ ] Migraciones: users, bikes, kinematics_results
 - [ ] Registro + login con JWT (Spring Security 6) + tests
 - [ ] Roles USER/MODERATOR + seed por migración del moderador (tu cuenta) y 2–3 bicis de muestra
@@ -85,6 +87,8 @@
 - [ ] Publicar bici (PRIVATE → PENDING)
 - [ ] Cola de moderación + aprobar/rechazar (solo MODERATOR) + tests de autorización (un USER recibe 403)
 - [ ] Votos (uno por usuario y bici) + rankings por categoría
+- [ ] Comentarios en bicicletas públicas
+- [ ] Perfil público y rango basado en contribuciones aprobadas
 - [ ] Front (IA): botón publicar, vista de moderación, votar, página de rankings
 - [ ] Cobertura ≥60% con JaCoCo (rellenar huecos con tests útiles, no de relleno)
 - [ ] README completo siguiendo punto por punto la lista del enunciado
@@ -104,6 +108,12 @@ En este orden; lo que no salga, al README como trabajo futuro (queda bien, es vi
 - [ ] Traducción de la UI al español (archivo i18n → tarea de una tarde)
 - [ ] Comparador de dos bicis
 - [ ] Extras: caché en rankings, actuator/health, mejoras de CI/CD
+
+## Después del MVP — modelo de producto
+
+- [ ] Validar la regla gratuita de dos bicicletas privadas como máximo
+- [ ] Diseñar planes y permisos antes de integrar un proveedor de pagos
+- [ ] Mantener ilimitadas las bicicletas públicas aprobadas para favorecer el catálogo
 
 ---
 

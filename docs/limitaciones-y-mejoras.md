@@ -99,8 +99,21 @@ GitHub cuando aplica).
 - **Orientación:** se normaliza izquierda/derecha, no perspectiva ni inclinación.
   Se necesita foto lateral, nivelada y suspensión extendida. No se rota usando la
   línea de ejes porque puede haber ruedas de tamaños diferentes.
-- **Prueba final pendiente:** #54 requiere foto real de David comparada con una
-  referencia y desviaciones documentadas; los tests no la sustituyen.
+- **Prueba final con foto real — completada (#54):** David marcó manualmente una
+  Orange Stage 6 29'' 2020 en la aplicación, a partir de una foto lateral real.
+  El cálculo devolvió 149,0 mm de recorrido frente a 150 mm declarados (0,7 % de
+  diferencia), y un leverage ratio de 2,75 → 2,66. La referencia de
+  [Linkage Design](https://linkagedesign.blogspot.com/2019/11/orange-stage-6-29-2020.html)
+  describe la misma bici como casi lineal, 2,775 → 2,675, y cita 22° de
+  pedal kickback; BikeMatch obtuvo 20,9°. La coincidencia entra holgadamente
+  en la tolerancia del ±3 % para recorrido y leverage; el kickback queda como
+  validación orientativa por su sensibilidad al marcado.
+- **Acción final duplicada en resultados — aplazada:** al llegar al cuarto paso,
+  sigue visible y desactivado el botón `View results`, aunque los resultados ya
+  están en pantalla. No tiene función en ese estado y puede confundir. Se
+  mantiene sin cambios por ahora: la pantalla de resultados se revisará como
+  conjunto antes de decidir si se elimina, se convierte en otra acción o se
+  cambia su navegación.
 - **Antes de publicar:** configurar secretos, TLS, CORS y límites de tamaño/tasa
   de peticiones, y repetir la revisión de seguridad. El aislamiento local y cero
   avisos conocidos no certifican un despliegue público como seguro.

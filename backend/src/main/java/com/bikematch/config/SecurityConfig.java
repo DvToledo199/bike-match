@@ -9,21 +9,18 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * TEMPORARY security configuration (Sprint 0 skeleton).
+ * Security configuration while JWT authentication is being introduced.
  * <p>
- * GET /api/health and POST /api/kinematics/preview are public (health smoke-test and
- * the kinematics preview the frontend needs before auth exists); CSRF is disabled
- * because this is a stateless REST API. Every other route stays locked. This whole
- * class will be reworked in the JWT sprint (stateless sessions, auth endpoints,
- * role-based rules).
+ * Health, kinematics preview, registration and login are public. Every other route
+ * stays locked. JWT validation and stateless sessions are added in the next task.
  */
 @Configuration
 @EnableWebSecurity
@@ -37,7 +34,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/kinematics/preview").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/auth/register",
+                                "/api/auth/login"
+                        ).permitAll()
                         .anyRequest().authenticated());
         return http.build();
     }

@@ -39,4 +39,4 @@ jobs:
 
       - name: Build and test the backend
         working-directory: backend
-        run: ./mvnw verify
+        run: JWT_SECRET_BASE64="$(openssl rand -base64 32)" ./mvnw verify

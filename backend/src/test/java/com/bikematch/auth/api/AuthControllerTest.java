@@ -2,6 +2,8 @@ package com.bikematch.auth.api;
 
 import com.bikematch.api.ApiExceptionHandler;
 import com.bikematch.auth.AccountAlreadyExistsException;
+import com.bikematch.auth.InvalidCredentialsException;
+import com.bikematch.auth.LoginService;
 import com.bikematch.auth.RegistrationService;
 import com.bikematch.config.SecurityConfig;
 import org.junit.jupiter.api.Test;
@@ -34,11 +36,21 @@ class AuthControllerTest {
             }
             """;
 
+    private static final String VALID_LOGIN_REQUEST = """
+            {
+              "email": "david@example.com",
+              "password": "bici verde"
+            }
+            """;
+
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
     private RegistrationService registrationService;
+
+    @MockitoBean
+    private LoginService loginService;
 
     @Test
     void validRegistrationReturns201AndOnlyPublicData() throws Exception {
@@ -85,5 +97,48 @@ class AuthControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail")
                         .value("Email or username is already in use"));
+    }
+
+    @Test
+    void validLoginReturns200AndBearerToken() throws Exception {
+        given(loginService.login(any(LoginRequest.class)))
+                .willReturn(new LoginResponse("signed.jwt.token", "Bearer"));
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_LOGIN_REQUEST))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").value("signed.jwt.token"))
+                .andExpect(jsonPath("$.tokenType").value("Bearer"));
+    }
+
+    static Stream<String> invalidLogins() {
+        return Stream.of(
+                VALID_LOGIN_REQUEST.replace("david@example.com", "not-an-email"),
+                VALID_LOGIN_REQUEST.replace("david@example.com", ""),
+                VALID_LOGIN_REQUEST.replace("bici verde", "")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidLogins")
+    void invalidLoginRequestReturns400(String body) throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").isNotEmpty());
+    }
+
+    @Test
+    void invalidCredentialsReturn401() throws Exception {
+        given(loginService.login(any(LoginRequest.class)))
+                .willThrow(new InvalidCredentialsException());
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_LOGIN_REQUEST))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.detail").value("Invalid email or password"));
     }
 }

@@ -1,0 +1,89 @@
+package com.bikematch.auth.api;
+
+import com.bikematch.api.ApiExceptionHandler;
+import com.bikematch.auth.AccountAlreadyExistsException;
+import com.bikematch.auth.RegistrationService;
+import com.bikematch.config.SecurityConfig;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.stream.Stream;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(AuthController.class)
+@Import({ApiExceptionHandler.class, SecurityConfig.class})
+class AuthControllerTest {
+
+    private static final String VALID_REQUEST = """
+            {
+              "email": "david@example.com",
+              "username": "David",
+              "password": "bici verde"
+            }
+            """;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private RegistrationService registrationService;
+
+    @Test
+    void validRegistrationReturns201AndOnlyPublicData() throws Exception {
+        given(registrationService.register(any(RegisterRequest.class)))
+                .willReturn(new RegisterResponse(42L, "david"));
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_REQUEST))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(42))
+                .andExpect(jsonPath("$.username").value("david"))
+                .andExpect(jsonPath("$.email").doesNotExist())
+                .andExpect(jsonPath("$.passwordHash").doesNotExist());
+    }
+
+    static Stream<String> invalidRegistrations() {
+        return Stream.of(
+                VALID_REQUEST.replace("david@example.com", "not-an-email"),
+                VALID_REQUEST.replace("David", "ab"),
+                VALID_REQUEST.replace("David", "david bike"),
+                VALID_REQUEST.replace("bici verde", "short")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidRegistrations")
+    void invalidRegistrationReturns400(String body) throws Exception {
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").isNotEmpty());
+    }
+
+    @Test
+    void duplicateAccountReturns409() throws Exception {
+        given(registrationService.register(any(RegisterRequest.class)))
+                .willThrow(new AccountAlreadyExistsException());
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_REQUEST))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.detail")
+                        .value("Email or username is already in use"));
+    }
+}

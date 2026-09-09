@@ -16,6 +16,12 @@ El resultado buscado es un catálogo vivo de bicicletas ya analizadas. Una perso
 puede consultar una bici sin repetir el marcado, y la comunidad puede valorar,
 comentar y mejorar el conocimiento disponible.
 
+La explicación comprensible de la cinemática es parte central del producto: también
+debe servir a quien empieza y no sabe interpretar las gráficas. La decisión del
+9 de septiembre separa un resumen básico sin cuestionario, una personalización
+posterior y un posible chat futuro. Alcance y tareas en
+[`plan-ia-explicacion.md`](plan-ia-explicacion.md), épica #10.
+
 ## Punto de partida: V1 terminada
 
 La V1 local ya permite subir una foto, marcar una monopivote, introducir parámetros,
@@ -114,10 +120,15 @@ David implementará el backend con acompañamiento, una tarea pequeña cada vez:
 4. Login y JWT, seguido de rutas protegidas y tests 401/403.
 5. Roles y usuario moderador inicial mediante Flyway.
 6. Migraciones de `bikes` y `kinematics_results`.
+   Antes de cerrarlas, definir en #103 los datos y versiones que necesita la explicación.
 7. Crear y guardar una bicicleta reutilizando el motor de la V1.
 8. Reglas de propietario y visibilidad privada/pública.
 9. Catálogo y detalle públicos.
-10. Moderación, votos, comentarios, perfiles y rangos, cada uno en su issue.
+10. Explicación básica de los resultados con IA (#104/#105), reutilizando el motor y
+    el detalle, antes de las funciones sociales y sin esperar a cuatro barras.
+11. Moderación, votos, comentarios, perfiles y rangos, cada uno en su issue.
+12. Personalización por cuestionario (#10, Sprint 4) y chat futuro (#106). El posible
+    pago del chat es una hipótesis pendiente; no se implementa en Sprint 2.
 
 La ayuda seguirá este método: explicación breve del concepto, David plantea o escribe
 el código, revisión conjunta, tests, commit, PR y siguiente issue. El frontend se adapta
@@ -129,3 +140,7 @@ Ya existen: #5 autenticación, #6 creación de bici, #7 privacidad/publicación,
 catálogo, #3 detalle, #8 moderación, #9 votos y #4 rankings. La planificación añade
 #86 para comentarios, #87 para perfil/rango y #88 para el límite privado de una futura
 modalidad de pago. Esta última queda en el backlog comercial, fuera del Sprint 2.
+
+La épica #10 incluye el resumen básico de Sprint 2 (#103 contrato, #104 servicio,
+#105 pantalla) y conserva el cuestionario como ampliación posterior. El chat #106
+queda en Backlog. Los detalles y dependencias están en `plan-ia-explicacion.md`.

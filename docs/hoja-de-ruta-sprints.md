@@ -10,6 +10,10 @@
 
 **Si un sprint se retrasa 2–3 días:** se come el colchón del Sprint 4, nunca los Sprints 2 y 3.
 
+**Actualización de producto (9 de septiembre):** la explicación básica con IA (#10)
+se incorpora al cierre de Sprint 2, después de guardado/permisos y junto al detalle.
+Cuestionario y chat se separan; ver [`plan-ia-explicacion.md`](plan-ia-explicacion.md).
+
 ---
 
 ## Sprint 0 — Decidir y montar el tablero (días 1–3)
@@ -64,10 +68,11 @@
 
 ## Sprint 2 — De demo a producto (semana 2)
 
-**Objetivo:** usuarios reales se registran y guardan sus bicis.
+**Objetivo:** usuarios reales se registran, guardan sus bicis y entienden el análisis.
 
 - [ ] Confirmar email de acceso + username público y consolidar #1 dentro de #5
 - [ ] Migraciones: users, bikes, kinematics_results
+- [ ] Antes de cerrar resultados de #6: contrato de interpretación, capacidades y versiones (#103)
 - [ ] Registro + login con JWT (Spring Security 6) + tests
 - [ ] Roles USER/MODERATOR + seed por migración del moderador (tu cuenta) y 2–3 bicis de muestra
 - [ ] Crear bici: metadatos + foto a Cloudinary + guardar puntos + persistir resultados del motor
@@ -75,8 +80,12 @@
 - [ ] Catálogo público (solo aprobadas) con filtro por categoría y paginación
 - [ ] Swagger al día, con la autenticación documentada
 - [ ] Front (IA): pantallas de registro/login, mis bicis, catálogo y detalle
+- [ ] Servicio de explicación básica sin cuestionario: reutilización, límites, privacidad y recuperación de errores (#104)
+- [ ] Texto sencillo junto a las gráficas del resultado guardado/detalle y prueba de comprensión (#105)
 
-**Hecho cuando:** en la URL pública alguien se registra, crea una bici y la ve en "mis bicis".
+**Hecho cuando:** en la URL pública alguien se registra, crea una bici y la ve en
+"mis bicis" con una explicación comprensible. La indisponibilidad del proveedor de
+IA no bloquea los resultados; su integración se valida con ejemplos reales.
 
 ---
 
@@ -104,7 +113,7 @@
 En este orden; lo que no salga, al README como trabajo futuro (queda bien, es visión):
 
 - [ ] Solver de 4 barras (Horst link) + fixture de Linkage
-- [ ] Capa IA con Spring AI: cuestionario de estilo + análisis narrado a partir de los números del motor (con modo mock en desarrollo)
+- [ ] Personalización con cuestionario opcional de estilo/peso (#10, segundo bloque), reutilizando el resumen y contexto de Sprint 2
 - [ ] Traducción de la UI al español (archivo i18n → tarea de una tarde)
 - [ ] Comparador de dos bicis
 - [ ] Extras: caché en rankings, actuator/health, mejoras de CI/CD
@@ -114,6 +123,7 @@ En este orden; lo que no salga, al README como trabajo futuro (queda bien, es vi
 - [ ] Validar la regla gratuita de dos bicicletas privadas como máximo
 - [ ] Diseñar planes y permisos antes de integrar un proveedor de pagos
 - [ ] Mantener ilimitadas las bicicletas públicas aprobadas para favorecer el catálogo
+- [ ] Chat sobre el análisis, privacidad del historial, cuotas y posible modalidad de pago por decidir (#106)
 
 ---
 

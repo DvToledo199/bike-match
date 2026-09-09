@@ -2,6 +2,16 @@
 
 Material de referencia para la capa de IA de BikeMatch. El motor de la aplicación calcula los números; este documento define cómo traducirlos a una valoración en lenguaje natural, como lo haría un especialista en suspensiones. Está pensado para inyectarse (completo o por secciones) como contexto del modelo de lenguaje.
 
+> **Aplicación a la versión real del motor (9 de septiembre de 2026):** seleccionar
+> solo reglas compatibles con las capacidades entregadas. V1 no calcula anti-squat
+> ni anti-rise y su kickback simplificado ignora el efecto del piñón, aunque este se
+> registre. Las bandas de kickback por desarrollo y las frases sobre pedaleo/frenada
+> de los ejemplos siguientes no se pueden trasladar automáticamente a V1. Las
+> heurísticas necesitan revisión; los ejemplos no son resultados verificados de la app.
+> El contrato #103 y [`plan-ia-explicacion.md`](plan-ia-explicacion.md) concretarán el
+> contexto antes de integrar el proveedor. Estas restricciones prevalecen sobre
+> los ejemplos generales de este documento.
+
 ---
 
 ## 1. Reglas de oro para la IA

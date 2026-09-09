@@ -64,9 +64,18 @@ Esta es una decisión de diseño clave, para evitar el principal riesgo (que la 
 
 - **La IA no decide la física.** Todo lo que se puede calcular o clasificar (si una bici es más progresiva o más lineal, etc.) lo hace el motor mediante reglas sobre los números que ya ha calculado. Eso es fiable y no depende de la IA.
 - **La IA (un modelo de lenguaje) se encarga solo de "traducir":** coge los números y clasificaciones que produjo el motor, más las respuestas del usuario sobre sus preferencias, y redacta un análisis en lenguaje natural y personalizado. También formula las preguntas al usuario (peso, estilo de conducción ágil o estable, si suele hacer saltos/topes, si prefiere suspensiones progresivas o lineales, etc.).
-- Como los números calculados se muestran junto al texto, si la redacción de la IA se desviara, se detectaría a simple vista.
-- **Un resultado central de esa traducción en la v1 es la recomendación del tipo de amortiguador** (muelle / aire y volumen de cámara) que casa con el cuadro. Se genera a partir de los descriptores de la curva de leverage y las reglas de emparejamiento de la base de conocimiento (sección 3), **sin necesidad de la gráfica de fuerzas**. El futuro simulador de emparejamiento (ver "Fuera de alcance") solo añadirá la comparación visual de esas curvas.
+- Las gráficas y 2–4 cifras relevantes acompañan al texto para poder contrastarlo.
+  Esto ayuda a la revisión, pero no garantiza por sí solo que la redacción sea correcta.
+- **La orientación sobre tipo de amortiguador** (muelle / aire y volumen de cámara)
+  formará parte de la capa narrativa, todavía no implementada en la V1 técnica.
+  Parte de los descriptores y reglas revisadas de la sección 3 de la base de conocimiento,
+  sin necesidad de la gráfica de fuerzas, y no garantiza compatibilidad física ni reglajes.
 - **No hay que "entrenar" ningún modelo** (eso sería demasiado costoso para el plazo). Se trabaja con *prompting* (darle al modelo el contexto y los números ya calculados) y con reglas codificadas.
+
+La planificación vigente separa **resumen básico sin cuestionario** (final de Sprint 2,
+#103–#105), **personalización opcional** (#10, Sprint 4) y **chat futuro** (#106, posible
+pago por decidir). El objetivo es facilitar la entrada a la cinemática. Detalle de
+reutilización y límites en [`plan-ia-explicacion.md`](plan-ia-explicacion.md).
 
 ### Flujo del usuario
 
@@ -111,15 +120,17 @@ Estas ideas se descartan para la versión inicial pero pueden mencionarse como l
 
 ---
 
-## Orden de construcción sugerido
+## Orden de construcción vigente
 
-1. **Aplicación básica funcionando y desplegada**, con registro/login. Cubre las historias de usuario que exige el curso y garantiza una entrega.
-2. **Motor de cinemática**, empezando por el sistema de suspensión más simple para tener el flujo completo funcionando de principio a fin.
-3. **Resto de sistemas de suspensión** (los más complejos).
-4. **Capa de comunidad y rankings**.
-5. **Capa de IA** que redacta el análisis en lenguaje natural.
+1. Motor monopivote y flujo foto → puntos → curvas: V1 técnica local completada.
+2. Cuentas, permisos, guardado y detalle de bicicletas: Sprint 2 en curso.
+3. Explicación básica en lenguaje sencillo junto a los resultados: cierre de Sprint 2.
+4. Comunidad y requisitos de entrega, con despliegue verificado: Sprint 3.
+5. Otros sistemas de suspensión y personalización por cuestionario: Sprint 4.
+6. Chat y posible modalidad de pago: futuro, pendiente de decisión.
 
-Este orden asegura entregar algo funcional pronto y dejar la parte más ambiciosa (el motor) como aquello que se sigue puliendo después del curso.
+El contrato de interpretación se prepara antes de cerrar el guardado, para reutilizar
+los mismos resultados sin rehacer el motor. El resumen no espera a cuatro barras.
 
 ---
 

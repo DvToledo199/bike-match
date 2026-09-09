@@ -2,6 +2,10 @@
 
 Documento de trabajo. Orden operativo: qué cerrar antes de codificar, cómo trabajar, en qué orden construir y qué vigilar.
 
+> Actualización de producto, 9 de septiembre de 2026: el resumen básico con IA es
+> prioritario al cierre de Sprint 2. Cuestionario y chat son ampliaciones separadas.
+> Detalle vigente: [`plan-ia-explicacion.md`](plan-ia-explicacion.md), épica #10.
+
 ---
 
 ## 1. Decisiones a cerrar ANTES de escribir código
@@ -99,17 +103,17 @@ Backend y frontend avanzan juntos, historia a historia. Nunca "todo el backend y
 - Endpoint que recibe puntos y parámetros y devuelve las curvas; gráfica en el front.
 - Esto desriesga el proyecto entero: si algo no funciona como se espera, se descubre en la semana 1, con margen para reaccionar.
 
-**F2 — Producto alrededor del motor (semana 2).** Registro/login JWT + roles. CRUD completo de bici (metadatos + foto en Cloudinary + puntos + resultados persistidos). Catálogo público con filtros por categoría. Detalle de bici con gráficas y números. Privado vs. publicar.
+**F2 — Producto alrededor del motor (semana 2).** Registro/login JWT + roles. CRUD completo de bici (metadatos + foto en Cloudinary + puntos + resultados persistidos). Catálogo público con filtros por categoría. Detalle de bici con gráficas y explicación básica comprensible sin cuestionario (#103–#105). Privado vs. publicar. Definir el contrato de interpretación antes de cerrar la persistencia de resultados.
 
 **F3 — Comunidad y cierre de mínimos (semana 3).** Moderación (PENDING → APPROVED/REJECTED, endpoints solo MODERATOR). Votos (N:M con restricción de único) + rankings por categoría. Cobertura ≥60% real, Swagger pulido, README completo, despliegue final verificado.
 
-**F4 — Valor añadido (semana 4 / colchón).** Por orden: solver 4 barras (Horst) → capa IA con Spring AI (preguntas de estilo + análisis narrado desde los números del motor) → comparador de bicis → extras de CI/CD y observabilidad (actuator health, logs estructurados).
+**F4 — Valor añadido (semana 4 / colchón).** Por orden: solver 4 barras (Horst) → personalización opcional por cuestionario reutilizando la explicación de F2 → comparador de bicis → extras de CI/CD y observabilidad (actuator health, logs estructurados). El chat y su posible pago quedan para más adelante (#106).
 
 El MVP defendible se cierra en F3. F4 es la lista de "si hay tiempo", y lo que quede fuera va al README como trabajo futuro.
 
 ---
 
-## 5. Historias de usuario (borrador, 8 + 2 stretch)
+## 5. Historias de usuario (resumen actualizado)
 
 1. Como **visitante** quiero navegar el catálogo público con filtros por categoría para descubrir bicis analizadas.
 2. Como **visitante** quiero ver el detalle de una bici (gráficas, números y explicación) para entender su comportamiento.
@@ -119,7 +123,7 @@ El MVP defendible se cierra en F3. F4 es la lista de "si hay tiempo", y lo que q
 6. Como **moderador** quiero revisar las bicis pendientes y aprobarlas o rechazarlas para mantener la calidad del catálogo. *(2º rol)*
 7. Como **usuario** quiero votar bicis públicas para destacar las mejores.
 8. Como **visitante** quiero ver rankings por categoría (Enduro, e-Enduro, DH) basados en votos.
-9. *(stretch)* Como **usuario** quiero responder unas preguntas sobre mi estilo y recibir un análisis personalizado en lenguaje natural generado por IA a partir de los números calculados.
+9. Como **visitante o usuario autorizado** quiero entender los resultados con una explicación breve de IA respaldada por el motor, sin necesitar conocimientos técnicos ni un cuestionario. La personalización opcional por estilo/peso es una ampliación posterior.
 10. *(stretch)* Como **usuario** quiero comparar dos bicis lado a lado.
 
 Cumple el reparto que pide el enunciado: negocio (1, 2, 4, 5, 7, 8), auth y roles (3, 6), pantallas principales (1, 2, 4).
@@ -166,7 +170,8 @@ Relaciones que pide el enunciado: 1:N (users→bikes, bikes→results) y N:M (vo
 - `GET /api/moderation/pending` · `POST /api/moderation/{id}/approve|reject` (solo MODERATOR)
 - `PUT /api/bikes/{id}/vote` · `DELETE /api/bikes/{id}/vote` (auth)
 - `GET /api/rankings?category=`
-- *(stretch)* `POST /api/bikes/{id}/analysis` (respuestas del cuestionario → texto IA)
+- Resumen básico por resultado/bicicleta (#104): generación controlada y lectura reutilizable según permisos; cerrar rutas y contrato en #103.
+- *(ampliación posterior)* `POST /api/bikes/{id}/analysis` (respuestas del cuestionario → texto personalizado)
 
 Respuestas de error consistentes (handler global): `{timestamp, status, error, message, path}`.
 
@@ -175,19 +180,25 @@ Respuestas de error consistentes (handler global): `{timestamp, status, error, m
 ## 9. Riesgos y plan de recorte
 
 **Orden de sacrificio si no llega el tiempo** (de primero a último en caer):
-1. Capa IA narrativa → queda como trabajo futuro (los números y clasificaciones por reglas ya se muestran).
+1. Personalización de IA por cuestionario; el chat y pagos ya están fuera del MVP.
 2. Comparador de bicis.
 3. Solver 4 barras → v1 solo monopivote (sigue habiendo motor real que enseñar).
 4. Rankings elaborados → orden simple por número de votos.
 
 **Innegociable** (son los mínimos del enunciado): auth + 2 roles, un motor completo funcionando, moderación, tests con 60%, Swagger, Docker, migraciones, despliegue, README, flujo Git ordenado.
 
+La explicación básica es una prioridad de producto distinta de esos mínimos del
+curso. Si es necesario recortarla, revisar expresamente la decisión con David;
+mostrar números por sí solo no cumple el objetivo de ayudar a principiantes.
+
 **Riesgos concretos y mitigación:**
 - Calibración/marcado impreciso → sanity check de recorrido (1.2) + foto de ejemplo buena en el onboarding.
 - Solver 4 barras se atasca → por eso monopivote primero y 4 barras en F4.
 - Integración front-back al final → por eso rebanadas verticales y despliegue en F0.
 - Fotos desaparecen al redesplegar → Cloudinary desde el principio.
-- Coste/cuota de la API de IA → clave por variable de entorno, modo mock en desarrollo, y es la primera en caer del alcance.
+- Coste/cuota de la API de IA → proveedor por decidir, clave por variable de entorno,
+  modo simulado en desarrollo, resumen reutilizable y límites. Un fallo de IA conserva
+  las gráficas. No prometer gratuidad ilimitada ni enviar perfiles privados al resumen público.
 
 ---
 

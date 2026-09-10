@@ -68,6 +68,27 @@ requiere otro centro instantáneo de reacción; NO reutilizar el pivote principa
 
 ## Validación y limitaciones de la evidencia
 
+### Kickback cog-aware
+
+Se suma, respecto al reposo, en radianes:
+
+`ΔL/rRing + Δθ·(N_cog/N_ring−1) + (Ax_reposo−Ax_actual)/R·N_cog/N_ring`.
+
+Los tres términos son crecimiento del tramo tangente, enrollado/desenrollado al
+girar la línea de cadena y giro de rueda asociado al desplazamiento horizontal.
+El signo positivo representa retroceso de bielas; no recortar valores negativos
+ni exigir que la curva sea monótona para toda geometría. Se incluye la muestra
+de reposo (0 mm, 0°). El caso de platos/piñones iguales cancela el segundo término.
+
+Condiciones: transmisión engranada, retroceso de rueda sin deslizamiento asociado
+al movimiento del eje; sin velocidad de avance ni dinámica de rueda libre. No
+significa que el usuario vaya a sentir siempre ese giro al bajar rodando.
+
+Se conserva el método V1 para clientes que no indican configuración de ruedas;
+el API debe distinguir las versiones, nunca rellenar esos datos silenciosamente.
+
+### Evidencia y comprobaciones pendientes
+
 - Tests analíticos: construcción geométrica independiente, caso paralelo,
   efecto de marcha/altura, radios mullet, tangencias y entradas degeneradas.
 - Eso valida la implementación del modelo, no mide su precisión en una bici real.

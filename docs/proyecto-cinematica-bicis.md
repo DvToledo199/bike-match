@@ -114,7 +114,9 @@ Estas ideas se descartan para la versión inicial pero pueden mencionarse como l
 - **Detección automática de los pivotes a partir de la foto** mediante visión por computador. Hoy no es viable con fiabilidad suficiente; por eso los programas actuales obligan a marcarlos a mano.
 - **Extracción automática de la geometría** desde las webs oficiales de cada marca (scraping): frágil y de mantenimiento costoso.
 - La **parte de geometría como foco principal**.
-- Cálculos que requieren asumir datos adicionales (como el centro de gravedad), por ejemplo anti-squat / anti-rise.
+- Personalización del centro de gravedad y medidas exactas de neumáticos.
+  Anti-squat/anti-rise se adelantan en la ampliación del 10/09/2026 con condiciones
+  de referencia explícitas, sin pedir peso; ver `modelo-referencia-cinematica.md`.
 - **Simulador de emparejamiento de amortiguadores:** comparar, sobre un mismo cuadro, las curvas de fuerza en rueda con resortes genéricos (muelle lineal, aire de cámara grande, aire de cámara reducida) dimensionados para el sag estándar de la disciplina, sin pedir ningún dato al usuario — con un resorte lineal, la forma de la curva de fuerza se deriva directamente de la de leverage. Queda fuera de v1 por el trabajo extra de modelado y validación de esas curvas genéricas, no por falta de datos. Prioridad: después de anti-squat / anti-rise.
 - Sistemas de incentivos más elaborados.
 

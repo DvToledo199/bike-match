@@ -1,11 +1,19 @@
 import { expect, it } from 'vitest'
 import { getCalibration, getParameterErrors, hasValidParameters } from './parameterValidation.js'
 
-const valid = { eyeToEyeMm: '230', shockStrokeMm: '65', chainringTeeth: '34', sprocketTeeth: '50', declaredTravelMm: '164', sagPercent: '30' }
+const valid = { eyeToEyeMm: '230', shockStrokeMm: '65', chainringTeeth: '34', sprocketTeeth: '50', declaredTravelMm: '164', sagPercent: '30', wheelConfiguration: 'MULLET' }
 it('accepts valid measurements but not fractional teeth', () => {
   expect(hasValidParameters(valid)).toBe(true)
   expect(getParameterErrors({ ...valid, chainringTeeth: '34.9', sprocketTeeth: '10.5' }))
     .toEqual({ chainringTeeth: 'integer', sprocketTeeth: 'integer' })
+})
+it('requires an explicit supported wheel choice', () => {
+  for (const wheelConfiguration of ['', undefined, 'FULL_26', 0]) {
+    expect(getParameterErrors({ ...valid, wheelConfiguration }).wheelConfiguration).toBe('wheelConfiguration')
+  }
+  for (const wheelConfiguration of ['FULL_29', 'MULLET', 'FULL_27_5']) {
+    expect(hasValidParameters({ ...valid, wheelConfiguration })).toBe(true)
+  }
 })
 it('rejects degenerate and non-finite calibration', () => {
   expect(getCalibration({ SHOCK_FRAME: { x: 2, y: 2 }, SHOCK_SWINGARM: { x: 2, y: 2 } }, 230).isValid).toBe(false)

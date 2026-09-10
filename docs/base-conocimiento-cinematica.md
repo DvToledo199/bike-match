@@ -2,7 +2,7 @@
 
 Material de referencia para la capa de IA de BikeMatch. El motor de la aplicación calcula los números; este documento define cómo traducirlos a una valoración en lenguaje natural, como lo haría un especialista en suspensiones. Está pensado para inyectarse (completo o por secciones) como contexto del modelo de lenguaje.
 
-> **Aplicación a la versión real del motor (9 de septiembre de 2026):** seleccionar
+> **Aplicación a la versión real del motor (10 de septiembre de 2026):** seleccionar
 > solo reglas compatibles con las capacidades entregadas. V1 no calcula anti-squat
 > ni anti-rise y su kickback simplificado ignora el efecto del piñón, aunque este se
 > registre. Las bandas de kickback por desarrollo y las frases sobre pedaleo/frenada
@@ -11,6 +11,14 @@ Material de referencia para la capa de IA de BikeMatch. El motor de la aplicaci�
 > El contrato #103 y [`plan-ia-explicacion.md`](plan-ia-explicacion.md) concretarán el
 > contexto antes de integrar el proveedor. Estas restricciones prevalecen sobre
 > los ejemplos generales de este documento.
+
+> **Ampliación `monopivot-reference-v2`:** con ruedas seleccionadas, se entregan
+> anti-squat/anti-rise y kickback que sí usa el piñón. CG de 1100 mm y radios de
+> referencia son convenciones de comparación, NO mediciones del usuario. Conservar
+> `conditions.reference` y la versión al interpretar/guardar. Las bandas siguientes
+> son heurísticas, no pruebas de eficiencia, tracción o sensaciones garantizadas.
+> Validación analítica no equivale a comparación externa estricta ni ensayo de campo.
+> Ver [`modelo-referencia-cinematica.md`](modelo-referencia-cinematica.md).
 
 ---
 
@@ -107,9 +115,11 @@ El motor lee la forma en **tres fases** —tercio inicial, medio y final del rec
 
 ---
 
-## 6. Anti-squat (eficacia de pedaleo) — para cuando el motor lo calcule
+## 6. Anti-squat (respuesta al pedaleo) — estimación V2 bajo referencia
 
-**Qué es:** en qué medida la tensión de cadena contrarresta el hundimiento de la suspensión al pedalear. 100% = pedaleo neutro (ni se hunde ni se extiende).
+**Qué es:** en qué medida las fuerzas de transmisión contrarrestan el hundimiento
+por transferencia de carga al acelerar en el modelo. 100% = compensación en esas
+condiciones, NO eficiencia del 100% ni ausencia garantizada de balanceo al pedalear.
 
 **Cómo se lee:** el dato que importa es el **valor en la zona de sag y en el desarrollo de subida**; la cantidad pesa más que la forma de la curva. Bandas orientativas en sag: <80% blando al pedalear (balanceo perceptible, tacto muy sensible) · 80–100% equilibrado · 100–120% eficaz y firme (la referencia del buen pedaleador) · 120–140% muy firme, con el peaje de más kickback · >140% extremo.
 
@@ -119,9 +129,12 @@ El motor lee la forma en **tres fases** —tercio inicial, medio y final del rec
 
 ---
 
-## 7. Anti-rise (comportamiento al frenar) — para cuando el motor lo calcule
+## 7. Anti-rise (respuesta al frenar) — estimación V2 bajo referencia
 
-**Qué es:** en qué medida la frenada trasera comprime o deja libre la suspensión trasera. 0% = la suspensión ignora el freno y sigue su comportamiento natural (extenderse por la transferencia de peso); 100% = la frenada mantiene la geometría hundiendo lo justo.
+**Qué es:** cuánto contrarresta la frenada trasera la tendencia a extenderse por
+transferencia de carga. 100% representa compensación en el modelo de referencia,
+no una promesa de mantener toda la geometría de la bici. Solo se calcula con la
+pinza fija al basculante; frenos flotantes y otros sistemas necesitan otro modelo.
 
 **Lectura por bandas:** <50% suspensión muy activa frenando, más cabeceo de la bici · 50–80% el equilibrio más común en bicis modernas · 80–110% geometría muy estable al frenar, a costa de una suspensión que trabaja peor y pierde finura de tracción justo cuando frenas · >110% alto, carácter de "se sienta al frenar".
 

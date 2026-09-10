@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getCalibration, getParameterErrors, parameterFields } from './parameterValidation.js'
+import { wheelConfigurations } from '../../models/wheelConfigurations.js'
 import styles from './ParameterStep.module.css'
 
 const calibrationField = parameterFields[0]
@@ -118,6 +119,29 @@ function ParameterStep({ parameters, points, updateWizardData }) {
           <p className={styles.sectionDescription}>{t('wizard.parameters.analysis.description')}</p>
         </div>
         <div className={styles.fieldGrid}>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="parameter-wheelConfiguration">{t('wizard.parameters.wheels.label')}</label>
+            <p className={styles.helpText} id="wheel-help">{t('wizard.parameters.wheels.help')}</p>
+            <select
+              id="parameter-wheelConfiguration"
+              name="wheelConfiguration"
+              className={`${styles.input} ${styles.select}`}
+              value={parameters.wheelConfiguration ?? ''}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              required
+              aria-invalid={Boolean(getVisibleError('wheelConfiguration'))}
+              aria-describedby={getVisibleError('wheelConfiguration') ? 'wheel-help wheel-error' : 'wheel-help'}
+            >
+              <option value="" disabled>{t('wizard.parameters.wheels.placeholder')}</option>
+              {wheelConfigurations.map((configuration) => (
+                <option key={configuration} value={configuration}>{t(`wizard.parameters.wheels.options.${configuration}`)}</option>
+              ))}
+            </select>
+            {getVisibleError('wheelConfiguration') && (
+              <p id="wheel-error" className={styles.error} role="alert">{t('wizard.parameters.errors.wheelConfiguration')}</p>
+            )}
+          </div>
           {analysisFields.map((field) => (
             <ParameterField
               key={field.name}

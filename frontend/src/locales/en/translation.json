@@ -23,7 +23,7 @@
       "dimensions": "{{width}} × {{height}} px",
       "lowResolutionWarning": "This image is smaller than {{minimumPixels}} px on its longest side. Use a larger photo if possible: small images make the marking less reliable.",
       "suspensionLegend": "Suspension type",
-      "suspensionHelp": "The current analysis supports simple single-pivot designs.",
+      "suspensionHelp": "For simple single pivots with a direct chain and a brake fixed to the swingarm. Idlers, floating brakes and other linkages are not supported.",
       "suspensionTypes": {
         "singlePivot": "Single pivot",
         "fourBar": "Four-bar / Horst link",
@@ -106,6 +106,16 @@
         "title": "Bike and drivetrain values",
         "description": "These values describe the shock, suspension travel and gears used in the calculation."
       },
+      "wheels": {
+        "label": "Wheel setup",
+        "help": "Choose the wheels fitted to this bike. We use reference tyre dimensions; no rider weight is needed.",
+        "placeholder": "Select wheel setup",
+        "options": {
+          "FULL_29": "Full 29″ — both wheels",
+          "MULLET": "Mullet — 29″ front / 27.5″ rear",
+          "FULL_27_5": "Full 27.5″ — both wheels"
+        }
+      },
       "fields": {
         "eyeToEye": {
           "label": "Shock eye-to-eye",
@@ -119,12 +129,12 @@
         },
         "chainring": {
           "label": "Chainring teeth",
-          "help": "The number of teeth on the front chainring used for the kickback estimate.",
+          "help": "The number of teeth on the front chainring used for the kickback and anti-squat estimates.",
           "unit": "teeth"
         },
         "sprocket": {
           "label": "Sprocket teeth",
-          "help": "Recorded as context. The simplified v1 kickback model does not yet use the rear sprocket.",
+          "help": "The rear gear used for the kickback and anti-squat estimates. Use the same gear when comparing bikes.",
           "unit": "teeth"
         },
         "declaredTravel": {
@@ -139,6 +149,7 @@
         }
       },
       "errors": {
+        "wheelConfiguration": "Select the wheel setup fitted to this bike.",
         "required": "Enter {{field}}.",
         "integer": "{{field}} must be a whole number.",
         "range": "{{field}} must be between {{minimum}} and {{maximum}}."
@@ -153,12 +164,25 @@
       "title": "Your kinematics curves",
       "description": "Read each curve with its units, inspect an exact value with the pointer, or check its start and end values below.",
       "curveLabel": "Kinematics curve",
+      "referenceSetup": "Reference setup: {{wheels}} · {{chainring}}/{{sprocket}}T · centre-of-gravity height {{height}} m.",
+      "referenceLimit": "Estimates using nominal tyres and a reference rider position, not a personalized ride prediction or a laboratory measurement. External validation of kickback, anti-squat and anti-rise is still in progress. Direct-chain single pivots only.",
+      "percentageAxis": "Reference response (%)",
+      "percentageSummary": "Starts at {{start}}% and ends at {{end}}%. Dashed line: 100% reference, not a score.",
+      "antiSquat": {
+        "title": "Anti-squat — pedalling response",
+        "description": "How drive forces counter the rear suspension's tendency to compress under acceleration in this reference model. This is not an efficiency percentage."
+      },
+      "antiRise": {
+        "title": "Anti-rise — braking response",
+        "description": "How rear braking counters the suspension's tendency to extend as load shifts forwards. Assumes a brake fixed to the swingarm; higher is not automatically better."
+      },
       "axes": "Horizontal: {{x}} · Vertical: {{y}}",
       "wheelTravelAxis": "Wheel travel (mm)",
       "tooltip": {
         "wheelTravel": "Wheel travel: {{value}} mm",
         "leverage": "Leverage ratio: {{value}}",
         "kickback": "Pedal kickback: {{value}}°",
+        "percent": "Reference response: {{value}}%",
         "axleX": "Horizontal position: {{value}} mm",
         "axleY": "Vertical position: {{value}} mm"
       },
@@ -170,7 +194,7 @@
       },
       "kickback": {
         "title": "Pedal kickback",
-        "description": "Pedal rotation caused by chain growth as the rear suspension moves.",
+        "description": "Estimated pedal rotation from chain growth, chain wrap and wheel rollback with the drivetrain engaged. Actual feedback while riding also depends on speed and the freehub.",
         "axis": "Pedal kickback (°)",
         "summary": "Starts at {{start}}° and ends at {{end}}°."
       },
@@ -227,7 +251,7 @@
       "kickback": {
         "title": "Pedal kickback level",
         "description": "A level based on the strongest pedal rotation estimated across the suspension travel.",
-        "conditions": "Estimated across the full travel using a {{chainring}}T chainring. The recorded {{sprocket}}T sprocket does not affect the v1 estimate. Sag ({{sag}}%) is used for leverage descriptors, not kickback.",
+        "conditions": "Estimated across the full travel at {{chainring}}/{{sprocket}}T with the drivetrain engaged. Compare levels in the same gear. Sag ({{sag}}%) is used for leverage descriptors, not kickback.",
         "levels": {
           "low": "Low",
           "medium": "Medium",
@@ -253,7 +277,7 @@
       "errors": {
         "timeout": "The calculation took too long. Try again; your marks and measurements are still here.",
         "invalidResponse": "The service returned incomplete or invalid results. Your marks are safe; try again.",
-        "invalidRequest": "Check the marked points and measurements, then try again. One of them does not form a possible bike geometry.",
+        "invalidRequest": "Check the marks, shock measurements and wheel setup. Use a level side photo on flat ground and a supported single-pivot layout, then try again.",
         "network": "We could not reach the calculation service. Check that the BikeMatch backend is running, then try again.",
         "server": "The calculation service had a problem. Try again in a moment.",
         "unavailable": "The calculation service is not available right now. Try again in a moment.",

@@ -154,7 +154,10 @@ Relaciones que pide el enunciado: 1:N (users→bikes, bikes→results) y N:M (vo
 - **Pedal kickback:** derivado del crecimiento de la distancia pedalier–eje + dientes de plato/piñón. Documentar los supuestos simplificadores.
 - **Descriptores de curva** (la curva se analiza partida en el punto de sag; detalle en `base-conocimiento-cinematica.md`): LR inicial / en sag / final / medio, progresión total y **progresión útil** (sag→final), retroceso máximo del eje (mm) y tramo donde ocurre, pendiente por tramos (0→sag y sag→100%), detección de inflexiones y tramos regresivos, recorrido calculado (para el sanity check contra el declarado). El resultado incluye las condiciones de medida (sag y desarrollo).
 - **Validación:** fixtures de 2–3 bicis contrastadas con BikeChecker, tolerancia ±2–3%, como tests automáticos.
-- **Anti-squat / anti-rise: fuera de v1** (requieren asumir centro de gravedad y línea de cadena; el proyecto de referencia pide `cog_height` justo por esto). Al README como trabajo futuro.
+- **Anti-squat / anti-rise:** fuera de la V1 histórica por necesitar CG y cadena.
+  Adelantadas el 10/09/2026 (#108/#109) como estimaciones para monopivote simple con
+  CG de referencia, radios nominales y método documentado. Selector de ruedas sin
+  pedir peso. Ver [`modelo-referencia-cinematica.md`](modelo-referencia-cinematica.md).
 - **Curvas de fuerza — simulador de emparejamiento de amortiguadores: fuera de v1, con prioridad posterior a anti-squat / anti-rise.** No queda fuera por falta de datos del usuario: con resortes genéricos (muelle lineal, aire de cámara grande/reducida) normalizados al sag de la disciplina, la fuerza en rueda se deriva de la curva de leverage sin pedir nada. Queda fuera por el modelado y la validación extra de esas curvas genéricas. La recomendación de tipo de amortiguador de la v1 **no** lo necesita: sale de los descriptores del LR y las reglas de emparejamiento de la base de conocimiento (§3 de `base-conocimiento-cinematica.md`).
 
 ---
@@ -226,7 +229,8 @@ mostrar números por sí solo no cumple el objetivo de ayudar a principiantes.
 **Ideas que valen la pena (adaptadas, no copiadas):**
 - **El solver como librería aparte con sus propios tests** (`test_solver.py`, `test_geometry.py`, `test_bike.py`) — equivale a nuestro motor como dominio puro testeado. Confirma el enfoque.
 - **Modelo de entrada:** puntos etiquetados con un **tipo** (`ground` = fijo al cuadro, `linkage` = móvil, `rear_wheel`, `bottom_bracket`…) + coordenadas **en píxeles de la imagen de fondo** + parámetros aparte (dientes de plato/piñón, wheelbase para escalar, tamaño de rueda). Valida nuestro diseño de captura sobre foto + calibración por medida conocida.
-- Su parámetro `cog_height` confirma que anti-squat exige asumir el centro de gravedad → bien dejado fuera de v1.
+- Su parámetro `cog_height` motivó excluir anti-squat de V1; desde el 10/09/2026 se
+  incorpora como referencia explícita, no como dato real del ciclista.
 - Su alcance real (mono + 4 barras ≈ 80% del mercado; high pivot inacabado) confirma nuestro recorte de v1.
 
 **Qué NO imitar:**

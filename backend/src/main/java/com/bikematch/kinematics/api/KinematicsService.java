@@ -3,6 +3,8 @@ package com.bikematch.kinematics.api;
 import com.bikematch.kinematics.check.TravelCheck;
 import com.bikematch.kinematics.curve.KickbackCurve;
 import com.bikematch.kinematics.curve.LeverageCurve;
+import com.bikematch.kinematics.curve.SuspensionResponseCurves;
+import com.bikematch.kinematics.geometry.ChainDrive;
 import com.bikematch.kinematics.descriptor.AxlePathDescriptors;
 import com.bikematch.kinematics.descriptor.LeverageDescriptors;
 import com.bikematch.kinematics.geometry.Point2D;
@@ -10,6 +12,7 @@ import com.bikematch.kinematics.model.KinematicsInput;
 import com.bikematch.kinematics.model.KinematicsParameters;
 import com.bikematch.kinematics.model.MarkedPoint;
 import com.bikematch.kinematics.model.PointType;
+import com.bikematch.kinematics.model.ReferenceSetup;
 import com.bikematch.kinematics.solver.MonopivotSolver;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +25,7 @@ public class KinematicsService {
     private final MonopivotSolver solver = new MonopivotSolver();
 
     /** Turns the request (points in pixels + calibration) into the engine's input (points in mm). */
-    private KinematicsInput toKinematicsInput(PreviewRequest request) {
+    private PreparedInput prepareInput(PreviewRequest request) {
         EnumSet<PointType> types = EnumSet.noneOf(PointType.class);
         for (PointDto point : request.points()) {
             if (!types.add(point.type())) {
@@ -44,18 +47,31 @@ public class KinematicsService {
         Point2D frontAxle = pixelPointOf(request.points(), PointType.FRONT_AXLE);
         double axleDx = frontAxle.x() - rearAxle.x();
         double axleDy = frontAxle.y() - rearAxle.y();
-        if (Math.abs(axleDx) < 1 || Math.abs(axleDy / axleDx) > Math.tan(Math.toRadians(15))) {
+        if (Math.abs(axleDx) < 1) {
             throw new IllegalArgumentException("Use a level side photo with clearly separated wheel axles");
         }
-        // Canonical coordinates: rear axle at rest = origin, front = positive x,
-        // image-down = positive y. Reflect only: wheel sizes can differ, so the
-        // wheel-axle line must not be used to invent a rotation of the ground.
         double facing = Math.signum(axleDx);
+        double observedAngle = Math.atan2(axleDy, Math.abs(axleDx));
+        var wheels = request.parameters().wheelConfiguration();
+        double rotation = 0;
+        if (wheels != null) {
+            double axleDistanceMm = Math.hypot(axleDx, axleDy) * mmPerPixel;
+            double radiusDifference = wheels.rearRadiusMm() - wheels.frontRadiusMm();
+            if (axleDistanceMm <= Math.abs(radiusDifference)) {
+                throw new IllegalArgumentException("Wheel spacing is incompatible with the selected wheels");
+            }
+            rotation = Math.asin(radiusDifference / axleDistanceMm) - observedAngle;
+        }
+        if (Math.abs(wheels == null ? observedAngle : rotation) > Math.toRadians(15)) {
+            throw new IllegalArgumentException("Use a side photo within 15 degrees of level and check the wheel selection");
+        }
+        final double correction = rotation;
 
         List<MarkedPoint> points = request.points().stream()
                 .map(dto -> new MarkedPoint(dto.type(),
                         new Point2D(facing * (dto.x() - rearAxle.x()) * mmPerPixel,
-                                (dto.y() - rearAxle.y()) * mmPerPixel)))
+                                (dto.y() - rearAxle.y()) * mmPerPixel)
+                                .rotateAround(new Point2D(0, 0), correction)))
                 .toList();
 
         KinematicsParametersDto params = request.parameters();
@@ -63,8 +79,10 @@ public class KinematicsService {
                 params.shockStrokeMm(), params.chainringTeeth(), params.sprocketTeeth(),
                 params.declaredTravelMm(), params.sagPercent());
 
-        return new KinematicsInput(points, parameters);
+        return new PreparedInput(new KinematicsInput(points, parameters), Math.toDegrees(rotation));
     }
+
+    private record PreparedInput(KinematicsInput input, double photoRotationDegrees) { }
 
     private Point2D pixelPointOf(List<PointDto> points, PointType type) {
         for (PointDto point : points) {
@@ -76,21 +94,31 @@ public class KinematicsService {
     }
 
     public PreviewResponse preview(PreviewRequest request) {
-        KinematicsInput input = toKinematicsInput(request);
+        PreparedInput prepared = prepareInput(request);
+        KinematicsInput input = prepared.input();
         KinematicsParametersDto parameters = request.parameters();
 
         List<Point2D> axlePath = solver.sweep(input);
 
         LeverageCurve leverageCurve = LeverageCurve.from(axlePath, parameters.shockStrokeMm());
-        KickbackCurve kickbackCurve = KickbackCurve.from(
-                axlePath, input.pointOf(PointType.BOTTOM_BRACKET), parameters.chainringTeeth());
+        ReferenceSetup setup = parameters.wheelConfiguration() == null ? null
+                : ReferenceSetup.standard(parameters.wheelConfiguration());
+        KickbackCurve kickbackCurve = setup == null
+                ? KickbackCurve.from(axlePath, input.pointOf(PointType.BOTTOM_BRACKET), parameters.chainringTeeth())
+                : KickbackCurve.from(axlePath, input.pointOf(PointType.BOTTOM_BRACKET),
+                        new ChainDrive(parameters.chainringTeeth(), parameters.sprocketTeeth()), setup.wheels().rearRadiusMm());
+        SuspensionResponseCurves responseCurves = setup == null
+                ? new SuspensionResponseCurves(List.of(), List.of())
+                : SuspensionResponseCurves.from(axlePath, input, setup);
 
         LeverageDescriptors leverageDescriptors = LeverageDescriptors.from(leverageCurve, parameters.sagPercent());
         AxlePathDescriptors axlePathDescriptors = AxlePathDescriptors.from(axlePath);
         TravelCheck travelCheck = TravelCheck.from(axlePath, parameters.declaredTravelMm());
 
         MeasurementConditions conditions = new MeasurementConditions(
-                parameters.sagPercent(), parameters.chainringTeeth(), parameters.sprocketTeeth());
+                parameters.sagPercent(), parameters.chainringTeeth(), parameters.sprocketTeeth(),
+                setup == null ? "monopivot-v1" : "monopivot-reference-v2",
+                setup == null ? null : ReferenceAssumptions.from(setup, prepared.photoRotationDegrees()));
 
         return new PreviewResponse(
                 leverageCurve.samples(),
@@ -99,6 +127,8 @@ public class KinematicsService {
                 leverageDescriptors,
                 axlePathDescriptors,
                 travelCheck,
-                conditions);
+                conditions,
+                responseCurves.antiSquat(),
+                responseCurves.antiRise());
     }
 }

@@ -23,6 +23,7 @@ export async function requestKinematicsPreview(wizardData, signal) {
         sprocketTeeth: toNumber(parameters.sprocketTeeth),
         declaredTravelMm: toNumber(parameters.declaredTravelMm),
         sagPercent: toNumber(parameters.sagPercent),
+        wheelConfiguration: parameters.wheelConfiguration,
       },
     }),
   })

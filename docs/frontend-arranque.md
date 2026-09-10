@@ -1,6 +1,6 @@
 # Arranque del frontend — paquete de traspaso
 
-> **Guía vigente, revisada el 6 de septiembre de 2026.** El frontend del Sprint 1 ya
+> **Guía vigente, revisada el 10 de septiembre de 2026.** El frontend del Sprint 1 ya
 > está implementado. Lee esta guía y el README antes de ampliarlo. El estudio histórico está en
 > [`investigaciones/frontend-stack-y-diseno-INFORME.md`](investigaciones/frontend-stack-y-diseno-INFORME.md).
 
@@ -77,16 +77,18 @@ es lo natural — el backend calibra px→mm internamente con el eye-to-eye):
   "eyeToEyeMm": 230.0,
   "parameters": {
     "shockStrokeMm": 65, "chainringTeeth": 34, "sprocketTeeth": 50,
-    "declaredTravelMm": 164, "sagPercent": 30
+    "declaredTravelMm": 164, "sagPercent": 30, "wheelConfiguration": "FULL_29"
   }
 }
 ```
 
-**Recibe** (tres series de ~100 puntos + descriptores):
+**Recibe** (cinco series de ~100 puntos + descriptores; ejemplo ilustrativo, no fixture físico):
 ```json
 {
   "leverageCurve":  [ { "wheelTravelMm": 1.6, "ratio": 2.55 }, "… ~100" ],
-  "kickbackCurve":  [ { "wheelTravelMm": 1.6, "kickbackDegrees": 0.4 }, "… ~100" ],
+  "kickbackCurve":  [ { "wheelTravelMm": 0, "kickbackDegrees": 0 }, "… ~100" ],
+  "antiSquatCurve": [ { "wheelTravelMm": 0, "percent": 120 }, "… ~100" ],
+  "antiRiseCurve":  [ { "wheelTravelMm": 0, "percent": 80 }, "… ~100" ],
   "axlePath":       [ { "x": 0.0, "y": 0.0 }, "… ~100 (en mm)" ],
   "leverageDescriptors": {
     "lrInitial": 2.55, "lrAtSag": 2.53, "lrFinal": 2.50, "lrMean": 2.52,
@@ -98,7 +100,17 @@ es lo natural — el backend calibra px→mm internamente con el eye-to-eye):
   "axlePathDescriptors": { "maxRearwardMm": 12.3, "atTravelPercent": 55.0 },
   "travelCheck": { "calculatedTravelMm": 162.0, "declaredTravelMm": 164.0,
                    "deviationPercent": 1.2, "withinTolerance": true },
-  "conditions": { "sagPercent": 30.0, "chainringTeeth": 34, "sprocketTeeth": 50 }
+  "conditions": {
+    "sagPercent": 30.0, "chainringTeeth": 34, "sprocketTeeth": 50,
+    "modelVersion": "monopivot-reference-v2",
+    "reference": {
+      "wheelConfiguration": "FULL_29",
+      "frontWheelRadiusMm": 371, "rearWheelRadiusMm": 371,
+      "centerOfGravityHeightMm": 1100, "photoRotationDegrees": 0,
+      "motionModel": "FIXED_FRAME_LOCAL_GROUND", "brakeModel": "SWINGARM_FIXED",
+      "validationLevel": "ANALYTICAL_REFERENCE"
+    }
+  }
 }
 ```
 - **`SegmentTrend`**: `PROGRESSIVE` / `LINEAR` / `REGRESSIVE`.
@@ -108,13 +120,24 @@ es lo natural — el backend calibra px→mm internamente con el eye-to-eye):
   Backend: origen en el eje trasero inicial, frente +x y abajo +y. La gráfica invierte
   y para mostrar subida positiva. El área útil es cuadrada, no solo el contenedor.
   Foto lateral, nivelada y extendida; orientación izquierda/derecha normalizada.
-  Se rechaza una línea de ejes ambigua o inclinada más de 15°, sin corregir perspectiva.
+  Se corrige la inclinación de imagen descontando la diferencia de radios elegidos
+  (incluido mullet); se rechazan correcciones mayores de 15° y orientación ambigua.
+  Se asume suelo plano; no corrige perspectiva ni distingue foto girada de bici en pendiente.
   El JSON anterior es ilustrativo, no una respuesta completa reutilizable.
 - **Límites:** eye-to-eye 100–300 mm, carrera 20–120 mm, plato 20–60 dientes enteros,
   piñón 10–60 enteros, recorrido 50–250 mm y sag 10–50%. Los seis tipos de punto
   aparecen una sola vez; coordenadas finitas entre 0 y 100000 px.
-- **Kickback v1:** plato y crecimiento recto de cadena; piñón solo como contexto,
-  sag para descriptores de leverage. Las etiquetas alimentarán la futura IA.
+- **Ruedas:** selector explícito `FULL_29`, `MULLET` o `FULL_27_5`, sin peso.
+  El frontend requiere la respuesta `monopivot-reference-v2`. No acepta respuestas
+  antiguas como si contuvieran las nuevas curvas. El backend conserva `monopivot-v1`
+  para solicitudes sin ruedas (o null): kickback antiguo, referencia null, curvas
+  anti vacías; no asumir 29 por defecto. Los enums numéricos se rechazan con 400.
+- **Kickback ampliado:** tangente, enrollado y giro de rueda; plato y piñón sí
+  influyen. Sag sirve para descriptores de leverage. AS/AR son estimaciones bajo
+  referencia, no notas de eficiencia/seguridad. Las etiquetas alimentarán la IA.
+- **Gráficas:** inicio/final numéricos y línea de referencia 100% para AS/AR, sin
+  tabla masiva de puntos. Se conservan valores negativos. Condiciones, límites y
+  mejoras futuras en [`modelo-referencia-cinematica.md`](modelo-referencia-cinematica.md).
 - **Errores → 400** con cuerpo `ProblemDetail` (`{ type, title, status, detail }`): validación
   de entrada (`@Valid`) y punto obligatorio ausente / geometría imposible.
 

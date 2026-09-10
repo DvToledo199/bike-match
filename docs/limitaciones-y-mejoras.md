@@ -13,6 +13,23 @@ GitHub cuando aplica).
 
 ## Motor de cinemática
 
+### Ampliación del 10/09/2026 — referencia, no medición personalizada
+
+- Selector Full 29/Mullet/Full 27,5; radios nominales y CG de referencia 1100 mm.
+- Cinco curvas, kickback cog-aware y normalización de inclinación consciente de
+  radios distintos. Versiones/condiciones incluidas en la API.
+- Pendiente: export o fixture externo con geometría y condiciones conocidas para
+  contraste estricto (issue #31); validación física de CG/ruedas reales, neumáticos,
+  dinámica de horquilla/rueda libre y otros montajes. No afirmar paridad con Linkage.
+- Documentación y fórmulas: [`modelo-referencia-cinematica.md`](modelo-referencia-cinematica.md).
+- Los apartados 1–3 siguientes explican las decisiones y pruebas históricas de V1;
+  su tolerancia ±30% no valida las curvas añadidas ni justifica ignorar el piñón.
+- Las dos Orange conservan recorrido y leverage dentro del ±3% en V2. Kickback:
+  Surge mejora (35,86° frente a ≈34°); Stage 6 discrepa (28,79° frente a ≈22°).
+  No se atribuye automáticamente a error de marcado: queda investigarlo en #31.
+  La tabla original Stage 6 sí da 32/50, CDG 1065 y sag 25% F+R; ver comparación
+  completa y condiciones todavía no reproducidas en el documento del modelo.
+
 ### 1. Validación del pedal kickback con tolerancia ±30%
 - **Qué:** el test `surgeKickbackMatchesTheReference` valida el kickback contra la
   gráfica de BikeChecker con una banda ancha del **±30%**, no con el ±3% del leverage.
@@ -26,9 +43,10 @@ GitHub cuando aplica).
 - **Qué:** el crecimiento de cadena se calcula como el cambio de la distancia recta
   pedalier→eje; se desprecian el enrollado en el piñón y el *wheel wind-up*. El número
   lo fija solo el plato; el piñón se registra como condición de cálculo, no influye.
-- **Por qué ahora:** limpio y defendible; el efecto del piñón queda tapado por el ruido
-  de marcado (punto 3), así que afinarlo no mejoraría la validación.
-- **Impacto:** el motor no distingue el efecto real del piñón en el kickback.
+- **Motivo histórico:** mantener un modelo defendible para el curso. La suposición
+  de que el ruido siempre tapaba el piñón no estaba suficientemente demostrada.
+- **Impacto actual:** solo las peticiones legacy sin ruedas conservan este método;
+  el frontend usa ahora el cálculo cog-aware. Su contraste externo sigue pendiente.
 - **Dónde:** issue #31 (modelo *cog-aware* validado).
 
 ### 3. Sensibilidad extrema al marcado del pivote principal
@@ -39,8 +57,9 @@ GitHub cuando aplica).
   con fotos de referencia pequeñas (la Surge es 500×280 px, ~3,9 mm/px).
 - **Dónde:** investigación **completada** →
   [`sensibilidad-marcado-pivote-INFORME.md`](investigaciones/sensibilidad-marcado-pivote-INFORME.md).
-  **Conclusión:** no es un fallo del motor, es resolución de foto × precisión de marcado;
-  se aplican mejor foto, zoom y corrección visual. David descartó promediar cinco
+  **Conclusión acotada:** el ensayo demuestra sensibilidad al marcado, pero no
+  descarta errores o limitaciones del motor en comparaciones externas. Se aplican
+  mejor foto, zoom y corrección visual. David descartó promediar cinco
   clics: un punto se marca una vez, con cruz visible y deshacer inmediato.
   Objetivo orientativo: mm/px ≤ ~1,3. Relacionado con #31 y #54.
 
@@ -96,9 +115,11 @@ GitHub cuando aplica).
 
 ## Alcance (decisiones de producto, no atajos)
 
-- **Orientación:** se normaliza izquierda/derecha, no perspectiva ni inclinación.
-  Se necesita foto lateral, nivelada y suspensión extendida. No se rota usando la
-  línea de ejes porque puede haber ruedas de tamaños diferentes.
+- **Orientación:** izquierda/derecha y corrección de inclinación de hasta 15° con
+  las ruedas seleccionadas; se descuenta la diferencia de radios para mullet.
+  Se asume suelo plano y suspensión extendida. No corrige perspectiva ni distingue
+  giro de cámara de bicicleta sobre pendiente; radios nominales introducen error.
+  Los clientes legacy sin ruedas conservan la normalización antigua sin rotación.
 - **Prueba final con foto real — completada (#54):** David marcó manualmente una
   Orange Stage 6 29'' 2020 en la aplicación, a partir de una foto lateral real.
   El cálculo devolvió 149,0 mm de recorrido frente a 150 mm declarados (0,7 % de
@@ -120,8 +141,7 @@ GitHub cuando aplica).
 - **Rendimiento:** gráficas en la carga inicial (~190 kB gzip de JS) para evitar
   reintentos atrapados por imports diferidos. Se mantiene el aviso de tamaño de Vite.
 
-- **Anti-squat / anti-rise fuera de la v1:** requieren la altura del centro de gravedad
-  del conjunto bici+ciclista, dato que no está en la foto. Documentado en
-  `fundamentos-motor-cinematica.md` §8.
+- **Anti-squat / anti-rise:** fuera de V1 histórica; incorporadas como estimaciones
+  de referencia en `monopivot-reference-v2`. El CG no se detecta en la fotografía.
 - **Solo monopivote en la v1:** los sistemas de 4 barras (Horst link) llegan después
   (issue #19).

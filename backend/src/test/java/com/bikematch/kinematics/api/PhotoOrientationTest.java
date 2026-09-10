@@ -19,7 +19,7 @@ class PhotoOrientationTest {
 
     private PreviewRequest request(List<PointDto> markedPoints) {
         return new PreviewRequest(markedPoints, 230.0,
-                new KinematicsParametersDto(65.0, 34, 50, 164.0, 30.0));
+                new KinematicsParametersDto(65.0, 34, 50, 164.0, 30.0, null));
     }
 
     @Test

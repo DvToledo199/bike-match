@@ -1,8 +1,9 @@
 # BikeMatch
 
 MVP de un bootcamp Java: foto lateral de una bici → seis puntos → medidas → curvas
-de leverage, kickback y trayectoria del eje. Los descriptores serán entrada de una
-futura explicación con IA; **IA, cuentas y persistencia aún no están implementadas**.
+de leverage, kickback, trayectoria del eje, anti-squat y anti-rise de referencia.
+Los descriptores serán entrada de una futura explicación con IA. El backend ya tiene
+registro/login; autorización #94, persistencia de bicis e IA siguen pendientes.
 
 ## Estado
 
@@ -61,7 +62,7 @@ npm audit
 ```
 
 GitHub Actions ejecuta Java y, por separado, tests/lint/build del frontend. Auditoría
-del 6 de septiembre: **64 tests Java y 22 frontend**. JaCoCo y la cobertura ≥60%
+actualizada el 10 de septiembre: **112 tests Java y 28 frontend**. JaCoCo y la cobertura ≥60%
 siguen previstos para Sprint 3: el número de tests no acredita ese porcentaje.
 
 ## Organización y contrato
@@ -77,8 +78,15 @@ siguen previstos para Sprint 3: el número de tests no acredita ese porcentaje.
 únicos, coordenadas finitas y medidas dentro de los límites del formulario. Los
 datos inválidos se rechazan con HTTP 400; ejemplo en [la guía frontend](docs/frontend-arranque.md).
 La foto debe ser lateral, nivelada y con suspensión extendida; puede mirar a ambos
-lados. El kickback v1 utiliza plato y crecimiento recto de cadena: **el piñón no
-afecta al cálculo**. No calcula anti-squat ni anti-rise.
+lados. Selector Full 29/Mullet/Full 27,5, sin pedir peso. El cálculo ampliado incluye
+piñón, radios nominales, CG de referencia y corrección de inclinación teniendo en
+cuenta ruedas distintas. Versiones y supuestos viajan con los resultados.
+
+Son **estimaciones bajo condiciones de referencia**, no medidas individuales ni
+validación de campo. Los clientes sin ruedas conservan el cálculo V1 (sin curvas
+anti ni efecto del piñón). Fuentes, fórmulas, límites y mejoras futuras:
+[modelo de referencia](docs/modelo-referencia-cinematica.md). El contraste externo
+estricto sigue abierto en #31.
 
 ## Seguimiento
 

@@ -1,3 +1,5 @@
+import { wheelConfigurations } from '../../models/wheelConfigurations.js'
+
 export const parameterFields = [
   {
     name: 'eyeToEyeMm',
@@ -46,7 +48,7 @@ export const parameterFields = [
 ]
 
 export function getParameterErrors(parameters) {
-  return parameterFields.reduce((errors, field) => {
+  const errors = parameterFields.reduce((errors, field) => {
     const value = parameters[field.name]
     const parsedValue = Number(value)
 
@@ -60,6 +62,8 @@ export function getParameterErrors(parameters) {
 
     return errors
   }, {})
+  if (!wheelConfigurations.includes(parameters.wheelConfiguration)) errors.wheelConfiguration = 'wheelConfiguration'
+  return errors
 }
 
 export function hasValidParameters(parameters) {

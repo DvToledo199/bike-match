@@ -3,6 +3,7 @@ import {
   Line,
   LineChart,
   ResponsiveContainer,
+  ReferenceLine,
   Tooltip,
   XAxis,
   YAxis,
@@ -95,6 +96,9 @@ function CurveChart({ config, data, domains, square }) {
               tickFormatter={(value) => formatNumber(value, config.decimals)}
             />
             <Tooltip content={<ChartTooltip config={config} />} cursor={{ stroke: 'var(--color-text-muted)', strokeWidth: 1 }} />
+            {config.percentage && (
+              <ReferenceLine y={100} stroke="var(--color-text-muted)" strokeDasharray="6 4" />
+            )}
             <Line
               type="linear"
               dataKey={config.yKey}
@@ -117,6 +121,7 @@ function KinematicsCharts({ data }) {
   const { t } = useTranslation()
   const axlePoints = relativeAxlePath(data.axlePath)
   const axleDomains = getEqualScaleDomains(axlePoints)
+  const { reference, chainringTeeth, sprocketTeeth } = data.conditions
   const charts = [
     {
       id: 'leverage',
@@ -164,19 +169,40 @@ function KinematicsCharts({ data }) {
       summaryKey: 'wizard.charts.axle.summary',
     },
   ]
+  for (const [id, curve, color] of [
+    ['antiSquat', data.antiSquatCurve, 'var(--color-chart-leverage)'],
+    ['antiRise', data.antiRiseCurve, 'var(--color-chart-kickback)'],
+  ]) {
+    charts.push({
+      id, data: curve, color, percentage: true, xKey: 'wheelTravelMm', yKey: 'percent', decimals: 1,
+      titleKey: `wizard.charts.${id}.title`, descriptionKey: `wizard.charts.${id}.description`,
+      xAxisKey: 'wizard.charts.wheelTravelAxis', yAxisKey: 'wizard.charts.percentageAxis',
+      tooltipLabelKey: 'wizard.charts.tooltip.wheelTravel', tooltipValueKey: 'wizard.charts.tooltip.percent',
+      summaryKey: 'wizard.charts.percentageSummary',
+      domains: { yDomain: [Math.min(0, ...curve.map((point) => point.percent)), Math.max(100, ...curve.map((point) => point.percent))] },
+    })
+  }
 
   return (
     <div className={styles.charts}>
       <div className={styles.introduction}>
         <h1 id="wizard-title" className={styles.title}>{t('wizard.charts.title')}</h1>
         <p className={styles.description}>{t('wizard.charts.description')}</p>
+        <p className={styles.referenceNotice}>
+          {t('wizard.charts.referenceSetup', {
+            wheels: t(`wizard.parameters.wheels.options.${reference.wheelConfiguration}`),
+            height: formatNumber(reference.centerOfGravityHeightMm / 1000, 2),
+            chainring: chainringTeeth, sprocket: sprocketTeeth,
+          })}
+        </p>
+        <p className={styles.description}>{t('wizard.charts.referenceLimit')}</p>
       </div>
       {charts.map((chart) => (
         <CurveChart
           key={chart.id}
           config={chart}
           data={chart.data}
-          domains={chart.id === 'axle' ? axleDomains : undefined}
+          domains={chart.id === 'axle' ? axleDomains : chart.domains}
           square={chart.id === 'axle'}
         />
       ))}

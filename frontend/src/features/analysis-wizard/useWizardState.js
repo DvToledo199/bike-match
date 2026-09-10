@@ -11,6 +11,7 @@ const initialWizardData = {
     sprocketTeeth: '',
     declaredTravelMm: '',
     sagPercent: '',
+    wheelConfiguration: '',
   },
 }
 
@@ -43,4 +44,3 @@ function useWizardState(totalSteps) {
 }
 
 export default useWizardState
-

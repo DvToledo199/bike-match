@@ -25,7 +25,8 @@ como relación de palanca o sag al usarlos. Las gráficas siguen disponibles y s
 | Cuestionario opcional para personalizar la lectura | Después del resumen básico; Sprint 4 | #10, segundo bloque pendiente |
 | Chat y evaluación de una posible modalidad de pago | Futuro, sin decisión comercial cerrada | #106 |
 
-Seguimos primero con #94 (seguridad). La primera explicación no depende de cuatro
+Actualización 10/09: se adelanta el bloque de referencia #108/#31/#109, sin tocar
+la rama de seguridad #94; después se retoma esta. La primera explicación no depende de cuatro
 barras (#19), kickback avanzado (#31), votos, comentarios ni rankings. No necesita
 esperar a que todo el catálogo esté terminado: se prueba primero con una bici
 guardada accesible a su dueño y luego se reutiliza en el detalle público.
@@ -42,6 +43,12 @@ El flujo actual ya entrega en `PreviewResponse`:
 - `leverageCurve`, `kickbackCurve` y `axlePath`;
 - `leverageDescriptors` y `axlePathDescriptors`;
 - `travelCheck` y `conditions` (sag, plato y piñón registrados).
+
+Desde el 10/09/2026, las peticiones con ruedas añaden `antiSquatCurve` y
+`antiRiseCurve`, y `conditions.modelVersion = monopivot-reference-v2` con
+`conditions.reference`: ruedas/radios, CG, corrección angular, modelo y nivel de
+validación. Guardar TODOS esos datos con el resultado. La V1 sin ruedas sigue
+siendo compatible en la API, pero no debe recibir interpretaciones de V2.
 
 La IA recibirá datos estructurados y reglas de interpretación, no una captura de la
 gráfica. El cálculo y las clasificaciones siguen siendo deterministas. El motor no
@@ -80,6 +87,13 @@ capacidades reales de cada versión del motor:
 - El kickback V1 ignora el efecto del piñón. Aunque este se registre en las condiciones,
   no afirmar que cambiarlo modifica la curva actual ni aplicar automáticamente las
   bandas de un modelo completo de transmisión.
+- `monopivot-reference-v2` sí incorpora piñón, anti-squat y anti-rise, pero utiliza
+  CG de referencia (1100 mm), radios nominales, cuadro fijo y freno en basculante.
+  `ANALYTICAL_REFERENCE` no significa validación experimental. Explicar tendencias
+  condicionadas, no eficiencia en porcentaje ni comportamiento individual garantizado.
+  No inventar descriptores de AS/AR en sag: actualmente se entregan curvas, y el
+  adaptador #103 deberá definir y probar su extracción si la necesita.
+  El contrato detallado y mejoras pendientes viven en `modelo-referencia-cinematica.md`.
 - Las curvas no garantizan el tacto final: influyen amortiguador, reglaje y piloto.
   Un LR aislado no determina que la bici sea blanda o firme; #34 sigue pendiente.
 - Si `travelCheck` avisa, destacarlo antes de interpretar y recomendar revisar el

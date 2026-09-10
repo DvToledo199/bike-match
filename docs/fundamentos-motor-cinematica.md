@@ -129,6 +129,12 @@ Tres niveles:
 
 ## 8. Alcance de la v1 y límites conocidos
 
+**Actualización 10/09/2026:** el alcance de abajo describe la V1 histórica. El
+preview con ruedas seleccionadas ya añade anti-squat/anti-rise y kickback
+cog-aware (`monopivot-reference-v2`), con condiciones de referencia explícitas.
+Método, fórmulas, evidencia y límites en
+[`modelo-referencia-cinematica.md`](modelo-referencia-cinematica.md).
+
 - **v1:** sistema monopivote (el más simple, valida el método de punta a punta).
   Después, sistemas de 4 barras (Horst link y variantes), que junto al monopivote cubren
   la mayoría del mercado.

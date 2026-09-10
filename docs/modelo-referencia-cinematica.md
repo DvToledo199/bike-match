@@ -92,13 +92,81 @@ el API debe distinguir las versiones, nunca rellenar esos datos silenciosamente.
 - Tests analíticos: construcción geométrica independiente, caso paralelo,
   efecto de marcha/altura, radios mullet, tangencias y entradas degeneradas.
 - Eso valida la implementación del modelo, no mide su precisión en una bici real.
-- Las referencias Orange existentes vienen de fotos marcadas a mano y gráficas;
-  no contienen todas las condiciones de anti-squat/anti-rise. No ajustar h para
-  forzar coincidencia ni declarar validación externa estricta con ellas.
+- Las referencias Orange existentes siguen siendo una validación real útil de
+  recorrido y leverage. Sus coordenadas son marcados sobre fotos, no una exportación
+  de coordenadas del archivo de Linkage. No ajustar h ni mover puntos para forzar
+  coincidencia con una curva.
 - Antes de atribuir precisión comparable a Linkage hace falta un fixture/export
   con coordenadas, radios, marcha, CG y convención de cuadro/suelo conocidos.
 - El ruido del marcado y la simplificación física son errores distintos: una foto
   ruidosa NO demuestra que se puedan ignorar componentes del modelo.
+
+### Comprobación de las dos Orange (10/09/2026)
+
+Se reutilizan `OrangeStage6Fixture` y `OrangeSurgeFixture`, sin cambiar sus puntos
+ni las tolerancias. `ReferenceBikeV2Test` prueba el API ampliado: recorrido y ambos
+extremos del leverage continúan dentro del **±3%**. Los tests anteriores siguen
+ejecutándose sobre V1. No se está sustituyendo una validación real por tests sintéticos.
+
+| Bici / transmisión | Referencia publicada | V1 | V2 de referencia |
+|---|---|---|---|
+| Stage 6 / 32×50 — recorrido | 150 mm | 153,17 mm | 153,04 mm |
+| Stage 6 — leverage inicial/final | 2,775 / 2,675 | 2,833 / 2,732 | 2,835 / 2,725 |
+| Stage 6 — kickback | ≈22° | 21,98° | **28,79°** |
+| Surge / 34×50 — recorrido | 164 mm | 164,35 mm | 164,36 mm |
+| Surge — leverage inicial/final | 2,55 / 2,50 | 2,548 / 2,504 | 2,544 / 2,508 |
+| Surge — kickback | ≈34° | 26,53° | **35,86°** |
+
+Los resultados propios se evalúan al final del recorrido calculado. Las cifras
+publicadas son aproximaciones de gráficas, no muestras digitales. La diferencia
+de kickback de la Stage 6 es importante y **no queda resuelta**: la mejora en la
+Surge no demuestra por sí sola que el modelo esté validado. La issue #31 sigue
+abierta. El test histórico de kickback solo cubría Surge con ±30%; no existía una
+aserción equivalente de Stage 6. No se amplía ninguna tolerancia para ocultarlo.
+
+La [entrada original de Stage 6](https://linkagedesign.blogspot.com/2019/11/orange-stage-6-29-2020.html)
+sí publica datos útiles: tabla con `SAG 25% F+R`, `CDG 1065`, B.S. 90% y desarrollo
+32/50 en la gráfica de kickback. La curva azul ronda 22° a 150 mm y continúa hacia
+160 mm. La tabla es una condición al sag, no necesariamente el primer punto de la
+curva. No comparar esos porcentajes directamente con nuestros valores a reposo.
+El CG afecta AS/AR, **no explica la diferencia de kickback**. Quedan por contrastar
+las coordenadas exactas, radios exteriores y convenciones de posición/horquilla
+de ese análisis; no se presume que sean la causa del desacuerdo.
+
+Para cerrar #31: obtener el modelo/export o una referencia reproducible con esas
+condiciones, contrastar muestras a iguales recorridos en ambas bicis, separar
+errores de entrada de posibles errores del motor y fijar una tolerancia justificada.
+No presentar las tres curvas ampliadas como precisión certificada de Linkage.
+
+## API, orientación y comprobación de integración (#109)
+
+- `parameters.wheelConfiguration`: `FULL_29`, `MULLET` o `FULL_27_5`.
+  Omitido/null conserva V1; un valor desconocido, vacío o numérico se rechaza.
+- `conditions.modelVersion`: `monopivot-v1` o `monopivot-reference-v2`.
+  En V1, `reference=null` y curvas anti vacías; no rellenar resultados no calculados.
+- `conditions.reference`: ruedas, radios, altura CG, corrección de foto en grados,
+  `motionModel=FIXED_FRAME_LOCAL_GROUND`, `brakeModel=SWINGARM_FIXED`,
+  `validationLevel=ANALYTICAL_REFERENCE`. Debe persistirse junto con las curvas.
+- Se refleja la orientación izquierda/derecha. En V2, tras calibrar, la diferencia
+  de altura esperada entre ejes descuenta los radios distintos antes de corregir
+  inclinación; rechazo si la corrección supera 15°. Se asume suelo plano, fotografía
+  lateral y suspensión extendida. No corrige perspectiva ni detecta una cuesta.
+- La web exige elegir ruedas y recibe cinco curvas con condiciones visibles;
+  no acepta como V2 una respuesta antigua/incompleta. Números negativos o >100%
+  válidos se conservan. No añade peso ni tablas de todos los puntos.
+- Pruebas: 112 tests Java y 28 frontend, lint/build; navegador Chromium con llamada
+  real al backend, las tres selecciones, cinco curvas, modos claro/oscuro a 1280 px
+  y móvil a 390 px sin desbordamiento. La foto sintética de esta comprobación prueba
+  la interfaz, no sustituye las dos referencias Orange de la tabla anterior.
+
+## Trazabilidad de esta ampliación
+
+- #108 → [PR #110](https://github.com/DvToledo199/bike-match/pull/110): geometría de cadena,
+  condiciones y curvas anti-squat/anti-rise, con tests independientes de Spring.
+- #31 → [PR #111](https://github.com/DvToledo199/bike-match/pull/111): kickback cog-aware;
+  implementado, pero issue abierta por el contraste externo pendiente.
+- #109: integración API/selector/gráficas, normalización mullet y documentos
+  sincronizados. El cambio de navegación final se tramita aparte.
 
 ## Mejoras futuras, sin implementarlas por adelantado
 

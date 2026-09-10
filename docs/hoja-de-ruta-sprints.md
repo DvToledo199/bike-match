@@ -14,6 +14,13 @@
 se incorpora al cierre de Sprint 2, después de guardado/permisos y junto al detalle.
 Cuestionario y chat se separan; ver [`plan-ia-explicacion.md`](plan-ia-explicacion.md).
 
+**Ampliación aprobada (10 de septiembre):** antes de persistir resultados se
+incorporan condiciones de referencia, anti-squat/anti-rise monopivote (#108),
+kickback cog-aware (#31) y selector de ruedas/gráficas (#109). Se pausa #94 sin
+mezclar sus cambios; después se retoma seguridad. La comparación externa estricta
+sigue pendiente en #31. Modelo, fuentes y mejoras:
+[`modelo-referencia-cinematica.md`](modelo-referencia-cinematica.md).
+
 ---
 
 ## Sprint 0 — Decidir y montar el tablero (días 1–3)
@@ -69,6 +76,11 @@ Cuestionario y chat se separan; ver [`plan-ia-explicacion.md`](plan-ia-explicaci
 ## Sprint 2 — De demo a producto (semana 2)
 
 **Objetivo:** usuarios reales se registran, guardan sus bicis y entienden el análisis.
+
+- [x] Motor de referencia: ruedas 29/mullet/27,5 y anti-squat/anti-rise (#108)
+- [x] Kickback cog-aware con tests analíticos; sin declarar paridad externa (#31)
+- [x] Selector de ruedas, cinco gráficas y condiciones/versiones API (#109)
+- [ ] Contraste externo con coordenadas/CG/ruedas/marcha conocidos (#31)
 
 - [ ] Confirmar email de acceso + username público y consolidar #1 dentro de #5
 - [ ] Migraciones: users, bikes, kinematics_results

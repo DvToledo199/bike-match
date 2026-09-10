@@ -3,6 +3,7 @@ package com.bikematch.kinematics.api;
 import com.bikematch.kinematics.check.TravelCheck;
 import com.bikematch.kinematics.curve.KickbackSample;
 import com.bikematch.kinematics.curve.LeverageSample;
+import com.bikematch.kinematics.curve.PercentageSample;
 import com.bikematch.kinematics.descriptor.AxlePathDescriptors;
 import com.bikematch.kinematics.descriptor.LeverageDescriptors;
 import com.bikematch.kinematics.geometry.Point2D;
@@ -16,6 +17,8 @@ public record PreviewResponse(
         LeverageDescriptors leverageDescriptors,
         AxlePathDescriptors axlePathDescriptors,
         TravelCheck travelCheck,
-        MeasurementConditions conditions
+        MeasurementConditions conditions,
+        List<PercentageSample> antiSquatCurve,
+        List<PercentageSample> antiRiseCurve
 ) {
 }

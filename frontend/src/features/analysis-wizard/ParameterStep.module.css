@@ -81,6 +81,10 @@
   outline-offset: 2px;
 }
 
+.select {
+  border-radius: var(--radius-sm);
+}
+
 .input[aria-invalid='true'] {
   border-color: var(--color-danger);
 }

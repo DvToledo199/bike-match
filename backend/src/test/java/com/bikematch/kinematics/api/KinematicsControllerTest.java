@@ -4,6 +4,7 @@ import com.bikematch.config.SecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -110,6 +111,29 @@ class KinematicsControllerTest {
         mockMvc.perform(post("/api/kinematics/preview")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
+                .andExpect(status().isBadRequest());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"FULL_29", "MULLET", "FULL_27_5"})
+    void wheelSelectionReturnsVersionedReferenceCurves(String wheels) throws Exception {
+        String body = VALID_REQUEST.replace("\"sagPercent\": 30",
+                "\"sagPercent\": 30, \"wheelConfiguration\": \"" + wheels + "\"");
+        mockMvc.perform(post("/api/kinematics/preview").contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.conditions.modelVersion").value("monopivot-reference-v2"))
+                .andExpect(jsonPath("$.conditions.reference.wheelConfiguration").value(wheels))
+                .andExpect(jsonPath("$.conditions.reference.centerOfGravityHeightMm").value(1100))
+                .andExpect(jsonPath("$.antiSquatCurve[0].percent").isNumber())
+                .andExpect(jsonPath("$.antiRiseCurve[0].percent").isNumber())
+                .andExpect(jsonPath("$.kickbackCurve[0].kickbackDegrees").value(0));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "\"FULL_26\"", "\"\""})
+    void unsupportedWheelValuesAreNotCoercedToAPreset(String wheels) throws Exception {
+        String body = VALID_REQUEST.replace("\"sagPercent\": 30", "\"sagPercent\": 30, \"wheelConfiguration\": " + wheels);
+        mockMvc.perform(post("/api/kinematics/preview").contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isBadRequest());
     }
 

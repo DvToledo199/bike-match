@@ -165,8 +165,10 @@ No presentar las tres curvas ampliadas como precisión certificada de Linkage.
   condiciones y curvas anti-squat/anti-rise, con tests independientes de Spring.
 - #31 → [PR #111](https://github.com/DvToledo199/bike-match/pull/111): kickback cog-aware;
   implementado, pero issue abierta por el contraste externo pendiente.
-- #109: integración API/selector/gráficas, normalización mullet y documentos
-  sincronizados. El cambio de navegación final se tramita aparte.
+- #109 → [PR #114](https://github.com/DvToledo199/bike-match/pull/114): integración
+  API/selector/gráficas, normalización mullet y documentos sincronizados.
+- #113: retirada del avance inerte en resultados y diseño documentado de la
+  futura ficha #3. No implementa Mis bicis ni la IA.
 
 ## Mejoras futuras, sin implementarlas por adelantado
 

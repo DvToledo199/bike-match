@@ -33,6 +33,28 @@ El endpoint de preview calcula, pero no guarda datos ni la foto.
 
 ## Experiencia de producto V2
 
+### Ficha de bicicleta: orden acordado el 10/09/2026
+
+Desde **Mis bicis → bici X**, o desde el catálogo si es pública, se abre la misma
+ficha de detalle (#3), con este orden:
+
+1. Ruta de navegación y título de la bicicleta.
+2. Foto subida, directamente debajo del título.
+3. Ficha técnica: datos de la bici y condiciones del análisis.
+4. Gráficas disponibles para su versión de motor (incluidas anti-squat y anti-rise
+   de referencia cuando estén calculadas), con inicio/final legibles, no tablas masivas.
+5. Explicación humana general y, cuando se implemente #104/#105, texto de IA.
+
+Se presenta todo en esa pantalla: no pedir otra acción para mostrar resultados ya
+calculados. Las curvas no esperan a la IA; su carga, error o indisponibilidad afectan
+solo al bloque de texto. El usuario debe poder distinguir una explicación fija de
+una generada por IA. La foto y el texto respetan los mismos permisos que la bici.
+
+La eliminación del botón inerte `View results` se entrega ahora en #113; esta ficha,
+el guardado de la foto, Mis bicis y la IA son trabajo futuro de #3/#6/#103–#105,
+no funciones que ya existan por documentarlas. La foto temporal del preview no basta
+para recuperarla al abrir una bicicleta guardada.
+
 ### Visitante
 
 - Puede explorar el catálogo de bicicletas públicas sin iniciar sesión.

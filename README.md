@@ -62,7 +62,7 @@ npm audit
 ```
 
 GitHub Actions ejecuta Java y, por separado, tests/lint/build del frontend. Auditoría
-actualizada el 10 de septiembre: **112 tests Java y 28 frontend**. JaCoCo y la cobertura ≥60%
+actualizada el 10 de septiembre: **112 tests Java y 34 frontend**. JaCoCo y la cobertura ≥60%
 siguen previstos para Sprint 3: el número de tests no acredita ese porcentaje.
 
 ## Organización y contrato

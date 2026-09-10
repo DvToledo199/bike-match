@@ -34,6 +34,6 @@ export function isStepComplete(stepId, wizardData) {
       && getCalibration(wizardData.points, wizardData.parameters.eyeToEyeMm)?.isValid
   }
 
-  // The results step is a placeholder until its own implementation issue.
+  // Results are displayed directly; there is no next step to unlock.
   return true
 }

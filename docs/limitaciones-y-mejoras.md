@@ -129,12 +129,12 @@ GitHub cuando aplica).
   pedal kickback; BikeMatch obtuvo 20,9°. La coincidencia entra holgadamente
   en la tolerancia del ±3 % para recorrido y leverage; el kickback queda como
   validación orientativa por su sensibilidad al marcado.
-- **Acción final duplicada en resultados — aplazada:** al llegar al cuarto paso,
-  sigue visible y desactivado el botón `View results`, aunque los resultados ya
-  están en pantalla. No tiene función en ese estado y puede confundir. Se
-  mantiene sin cambios por ahora: la pantalla de resultados se revisará como
-  conjunto antes de decidir si se elimina, se convierte en otra acción o se
-  cambia su navegación.
+- **Acción final duplicada en resultados — corregida (#113):** David detectó que
+  `View results` no hacía nada y aceptó aplazar su arreglo; no pidió conservarlo.
+  El último paso ya no muestra avance: al calcular aparecen las curvas directamente.
+  Se mantienen volver a parámetros y reintentar en caso de error. La futura ficha
+  #3 agrupará título, foto, datos, gráficas y explicación/IA en la misma pantalla,
+  sin un segundo botón para ver resultados (ver `vision-producto-v2.md`).
 - **Antes de publicar:** configurar secretos, TLS, CORS y límites de tamaño/tasa
   de peticiones, y repetir la revisión de seguridad. El aislamiento local y cero
   avisos conocidos no certifican un despliegue público como seguro.

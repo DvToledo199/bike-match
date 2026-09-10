@@ -128,16 +128,16 @@ function AnalysisWizard() {
         >
           {t('wizard.back')}
         </button>
-        <button
-          type="button"
-          className={styles.primaryButton}
-          onClick={handleNextStep}
-          disabled={isLastStep || !canGoToNextStep || isLoading}
-        >
-          {activeStep.id === 'parameters'
-            ? t('wizard.calculate')
-            : isLastStep ? t('wizard.finish') : t('wizard.next')}
-        </button>
+        {!isLastStep && (
+          <button
+            type="button"
+            className={styles.primaryButton}
+            onClick={handleNextStep}
+            disabled={!canGoToNextStep || isLoading}
+          >
+            {activeStep.id === 'parameters' ? t('wizard.calculate') : t('wizard.next')}
+          </button>
+        )}
       </div>
     </section>
   )

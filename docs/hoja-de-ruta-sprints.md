@@ -84,7 +84,8 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 
 - [ ] Confirmar email de acceso + username público y consolidar #1 dentro de #5
 - [ ] Migraciones: users, bikes, kinematics_results
-- [ ] Antes de cerrar resultados de #6: contrato de interpretación, capacidades y versiones (#103)
+- [x] Antes de cerrar resultados de #6: contrato de interpretación, capacidades y versiones (#103).
+  Ver [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
 - [x] Registro + login con JWT, filtro stateless, respuestas 401/403 y tests (#94)
 - [x] Roles USER/MODERATOR y moderador inicial opcional desde `.env` con hash BCrypt (#94).
   El esquema sigue en Flyway; la cuenta no va en una migración con contraseña. Bicis de

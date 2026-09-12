@@ -135,7 +135,7 @@ Cumple el reparto que pide el enunciado: negocio (1, 2, 4, 5, 7, 8), auth y role
 - **users**: id, email (único), password_hash, role (`USER`/`MODERATOR`), created_at.
 - **bikes**: id, owner_id → users, brand, model, year, category (enum), suspension_type (enum), travel_declared_mm, shock_eye_to_eye_mm, shock_stroke_mm, wheel_size, cassette_type (enum), chainring_teeth, photo_url, status (`PRIVATE` / `PENDING` / `PUBLIC` / `REJECTED`), created_at.
 - **bikes.linkage_points** (jsonb): puntos etiquetados con coordenadas normalizadas + datos de calibración. Es jsonb porque el conjunto de puntos varía según la topología.
-- **kinematics_results**: bike_id (1:1), curves (jsonb: arrays de las curvas), descriptors (jsonb: progresión útil, LR en sag, retroceso del eje, condiciones de medida —sag y desarrollo—, etc.), engine_version, computed_at. Se calcula una vez al crear/editar y se persiste (no recalcular en cada GET). `engine_version` permite recalcular todo si el motor mejora.
+- **kinematics_results**: bike_id (1:1), result_version, curves (jsonb: arrays de las curvas), descriptors (jsonb: progresión útil, LR en sag, retroceso del eje, comprobación de recorrido y condiciones de medida), capabilities (jsonb), engine_version y computed_at. Se calcula una vez al crear/editar y se persiste (no recalcular en cada GET). `engine_version` permite recalcular todo si el motor mejora; el formato exacto y sus límites están en [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
 - **votes**: user_id + bike_id (PK compuesta / unique) → relación **N:M**, created_at.
 - *(stretch)* **comments**.
 

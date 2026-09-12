@@ -1,6 +1,7 @@
 # IA — explicar la cinemática para quien empieza
 
-> Plan acordado el 9 de septiembre de 2026. Épica #10. Planificación, todavía sin
+> Plan acordado el 9 de septiembre de 2026. Épica #10. La planificación del
+> contrato de datos (#103) está cerrada; el servicio y la interfaz siguen sin
 > implementación. Este documento concreta el alcance y prevalece sobre el antiguo
 > plan que dejaba toda la IA como extra posterior al sistema de cuatro barras.
 
@@ -19,7 +20,7 @@ como relación de palanca o sag al usarlos. Las gráficas siguen disponibles y s
 
 | Etapa | Cuándo | Issue |
 |---|---|---|
-| Contrato de datos, límites y ejemplos de explicación | Antes de cerrar la persistencia de #6 | #103 |
+| Contrato de datos, límites y ejemplos de explicación | Completado antes de cerrar la persistencia de #6 | #103 |
 | Servicio que genera y reutiliza el resumen básico | Tras guardado y permisos de #6/#7; Sprint 2 | #104 |
 | Texto sencillo en resultados guardados y detalle | Con #3 y tras #104; cierre de Sprint 2 | #105 |
 | Cuestionario opcional para personalizar la lectura | Después del resumen básico; Sprint 4 | #10, segundo bloque pendiente |
@@ -59,9 +60,11 @@ curvas, descriptores, unidades/convenciones, condiciones, aviso de recorrido y v
 del motor. Las capacidades y limitaciones se identifican por esa versión, para poder
 reconstruir un contexto coherente desde los resultados guardados.
 
-Todavía faltan el contrato de interpretación, el adaptador desde esos resultados,
-el servicio narrativo, su almacenamiento y la presentación. Esto requerirá código
-nuevo; la separación actual permite añadirlo sin rehacer el solver ni las gráficas.
+El contrato de interpretación está en
+[`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
+Todavía faltan el adaptador desde esos resultados, el servicio narrativo, su
+almacenamiento y la presentación. Esto requerirá código nuevo; la separación actual
+permite añadirlo sin rehacer el solver ni las gráficas.
 
 ## Separación de responsabilidades prevista
 
@@ -71,7 +74,8 @@ nuevo; la separación actual permite añadirlo sin rehacer el solver ni las grá
 4. La pantalla muestra el texto y conserva acceso a las gráficas y su evidencia.
 
 El servicio y el adaptador del proveedor vivirán fuera del dominio del motor. El
-contrato de #103 se documentará antes de programarlo. El resumen general se consultará
+contrato de #103 ya fija sus datos, capacidades, privacidad y límites antes de
+programarlo. El resumen general se consultará
 por bicicleta/resultado; el endpoint inicialmente previsto
 `POST /api/bikes/{id}/analysis` queda para la personalización con cuestionario.
 Las rutas y estados HTTP definitivos se cerrarán en #103/#104, sin modificar ahora

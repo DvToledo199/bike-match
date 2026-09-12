@@ -3,7 +3,8 @@
 MVP de un bootcamp Java: foto lateral de una bici → seis puntos → medidas → curvas
 de leverage, kickback, trayectoria del eje, anti-squat y anti-rise de referencia.
 Los descriptores serán entrada de una futura explicación con IA. El backend ya tiene
-registro/login; autorización #94, persistencia de bicis e IA siguen pendientes.
+registro/login JWT y control de acceso por roles; persistencia de bicis e IA siguen
+pendientes.
 
 ## Estado
 
@@ -48,6 +49,41 @@ un volumen PostgreSQL ya inicializado; no borres ese volumen sin proteger sus da
 Si falla la conexión, comprueba Docker y health. El botón de reintento conserva tus
 marcas. Recargar o cerrar la pestaña **sí las pierde**: solo viven en memoria.
 
+## Autenticación y roles
+
+El análisis de una foto es deliberadamente público: una persona puede probar
+BikeMatch sin crear una cuenta, pero no se guarda ni la foto ni el resultado. Registro,
+login, health y `POST /api/kinematics/preview` no requieren token. Las demás rutas
+privadas requieren `Authorization: Bearer <JWT>`.
+
+- Sin token o con un token inválido/caducado: `401 Unauthorized`.
+- Token válido sin el permiso requerido: `403 Forbidden`.
+- Las rutas futuras bajo `/api/moderation/**` exigen `ROLE_MODERATOR`; las de usuario
+  quedan protegidas y los controladores concretos añadirán sus reglas al crearse.
+
+La sesión es *stateless*: el backend no guarda una sesión web. En cada petición
+privada, el filtro verifica firma, caducidad, ID y rol del JWT antes de llegar al
+controlador.
+
+### Moderador inicial local
+
+La cuenta moderadora es opcional. Añade **las tres** variables a tu `.env` local
+ignorando por Git: `INITIAL_MODERATOR_EMAIL`, `INITIAL_MODERATOR_USERNAME` e
+`INITIAL_MODERATOR_PASSWORD_HASH`. El último valor debe ser un hash BCrypt, no una
+contraseña. Con Docker instalado puedes generar uno sin que se muestre la contraseña:
+
+```bash
+docker run --rm -it httpd:2.4-alpine htpasswd -nBC 12 moderator
+```
+
+El comando la solicita de forma oculta y muestra `moderator:$2...`; copia solo la
+parte que empieza por `$2` como `INITIAL_MODERATOR_PASSWORD_HASH`. Al arrancar, la
+aplicación crea la cuenta si no existe. Con las tres variables vacías no hace nada;
+una configuración incompleta, un hash que no sea BCrypt o un conflicto con otra cuenta
+detienen el arranque para no crear una cuenta insegura ni promocionar a alguien por
+accidente. El esquema sigue perteneciendo a Flyway: esto es un dato inicial local, no
+una contraseña dentro de una migración versionada.
+
 ## Pruebas
 
 ```bash
@@ -62,7 +98,7 @@ npm audit
 ```
 
 GitHub Actions ejecuta Java y, por separado, tests/lint/build del frontend. Auditoría
-actualizada el 10 de septiembre: **112 tests Java y 34 frontend**. JaCoCo y la cobertura ≥60%
+actualizada el 12 de septiembre: **124 tests Java y 34 frontend**. JaCoCo y la cobertura ≥60%
 siguen previstos para Sprint 3: el número de tests no acredita ese porcentaje.
 
 ## Organización y contrato

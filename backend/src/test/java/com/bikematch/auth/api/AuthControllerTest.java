@@ -5,7 +5,11 @@ import com.bikematch.auth.AccountAlreadyExistsException;
 import com.bikematch.auth.InvalidCredentialsException;
 import com.bikematch.auth.LoginService;
 import com.bikematch.auth.RegistrationService;
+import com.bikematch.auth.JwtAuthenticationFilter;
+import com.bikematch.auth.JwtService;
 import com.bikematch.config.SecurityConfig;
+import com.bikematch.config.RestAccessDeniedHandler;
+import com.bikematch.config.RestAuthenticationEntryPoint;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -25,7 +29,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthController.class)
-@Import({ApiExceptionHandler.class, SecurityConfig.class})
+@Import({
+        ApiExceptionHandler.class,
+        SecurityConfig.class,
+        JwtAuthenticationFilter.class,
+        RestAuthenticationEntryPoint.class,
+        RestAccessDeniedHandler.class
+})
 class AuthControllerTest {
 
     private static final String VALID_REQUEST = """
@@ -51,6 +61,9 @@ class AuthControllerTest {
 
     @MockitoBean
     private LoginService loginService;
+
+    @MockitoBean
+    private JwtService jwtService;
 
     @Test
     void validRegistrationReturns201AndOnlyPublicData() throws Exception {

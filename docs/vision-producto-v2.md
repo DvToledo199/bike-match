@@ -140,7 +140,9 @@ David implementará el backend con acompañamiento, una tarea pequeña cada vez:
 2. Migración versionada de `users`, entidad y repositorio.
 3. Registro con validaciones, BCrypt y tests.
 4. Login y JWT, seguido de rutas protegidas y tests 401/403.
-5. Roles y usuario moderador inicial mediante Flyway.
+5. Roles y usuario moderador inicial desde variables locales ignoradas por Git, con
+   hash BCrypt. Flyway continúa siendo el dueño exclusivo del **esquema**; una cuenta
+   con contraseña no se versiona como una migración SQL.
 6. Migraciones de `bikes` y `kinematics_results`.
    Antes de cerrarlas, definir en #103 los datos y versiones que necesita la explicación.
 7. Crear y guardar una bicicleta reutilizando el motor de la V1.

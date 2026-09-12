@@ -164,7 +164,9 @@ Relaciones que pide el enunciado: 1:N (users→bikes, bikes→results) y N:M (vo
 
 ## 8. Contrato API inicial (borrador)
 
-- `POST /api/auth/register` · `POST /api/auth/login` → JWT
+- `POST /api/auth/register` · `POST /api/auth/login` → JWT; el filtro stateless de
+  #94 valida firma, caducidad, ID y rol. Sin token/inválido = 401; permiso insuficiente
+  = 403. `POST /api/kinematics/preview` permanece público para modo invitado.
 - `GET /api/bikes?category=&sort=votes&page=` (públicas y aprobadas) · `GET /api/bikes/{id}`
 - `GET /api/my-bikes` (auth)
 - `POST /api/bikes` (auth; metadatos) · `POST /api/bikes/{id}/photo` (multipart → Cloudinary)

@@ -85,8 +85,10 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [ ] Confirmar email de acceso + username público y consolidar #1 dentro de #5
 - [ ] Migraciones: users, bikes, kinematics_results
 - [ ] Antes de cerrar resultados de #6: contrato de interpretación, capacidades y versiones (#103)
-- [ ] Registro + login con JWT (Spring Security 6) + tests
-- [ ] Roles USER/MODERATOR + seed por migración del moderador (tu cuenta) y 2–3 bicis de muestra
+- [x] Registro + login con JWT, filtro stateless, respuestas 401/403 y tests (#94)
+- [x] Roles USER/MODERATOR y moderador inicial opcional desde `.env` con hash BCrypt (#94).
+  El esquema sigue en Flyway; la cuenta no va en una migración con contraseña. Bicis de
+  muestra quedan para la issue de creación/catálogo.
 - [ ] Crear bici: metadatos + foto a Cloudinary + guardar puntos + persistir resultados del motor
 - [ ] "Mis bicis" (privadas) y detalle de bici con gráficas y números
 - [ ] Catálogo público (solo aprobadas) con filtro por categoría y paginación

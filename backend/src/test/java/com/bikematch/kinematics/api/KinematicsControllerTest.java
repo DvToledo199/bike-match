@@ -1,6 +1,10 @@
 package com.bikematch.kinematics.api;
 
 import com.bikematch.config.SecurityConfig;
+import com.bikematch.config.RestAccessDeniedHandler;
+import com.bikematch.config.RestAuthenticationEntryPoint;
+import com.bikematch.auth.JwtAuthenticationFilter;
+import com.bikematch.auth.JwtService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -23,11 +27,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * paths handled by {@link ApiExceptionHandler} (@Valid rejection and a missing engine point).
  */
 @WebMvcTest(KinematicsController.class)
-@Import({KinematicsService.class, SecurityConfig.class})
+@Import({
+        KinematicsService.class,
+        SecurityConfig.class,
+        JwtAuthenticationFilter.class,
+        RestAuthenticationEntryPoint.class,
+        RestAccessDeniedHandler.class
+})
 class KinematicsControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private JwtService jwtService;
 
     private static final String VALID_REQUEST = """
             {

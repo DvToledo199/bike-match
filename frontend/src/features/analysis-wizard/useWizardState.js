@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 const initialWizardData = {
   photo: null,
-  suspensionType: null,
+  suspensionLayout: null,
   points: {},
   parameters: {
     eyeToEyeMm: '',

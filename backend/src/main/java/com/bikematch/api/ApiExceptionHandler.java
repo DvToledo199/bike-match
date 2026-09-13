@@ -2,6 +2,7 @@ package com.bikematch.api;
 
 import com.bikematch.auth.AccountAlreadyExistsException;
 import com.bikematch.auth.InvalidCredentialsException;
+import com.bikematch.user.CurrentUserNotFoundException;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -46,6 +47,16 @@ public class ApiExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     public ProblemDetail handleInvalidCredentials(
             InvalidCredentialsException exception
+    ) {
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler(CurrentUserNotFoundException.class)
+    public ProblemDetail handleCurrentUserNotFound(
+            CurrentUserNotFoundException exception
     ) {
         return ProblemDetail.forStatusAndDetail(
                 HttpStatus.UNAUTHORIZED,

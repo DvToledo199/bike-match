@@ -29,10 +29,12 @@ class BikeRepositoryTest {
     void savesABikeAndItsCurrentKinematicsResult() {
         User owner = userRepository.saveAndFlush(new User(
                 "bike-owner@example.com", "bikeowner", "password-hash", Role.USER));
-        Bike bike = bikeRepository.saveAndFlush(new Bike(
-                owner, "Orange", "Stage 6", (short) 2020, "ENDURO", "MONOPIVOT",
-                150, 230, 65, WheelConfiguration.FULL_29, CassetteType.TWELVE_SPEED,
-                (short) 32, (short) 50, 30));
+        BikeDetails details = new BikeDetails(
+                "Orange", "Stage 6", (short) 2020, BikeCategory.ENDURO,
+                SuspensionLayout.SINGLE_PIVOT, 150, 230, 65,
+                WheelConfiguration.FULL_29, CassetteType.TWELVE_SPEED,
+                (short) 32, (short) 50, 30);
+        Bike bike = bikeRepository.saveAndFlush(Bike.createPrivate(owner, details));
 
         KinematicsResult result = resultRepository.saveAndFlush(new KinematicsResult(
                 bike, 1, "monopivot-reference-v2", "{\"leverageCurve\":[]}",

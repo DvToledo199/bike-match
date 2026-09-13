@@ -28,8 +28,10 @@ La V1 local ya permite subir una foto, marcar una monopivote, introducir paráme
 llamar al motor Java y mostrar curvas y descriptores. La prueba manual con una Orange
 Stage 6 29'' 2020 quedó validada contra Linkage Design en la issue #54.
 
-La V1 no tiene todavía cuentas, persistencia de bicicletas, catálogo ni publicación.
-El endpoint de preview calcula, pero no guarda datos ni la foto.
+La V1 no incluía cuentas, persistencia de bicicletas, catálogo ni publicación. El
+Sprint 2 ya ha añadido el registro/login y el backend para crear una bicicleta privada
+y asociarle una foto alojada en Cloudinary. La interfaz todavía no usa ese flujo y el
+endpoint de preview sigue sin guardar los puntos ni los resultados.
 
 ## Experiencia de producto V2
 
@@ -50,10 +52,10 @@ calculados. Las curvas no esperan a la IA; su carga, error o indisponibilidad af
 solo al bloque de texto. El usuario debe poder distinguir una explicación fija de
 una generada por IA. La foto y el texto respetan los mismos permisos que la bici.
 
-La eliminación del botón inerte `View results` se entrega ahora en #113; esta ficha,
-el guardado de la foto, Mis bicis y la IA son trabajo futuro de #3/#6/#103–#105,
-no funciones que ya existan por documentarlas. La foto temporal del preview no basta
-para recuperarla al abrir una bicicleta guardada.
+La eliminación del botón inerte `View results` se entregó en #113. El guardado de la
+foto se incorpora en #124; la ficha, Mis bicis y la IA continúan como trabajo de
+#3/#6/#103–#105, no como funciones que ya existan por documentarlas. La foto temporal
+del preview no basta para recuperarla al abrir una bicicleta guardada.
 
 ### Visitante
 

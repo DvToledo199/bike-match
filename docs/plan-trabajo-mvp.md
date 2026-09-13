@@ -46,6 +46,12 @@ Marca, modelo, año, categoría (Enduro / e-Enduro / DH), diseño del sistema de
 ### 1.6 Almacenamiento de fotos
 **Cloudinary (free tier) desde el principio.** Motivo práctico: los despliegues gratuitos (Render/Railway/Fly) tienen **filesystem efímero: las fotos guardadas en disco desaparecen en cada redeploy**. Además cuenta como integración externa de nivel 3.
 
+Implementación de #124: el backend recibe `multipart/form-data` en
+`POST /api/bikes/{id}/photo`, comprueba propietario, tamaño y formato, y sube el archivo
+con credenciales privadas desde `CLOUDINARY_URL`. PostgreSQL guarda únicamente la URL
+HTTPS devuelta. El navegador nunca recibe el secreto de Cloudinary. Una nueva foto usa
+el mismo identificador remoto de la bici y sustituye la anterior.
+
 ---
 
 ## 2. Checklist de requisitos del enunciado

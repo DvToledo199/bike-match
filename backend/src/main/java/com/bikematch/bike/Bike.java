@@ -1,9 +1,9 @@
 package com.bikematch.bike;
 
-import com.bikematch.user.User;
 import com.bikematch.kinematics.model.WheelConfiguration;
-import jakarta.persistence.Entity;
+import com.bikematch.user.User;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.Objects;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -37,10 +38,12 @@ public class Bike {
     @Column(name = "model_year")
     private Short modelYear;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private BikeCategory category;
 
-    @Column(name = "suspension_type")
-    private String suspensionType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "suspension_layout")
+    private SuspensionLayout suspensionLayout;
 
     @Column(name = "declared_travel_mm")
     private double declaredTravelMm;
@@ -87,26 +90,27 @@ public class Bike {
     protected Bike() {
     }
 
-    public Bike(User owner, String brand, String model, Short modelYear, String category,
-                String suspensionType, double declaredTravelMm, double shockEyeToEyeMm,
-                double shockStrokeMm, WheelConfiguration wheelConfiguration, CassetteType cassetteType,
-                short chainringTeeth, short sprocketTeeth, double sagPercent) {
-        this.owner = owner;
-        this.brand = brand;
-        this.model = model;
-        this.modelYear = modelYear;
-        this.category = category;
-        this.suspensionType = suspensionType;
-        this.declaredTravelMm = declaredTravelMm;
-        this.shockEyeToEyeMm = shockEyeToEyeMm;
-        this.shockStrokeMm = shockStrokeMm;
-        this.wheelConfiguration = wheelConfiguration;
-        this.cassetteType = cassetteType;
-        this.chainringTeeth = chainringTeeth;
-        this.sprocketTeeth = sprocketTeeth;
-        this.sagPercent = sagPercent;
+    private Bike(User owner, BikeDetails details) {
+        this.owner = Objects.requireNonNull(owner, "Owner is required");
+        this.brand = details.brand();
+        this.model = details.model();
+        this.modelYear = details.modelYear();
+        this.category = details.category();
+        this.suspensionLayout = details.suspensionLayout();
+        this.declaredTravelMm = details.declaredTravelMm();
+        this.shockEyeToEyeMm = details.shockEyeToEyeMm();
+        this.shockStrokeMm = details.shockStrokeMm();
+        this.wheelConfiguration = details.wheelConfiguration();
+        this.cassetteType = details.cassetteType();
+        this.chainringTeeth = details.chainringTeeth();
+        this.sprocketTeeth = details.sprocketTeeth();
+        this.sagPercent = details.sagPercent();
         this.status = BikeStatus.PRIVATE;
         this.createdAt = Instant.now();
+    }
+
+    public static Bike createPrivate(User owner, BikeDetails details) {
+        return new Bike(owner, Objects.requireNonNull(details, "Bike details are required"));
     }
 
     public Long getId() {
@@ -115,6 +119,26 @@ public class Bike {
 
     public User getOwner() {
         return owner;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public Short getModelYear() {
+        return modelYear;
+    }
+
+    public BikeCategory getCategory() {
+        return category;
+    }
+
+    public SuspensionLayout getSuspensionLayout() {
+        return suspensionLayout;
     }
 
     public BikeStatus getStatus() {

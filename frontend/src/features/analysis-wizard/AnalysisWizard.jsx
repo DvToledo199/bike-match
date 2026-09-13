@@ -80,7 +80,7 @@ function AnalysisWizard() {
         {activeStep.id === 'photo' ? (
           <PhotoStep
             photo={wizardData.photo}
-            suspensionType={wizardData.suspensionType}
+            suspensionLayout={wizardData.suspensionLayout}
             updateWizardData={updateWizardData}
           />
         ) : activeStep.id === 'marking' ? (

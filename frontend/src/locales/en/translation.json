@@ -21,9 +21,9 @@
       "previewAlt": "Preview of {{fileName}}",
       "dimensions": "{{width}} × {{height}} px",
       "lowResolutionWarning": "This image is smaller than {{minimumPixels}} px on its longest side. Use a larger photo if possible: small images make the marking less reliable.",
-      "suspensionLegend": "Suspension type",
+      "suspensionLegend": "Suspension layout",
       "suspensionHelp": "For simple single pivots with a direct chain and a brake fixed to the swingarm. Idlers, floating brakes and other linkages are not supported.",
-      "suspensionTypes": {
+      "suspensionLayouts": {
         "singlePivot": "Single pivot",
         "fourBar": "Four-bar / Horst link",
         "dualLink": "Dual link / virtual pivot"

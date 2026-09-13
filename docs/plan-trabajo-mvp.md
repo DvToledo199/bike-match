@@ -26,7 +26,7 @@ El usuario marca puntos en píxeles sobre la foto; el motor necesita distancias 
 - **Sanity check integrado:** el motor calcula el recorrido trasero; si difiere mucho del recorrido declarado por el usuario (>±10%), avisar de que los puntos o la calibración están mal. Esto convierte un punto débil (precisión del marcado) en una funcionalidad de calidad.
 
 ### 1.3 Datos mínimos a pedir por bici
-Marca, modelo, año, categoría (Enduro / e-Enduro / DH), tipo de suspensión, recorrido trasero declarado (mm), medidas del amortiguador (eye-to-eye y carrera, p. ej. 230×65), tamaño de rueda, tipo de cassette (12v / DH 7-8v) con plato por defecto asociado (32/36, editable) — el motor elige internamente el piñón de cálculo del kickback —, foto lateral. **Opcional:** tabla de geometría.
+Marca, modelo, año, categoría (Enduro / e-Enduro / DH), diseño del sistema de suspensión, recorrido trasero declarado (mm), medidas del amortiguador (eye-to-eye y carrera, p. ej. 230×65), tamaño de rueda, tipo de cassette (12v / DH 7-8v) con plato por defecto asociado (32/36, editable) — el motor elige internamente el piñón de cálculo del kickback —, foto lateral. **Opcional:** tabla de geometría.
 
 ### 1.4 Stack y versiones (evitar problemas de compatibilidad)
 - **Java 21 LTS + Spring Boot 3.x** (la versión que uses en el curso; no mezclar con tutoriales de Boot 2: los imports son `jakarta.*`, no `javax.*`).
@@ -133,7 +133,7 @@ Cumple el reparto que pide el enunciado: negocio (1, 2, 4, 5, 7, 8), auth y role
 ## 6. Modelo de datos (borrador)
 
 - **users**: id, email (único), password_hash, role (`USER`/`MODERATOR`), created_at.
-- **bikes**: id, owner_id → users, brand, model, year, category (enum), suspension_type (enum), travel_declared_mm, shock_eye_to_eye_mm, shock_stroke_mm, wheel_size, cassette_type (enum), chainring_teeth, photo_url, status (`PRIVATE` / `PENDING` / `PUBLIC` / `REJECTED`), created_at.
+- **bikes**: id, owner_id → users, brand, model, year, category (enum), suspension_layout (enum), travel_declared_mm, shock_eye_to_eye_mm, shock_stroke_mm, wheel_size, cassette_type (enum), chainring_teeth, photo_url, status (`PRIVATE` / `PENDING` / `PUBLIC` / `REJECTED`), created_at.
 - **bikes.linkage_points** (jsonb): puntos etiquetados con coordenadas normalizadas + datos de calibración. Es jsonb porque el conjunto de puntos varía según la topología.
 - **kinematics_results**: bike_id (1:1), result_version, curves (jsonb: arrays de las curvas), descriptors (jsonb: progresión útil, LR en sag, retroceso del eje, comprobación de recorrido y condiciones de medida), capabilities (jsonb), engine_version y computed_at. Se calcula una vez al crear/editar y se persiste (no recalcular en cada GET). `engine_version` permite recalcular todo si el motor mejora; el formato exacto y sus límites están en [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
 - **votes**: user_id + bike_id (PK compuesta / unique) → relación **N:M**, created_at.

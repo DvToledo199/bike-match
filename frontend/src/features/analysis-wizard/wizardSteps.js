@@ -22,7 +22,7 @@ export const wizardSteps = [
 
 export function isStepComplete(stepId, wizardData) {
   if (stepId === 'photo') {
-    return Boolean(wizardData.photo && wizardData.suspensionType)
+    return Boolean(wizardData.photo && wizardData.suspensionLayout)
   }
 
   if (stepId === 'marking') {

@@ -101,7 +101,7 @@
   color: var(--color-text);
 }
 
-.suspensionTypes {
+.suspensionLayouts {
   display: grid;
   gap: var(--space-sm);
   margin: 0;

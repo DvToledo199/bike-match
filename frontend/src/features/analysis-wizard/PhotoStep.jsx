@@ -31,7 +31,7 @@ function readImageDimensions(imageUrl) {
   })
 }
 
-function PhotoStep({ photo, suspensionType, updateWizardData }) {
+function PhotoStep({ photo, suspensionLayout, updateWizardData }) {
   const { t } = useTranslation()
   const [error, setError] = useState('')
   const inputRef = useRef(null)
@@ -77,8 +77,8 @@ function PhotoStep({ photo, suspensionType, updateWizardData }) {
     }
   }
 
-  function handleSuspensionTypeChange(event) {
-    updateWizardData({ suspensionType: event.target.value })
+  function handleSuspensionLayoutChange(event) {
+    updateWizardData({ suspensionLayout: event.target.value })
   }
 
   const longestSidePixels = photo ? Math.max(photo.width, photo.height) : 0
@@ -131,27 +131,27 @@ function PhotoStep({ photo, suspensionType, updateWizardData }) {
         </div>
       )}
 
-      <fieldset className={styles.suspensionTypes}>
+      <fieldset className={styles.suspensionLayouts}>
         <legend className={styles.legend}>{t('wizard.photo.suspensionLegend')}</legend>
         <p className={styles.helpText}>{t('wizard.photo.suspensionHelp')}</p>
         <label className={styles.suspensionOption}>
           <input
             type="radio"
-            name="suspension-type"
+            name="suspension-layout"
             value="SINGLE_PIVOT"
-            checked={suspensionType === 'SINGLE_PIVOT'}
-            onChange={handleSuspensionTypeChange}
+            checked={suspensionLayout === 'SINGLE_PIVOT'}
+            onChange={handleSuspensionLayoutChange}
           />
-          <span>{t('wizard.photo.suspensionTypes.singlePivot')}</span>
+          <span>{t('wizard.photo.suspensionLayouts.singlePivot')}</span>
         </label>
         <label className={`${styles.suspensionOption} ${styles.unavailable}`}>
-          <input type="radio" name="suspension-type" disabled />
-          <span>{t('wizard.photo.suspensionTypes.fourBar')}</span>
+          <input type="radio" name="suspension-layout" disabled />
+          <span>{t('wizard.photo.suspensionLayouts.fourBar')}</span>
           <span className={styles.comingSoon}>{t('wizard.photo.comingSoon')}</span>
         </label>
         <label className={`${styles.suspensionOption} ${styles.unavailable}`}>
-          <input type="radio" name="suspension-type" disabled />
-          <span>{t('wizard.photo.suspensionTypes.dualLink')}</span>
+          <input type="radio" name="suspension-layout" disabled />
+          <span>{t('wizard.photo.suspensionLayouts.dualLink')}</span>
           <span className={styles.comingSoon}>{t('wizard.photo.comingSoon')}</span>
         </label>
       </fieldset>

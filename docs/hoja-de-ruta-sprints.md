@@ -65,7 +65,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [x] Descriptores desde el punto de sag (progresión útil, LR en sag, retroceso del eje…) + clasificación por reglas ("progresiva/lineal…") + tests
 - [x] Sanity check: recorrido calculado vs. declarado → aviso si difiere >10%
 - [x] Endpoint `POST /api/kinematics/preview` (sin BD): recibe puntos + calibración + parámetros, devuelve curvas y descriptores + test de aceptación
-- [x] Front (IA): pantalla de subir foto, marcarla con puntos guiados según tipo de suspensión, e inputs de calibración (eye-to-eye)
+- [x] Front (IA): pantalla de subir foto, marcarla con puntos guiados según el diseño del sistema de suspensión, e inputs de calibración (eye-to-eye)
 - [x] Front (IA): gráficas de las curvas que devuelve el endpoint
 - [x] Demo completa con tu foto real (Orange Stage 6, issue #54)
 

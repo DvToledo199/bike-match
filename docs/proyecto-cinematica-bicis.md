@@ -103,7 +103,7 @@ reutilización y límites en [`plan-ia-explicacion.md`](plan-ia-explicacion.md).
 ### Onboarding (guiar al usuario a marcar los puntos)
 
 - Al crear una bici, se muestra un **esquema sencillo y una explicación breve de cada pivote** (por ejemplo, orientar sobre dónde suele estar el punto de giro principal), para el usuario que tiene interés pero no es experto.
-- **Primero se pregunta el tipo de suspensión** (con ejemplos visuales) y, según el sistema elegido, se guía al usuario a marcar los puntos que corresponden a ese sistema concreto.
+- **Primero se pregunta el diseño del sistema de suspensión** (con ejemplos visuales) y, según el sistema elegido, se guía al usuario a marcar los puntos que corresponden a ese sistema concreto.
 
 ---
 

@@ -6,6 +6,7 @@ import com.bikematch.kinematics.model.WheelConfiguration;
 import com.bikematch.user.Role;
 import com.bikematch.user.User;
 import com.bikematch.user.UserRepository;
+import java.net.URI;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -35,6 +36,9 @@ class BikeRepositoryTest {
                 WheelConfiguration.FULL_29, CassetteType.TWELVE_SPEED,
                 (short) 32, (short) 50, 30);
         Bike bike = bikeRepository.saveAndFlush(Bike.createPrivate(owner, details));
+        bike.attachPhoto(URI.create(
+                "https://res.cloudinary.com/demo/image/upload/bikematch/bikes/7.jpg"));
+        bikeRepository.saveAndFlush(bike);
 
         KinematicsResult result = resultRepository.saveAndFlush(new KinematicsResult(
                 bike, 1, "monopivot-reference-v2", "{\"leverageCurve\":[]}",
@@ -47,6 +51,8 @@ class BikeRepositoryTest {
                 .contains(result);
         assertThat(result.getEngineVersion()).isEqualTo("monopivot-reference-v2");
         assertThat(bike.getStatus()).isEqualTo(BikeStatus.PRIVATE);
+        assertThat(bike.getPhotoUrl()).isEqualTo(
+                "https://res.cloudinary.com/demo/image/upload/bikematch/bikes/7.jpg");
         assertThat(bike.getKinematicsResult()).isSameAs(result);
     }
 }

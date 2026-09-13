@@ -2,6 +2,9 @@ package com.bikematch.api;
 
 import com.bikematch.auth.AccountAlreadyExistsException;
 import com.bikematch.auth.InvalidCredentialsException;
+import com.bikematch.bike.BikeNotFoundException;
+import com.bikematch.bike.InvalidBikePhotoException;
+import com.bikematch.media.ImageStorageException;
 import com.bikematch.user.CurrentUserNotFoundException;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
@@ -10,6 +13,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
@@ -62,5 +67,34 @@ public class ApiExceptionHandler {
                 HttpStatus.UNAUTHORIZED,
                 exception.getMessage()
         );
+    }
+
+    @ExceptionHandler(BikeNotFoundException.class)
+    public ProblemDetail handleBikeNotFound(BikeNotFoundException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+    }
+
+    @ExceptionHandler(InvalidBikePhotoException.class)
+    public ProblemDetail handleInvalidBikePhoto(InvalidBikePhotoException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ProblemDetail handleOversizedPhoto() {
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.PAYLOAD_TOO_LARGE,
+                "Photo must not exceed 10 MB");
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ProblemDetail handleMissingRequestPart(MissingServletRequestPartException exception) {
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "Missing request part: " + exception.getRequestPartName());
+    }
+
+    @ExceptionHandler(ImageStorageException.class)
+    public ProblemDetail handleImageStorage(ImageStorageException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, exception.getMessage());
     }
 }

@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.net.URI;
 import java.time.Instant;
 import java.util.Objects;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -143,6 +144,21 @@ public class Bike {
 
     public BikeStatus getStatus() {
         return status;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void attachPhoto(URI photoUri) {
+        Objects.requireNonNull(photoUri, "Photo URI is required");
+        String value = photoUri.toString();
+        if (!"https".equalsIgnoreCase(photoUri.getScheme())
+                || photoUri.getHost() == null
+                || value.length() > 2048) {
+            throw new IllegalArgumentException("Photo URI must be a valid HTTPS address");
+        }
+        this.photoUrl = value;
     }
 
     public KinematicsResult getKinematicsResult() {

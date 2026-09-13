@@ -83,14 +83,16 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [ ] Contraste externo con coordenadas/CG/ruedas/marcha conocidos (#31)
 
 - [ ] Confirmar email de acceso + username público y consolidar #1 dentro de #5
-- [ ] Migraciones: users, bikes, kinematics_results
+- [x] Migraciones: users, bikes, kinematics_results (#92, #118)
 - [x] Antes de cerrar resultados de #6: contrato de interpretación, capacidades y versiones (#103).
   Ver [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
 - [x] Registro + login con JWT, filtro stateless, respuestas 401/403 y tests (#94)
 - [x] Roles USER/MODERATOR y moderador inicial opcional desde `.env` con hash BCrypt (#94).
   El esquema sigue en Flyway; la cuenta no va en una migración con contraseña. Bicis de
   muestra quedan para la issue de creación/catálogo.
-- [ ] Crear bici: metadatos + foto a Cloudinary + guardar puntos + persistir resultados del motor
+- [x] Crear una bici privada y guardar sus metadatos (#122)
+- [x] Subir su foto a Cloudinary y guardar la URL con control de propietario (#124)
+- [ ] Guardar los puntos marcados y persistir los resultados del motor
 - [ ] "Mis bicis" (privadas) y detalle de bici con gráficas y números
 - [ ] Catálogo público (solo aprobadas) con filtro por categoría y paginación
 - [ ] Swagger al día, con la autenticación documentada

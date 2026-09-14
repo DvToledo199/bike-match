@@ -2,9 +2,9 @@
 
 MVP de un bootcamp Java: foto lateral de una bici → seis puntos → medidas → curvas
 de leverage, kickback, trayectoria del eje, anti-squat y anti-rise de referencia.
-Los descriptores serán entrada de una futura explicación con IA. El backend ya tiene
+Los descriptores alimentan una explicación breve y controlada. El backend ya tiene
 registro/login JWT, control de acceso por roles y persistencia de bicicletas, fotos,
-puntos y resultados. La interfaz de producto y la explicación con IA siguen pendientes.
+puntos, resultados e interpretaciones.
 
 ## Estado
 
@@ -138,6 +138,24 @@ sin iniciar sesión; una bici `PRIVATE`, `PENDING` o `REJECTED` solo se devuelve
 propietario autenticado. La respuesta incluye la foto, los metadatos, el username público
 del propietario y el resultado guardado con sus curvas, descriptores y capacidades. No
 devuelve los puntos internos de marcado, el correo ni ningún dato de autenticación.
+
+La explicación básica se genera y se reutiliza desde el backend. `POST
+/api/bikes/{id}/interpretation?language=en` solo lo puede pedir el propietario de la
+bici y devuelve un resumen junto con 2–4 cifras que lo respaldan. `GET
+/api/bikes/{id}/interpretation?language=en` permite leer una explicación ya guardada
+si la bici es pública o si quien consulta es su propietario; una visita pública no
+genera una llamada al proveedor. El modo predeterminado es `rules`, determinista y sin
+coste externo. Gemini se activa únicamente con `INTERPRETATION_PROVIDER=gemini`,
+`GEMINI_API_KEY` y `GEMINI_MODEL` en el entorno del backend; si falla, se guarda una
+explicación por reglas identificada como `source=RULES`. No se envían foto, puntos,
+correo, contraseña ni perfil personal al proveedor.
+
+La caché se versiona por resultado, contexto, reglas, idioma, proveedor y prompt. Las
+peticiones que tendrían que llamar al proveedor tienen además un enfriamiento local
+configurable (`INTERPRETATION_GENERATION_COOLDOWN`, 30 segundos por defecto); el
+resumen y el contexto tienen límites de tamaño y la respuesta externa se valida como
+texto plano con evidencias conocidas. El límite local deberá sustituirse por una
+cuota compartida si el backend se despliega en varias instancias.
 
 `GET /api/bikes?page=0&category=ENDURO` es el catálogo público. No necesita JWT, solo
 devuelve bicicletas `PUBLIC` y responde con páginas de 12 tarjetas (`items`, `page`,

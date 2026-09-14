@@ -106,7 +106,10 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
   - [x] Registro/login y sesión frontend (#138, #140, #142)
   - [x] Mis bicis y solicitud de publicación (#144, #146)
   - [x] Ficha de bici con foto, metadatos y gráficas guardadas (#150)
-- [ ] Servicio de explicación básica sin cuestionario: reutilización, límites, privacidad y recuperación de errores (#104)
+- [x] Servicio de explicación básica sin cuestionario: reutilización, límites, privacidad y recuperación de errores (#104)
+  - [x] Proveedor determinista por reglas como modo local y fallback
+  - [x] Adaptador opcional de Gemini sin dependencia nueva, con clave solo en servidor
+  - [x] Caché versionada, permisos de lectura/generación y límite de peticiones MVP
 - [ ] Texto sencillo junto a las gráficas del resultado guardado/detalle y prueba de comprensión (#105)
 
 **Hecho cuando:** en la URL pública alguien se registra, crea una bici y la ve en

@@ -1,8 +1,9 @@
 # IA — explicar la cinemática para quien empieza
 
 > Plan acordado el 9 de septiembre de 2026 y revisado el 14 de septiembre. Épica #10.
-> El contrato de datos (#103) y la persistencia numérica están cerrados; el servicio y la interfaz siguen sin
-> implementación. Este documento concreta el alcance y prevalece sobre el antiguo
+> El contrato de datos (#103), la persistencia numérica y el servicio de interpretación
+> (#104) están cerrados; la integración visual queda en #105. Este documento concreta
+> el alcance y prevalece sobre el antiguo
 > plan que dejaba toda la IA como extra posterior al sistema de cuatro barras.
 
 ## Objetivo de producto
@@ -21,7 +22,7 @@ como relación de palanca o sag al usarlos. Las gráficas siguen disponibles y s
 | Etapa | Cuándo | Issue |
 |---|---|---|
 | Contrato de datos, límites y ejemplos de explicación | Completado antes de cerrar la persistencia de #6 | #103 |
-| Servicio que genera y reutiliza el resumen básico | Tras guardado y permisos de #6/#7; Sprint 2 | #104 |
+| Servicio que genera y reutiliza el resumen básico | Completado: reglas + proveedor Gemini opcional, caché y fallback | #104 |
 | Texto sencillo en resultados guardados y detalle | Con #3 y tras #104; cierre de Sprint 2 | #105 |
 | Cuestionario opcional para personalizar la lectura | Después del resumen básico; Sprint 4 | #10, segundo bloque pendiente |
 | Chat y evaluación de una posible modalidad de pago | Futuro, sin decisión comercial cerrada | #106 |
@@ -62,9 +63,10 @@ pueda reconstruirse un contexto coherente desde los resultados guardados.
 
 El contrato de interpretación está en
 [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
-Todavía faltan el adaptador desde esos resultados, el servicio narrativo, su
-almacenamiento y la presentación. Esto requerirá código nuevo; la separación actual
-permite añadirlo sin rehacer el solver ni las gráficas.
+El adaptador desde esos resultados, el servicio narrativo y su almacenamiento ya están
+implementados en #104. Falta la presentación en el detalle de la bici y la prueba de
+comprensión de #105. Esta separación permite cambiar el proveedor sin rehacer el solver
+ni las gráficas.
 
 ## Separación de responsabilidades prevista
 
@@ -79,8 +81,10 @@ programarlo. El resumen general se consultará
 por bicicleta/resultado. `POST /api/bikes/{id}/analysis` finaliza y guarda el análisis
 numérico; la futura personalización con cuestionario reservará una ruta distinta, como
 `POST /api/bikes/{id}/interpretation`.
-Las rutas y estados HTTP de la interpretación se cerrarán en #104, sin modificar
-el contrato público de `POST /api/kinematics/preview` ni el guardado numérico.
+Las rutas de #104 son `POST /api/bikes/{id}/interpretation?language=en` para que el
+propietario genere o reutilice la explicación y `GET /api/bikes/{id}/interpretation?language=en`
+para leer la caché si tiene permiso. No se modifica el contrato público de
+`POST /api/kinematics/preview` ni el guardado numérico.
 
 ## Límites que el contexto debe expresar
 
@@ -113,19 +117,24 @@ explicación generada sea correcta.
 
 ## Coste, privacidad y disponibilidad
 
-- Elegir proveedor/modelo y comprobar compatibilidad, coste, cuotas y tratamiento de
-  datos en #104. Spring AI sigue siendo candidato; no se añade ninguna dependencia
-  ahora ni se cambia Spring Boot para acomodarla. No se promete IA gratuita ilimitada.
+- El proveedor por defecto es `rules`: funciona sin red ni coste y sirve para desarrollo
+  y fallback. Gemini es opcional mediante `INTERPRETATION_PROVIDER=gemini`,
+  `GEMINI_API_KEY` y `GEMINI_MODEL`; se llama desde el backend con la clave fuera del
+  repositorio. No se añade Spring AI ni se cambia Spring Boot. No se promete IA gratuita
+  ilimitada: las cuotas y el precio dependen del proveedor/modelo elegido.
 - El resumen básico no exige peso ni cuestionario. No se envían correo, contraseña,
   foto ni datos personales para explicar los resultados geométricos.
 - Guardar o cachear la explicación por versión del resultado, del contexto, de las
-  reglas/prompt y por idioma; invalidarla cuando cambien. Agrupar solicitudes
-  simultáneas evita pagar varias veces por el mismo resumen.
+  reglas/prompt, proveedor y por idioma; invalidarla cuando cambien. La caché evita
+  repetir la llamada para el mismo contexto. El MVP añade un enfriamiento local por
+  propietario y bicicleta; para varias instancias habrá que sustituirlo por una cuota
+  compartida.
 - Consultar un resumen respeta los permisos de la bici. Su generación se controla en
   backend con límites y claves privadas; una visita pública no dispara una llamada
   ilimitada al proveedor.
-- Un fallo de IA no bloquea cálculo, guardado ni gráficas. Mostrar indisponibilidad o
-  un texto por reglas identificado como tal; el modo simulado es solo de desarrollo.
+- Un fallo de IA no bloquea cálculo, guardado ni gráficas: el servicio guarda un texto
+  por reglas identificado como `source=RULES`. Una respuesta externa se valida como
+  JSON con resumen corto, sin HTML y con evidencias pertenecientes al contexto.
 - Los textos aportados por usuarios son datos, nunca instrucciones del sistema.
   La salida se valida y se presenta sin ejecutar HTML generado.
 - La personalización futura mantiene respuestas y conversaciones privadas, separadas

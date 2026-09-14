@@ -2,6 +2,7 @@ package com.bikematch.api;
 
 import com.bikematch.auth.AccountAlreadyExistsException;
 import com.bikematch.auth.InvalidCredentialsException;
+import com.bikematch.bike.BikeAccessDeniedException;
 import com.bikematch.bike.BikeAnalysisLockedException;
 import com.bikematch.bike.BikeAnalysisNotReadyException;
 import com.bikematch.bike.BikeNotFoundException;
@@ -74,6 +75,11 @@ public class ApiExceptionHandler {
     @ExceptionHandler(BikeNotFoundException.class)
     public ProblemDetail handleBikeNotFound(BikeNotFoundException exception) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+    }
+
+    @ExceptionHandler(BikeAccessDeniedException.class)
+    public ProblemDetail handleBikeAccessDenied(BikeAccessDeniedException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
     }
 
     @ExceptionHandler(BikeAnalysisLockedException.class)

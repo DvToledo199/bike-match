@@ -18,6 +18,7 @@ import com.bikematch.auth.JwtAuthenticationFilter;
 import com.bikematch.auth.JwtService;
 import com.bikematch.bike.AttachBikePhotoService;
 import com.bikematch.bike.Bike;
+import com.bikematch.bike.BikeAccessDeniedException;
 import com.bikematch.bike.BikeAnalysisLockedException;
 import com.bikematch.bike.BikeNotFoundException;
 import com.bikematch.bike.BikePhotoFile;
@@ -26,6 +27,7 @@ import com.bikematch.bike.BikeStatus;
 import com.bikematch.bike.CreateBikeService;
 import com.bikematch.bike.FinalizeBikeAnalysisService;
 import com.bikematch.bike.MarkedPhotoGeometry;
+import com.bikematch.bike.PublishBikeService;
 import com.bikematch.config.RestAccessDeniedHandler;
 import com.bikematch.config.RestAuthenticationEntryPoint;
 import com.bikematch.config.SecurityConfig;
@@ -100,6 +102,9 @@ class BikeControllerTest {
 
     @MockitoBean
     private FinalizeBikeAnalysisService finalizeBikeAnalysisService;
+
+    @MockitoBean
+    private PublishBikeService publishBikeService;
 
     @MockitoBean
     private JwtService jwtService;
@@ -339,6 +344,56 @@ class BikeControllerTest {
 
         verify(finalizeBikeAnalysisService, never())
                 .finalizeAnalysis(anyLong(), anyLong(), any(MarkedPhotoGeometry.class));
+    }
+
+    @Test
+    void authenticatedOwnerPublishesABikeForModeration() throws Exception {
+        authenticateUserToken();
+        Bike bike = mock(Bike.class);
+        given(bike.getId()).willReturn(7L);
+        given(bike.getStatus()).willReturn(BikeStatus.PENDING);
+        given(publishBikeService.publish(42L, 7L)).willReturn(bike);
+
+        mockMvc.perform(post("/api/bikes/{bikeId}/publish", 7L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(7))
+                .andExpect(jsonPath("$.status").value("PENDING"));
+
+        verify(publishBikeService).publish(42L, 7L);
+    }
+
+    @Test
+    void missingTokenCannotPublishABike() throws Exception {
+        mockMvc.perform(post("/api/bikes/{bikeId}/publish", 7L))
+                .andExpect(status().isUnauthorized());
+
+        verify(publishBikeService, never()).publish(anyLong(), anyLong());
+    }
+
+    @Test
+    void anotherUsersBikeReturns403WhenPublishing() throws Exception {
+        authenticateUserToken();
+        given(publishBikeService.publish(42L, 7L))
+                .willThrow(new BikeAccessDeniedException());
+
+        mockMvc.perform(post("/api/bikes/{bikeId}/publish", 7L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.detail")
+                        .value("You do not have permission to change this bike"));
+    }
+
+    @Test
+    void missingBikeReturns404WhenPublishing() throws Exception {
+        authenticateUserToken();
+        given(publishBikeService.publish(42L, 7L))
+                .willThrow(new BikeNotFoundException());
+
+        mockMvc.perform(post("/api/bikes/{bikeId}/publish", 7L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Bike not found"));
     }
 
     private void authenticateUserToken() {

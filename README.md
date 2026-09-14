@@ -133,6 +133,10 @@ un flujo de edición y recálculo posterior sin modificar esa fuente.
 del usuario autenticado, ordenados de más reciente a más antigua. No expone puntos ni
 curvas: esos datos pertenecen a la futura pantalla de detalle.
 
+`POST /api/bikes/{id}/publish` requiere JWT y permite al propietario pedir la
+publicación de una bici privada. La bici pasa a `PENDING`, pendiente de moderación;
+otro usuario recibe `403` y una bici inexistente recibe `404`.
+
 Son **estimaciones bajo condiciones de referencia**, no medidas individuales ni
 validación de campo. Los clientes sin ruedas conservan el cálculo V1 (sin curvas
 anti ni efecto del piñón). Fuentes, fórmulas, límites y mejoras futuras:

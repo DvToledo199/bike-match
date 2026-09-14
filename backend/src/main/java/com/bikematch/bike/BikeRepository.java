@@ -18,6 +18,10 @@ public interface BikeRepository extends JpaRepository<Bike, Long> {
             @Param("bikeId") Long bikeId,
             @Param("ownerId") Long ownerId);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select bike from Bike bike join fetch bike.owner where bike.id = :bikeId")
+    Optional<Bike> findByIdForUpdate(@Param("bikeId") Long bikeId);
+
     @Query("""
             select new com.bikematch.bike.OwnedBikeSummary(
                 bike.id,

@@ -122,6 +122,10 @@ public class Bike {
         return owner;
     }
 
+    public boolean isOwnedBy(long ownerId) {
+        return owner.getId() != null && owner.getId() == ownerId;
+    }
+
     public String getBrand() {
         return brand;
     }
@@ -219,6 +223,12 @@ public class Bike {
 
     public KinematicsResult getKinematicsResult() {
         return kinematicsResult;
+    }
+
+    public void requestPublication() {
+        if (status == BikeStatus.PRIVATE) {
+            status = BikeStatus.PENDING;
+        }
     }
 
     void setKinematicsResult(KinematicsResult kinematicsResult) {

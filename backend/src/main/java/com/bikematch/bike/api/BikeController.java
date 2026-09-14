@@ -6,6 +6,7 @@ import com.bikematch.bike.BikePhotoFile;
 import com.bikematch.bike.CreateBikeService;
 import com.bikematch.bike.FinalizeBikeAnalysisService;
 import com.bikematch.bike.InvalidBikePhotoException;
+import com.bikematch.bike.PublishBikeService;
 import com.bikematch.kinematics.api.PreviewResponse;
 import jakarta.validation.Valid;
 import java.io.IOException;
@@ -28,15 +29,18 @@ public class BikeController {
     private final CreateBikeService createBikeService;
     private final AttachBikePhotoService attachBikePhotoService;
     private final FinalizeBikeAnalysisService finalizeBikeAnalysisService;
+    private final PublishBikeService publishBikeService;
 
     public BikeController(
             CreateBikeService createBikeService,
             AttachBikePhotoService attachBikePhotoService,
-            FinalizeBikeAnalysisService finalizeBikeAnalysisService
+            FinalizeBikeAnalysisService finalizeBikeAnalysisService,
+            PublishBikeService publishBikeService
     ) {
         this.createBikeService = createBikeService;
         this.attachBikePhotoService = attachBikePhotoService;
         this.finalizeBikeAnalysisService = finalizeBikeAnalysisService;
+        this.publishBikeService = publishBikeService;
     }
 
     @PostMapping
@@ -82,5 +86,15 @@ public class BikeController {
         return ResponseEntity
                 .created(URI.create("/api/bikes/" + bikeId + "/analysis"))
                 .body(response);
+    }
+
+    @PostMapping("/{bikeId}/publish")
+    public PublishBikeResponse publish(
+            @AuthenticationPrincipal String authenticatedUserId,
+            @PathVariable long bikeId
+    ) {
+        long ownerId = Long.parseLong(authenticatedUserId);
+        Bike bike = publishBikeService.publish(ownerId, bikeId);
+        return PublishBikeResponse.from(bike);
     }
 }

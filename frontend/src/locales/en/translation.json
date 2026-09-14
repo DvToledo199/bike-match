@@ -4,6 +4,30 @@
     "tagline": "Mountain bike suspension kinematics, explained",
     "skipToContent": "Skip to main content"
   },
+  "auth": {
+    "openRegister": "Sign up",
+    "continueAsGuest": "Continue as guest",
+    "register": {
+      "eyebrow": "Your BikeMatch account",
+      "title": "Create an account",
+      "description": "Save your bike analyses and keep them private until you choose to share them.",
+      "emailLabel": "Email",
+      "usernameLabel": "Username",
+      "passwordLabel": "Password",
+      "submit": "Create account",
+      "submitting": "Creating account…",
+      "success": "Your account was created. You can continue using the analysis as a guest for now.",
+      "duplicate": "That email or username is already in use. Choose another one.",
+      "unavailable": "We could not create the account right now. Check that the BikeMatch backend is running and try again.",
+      "errors": {
+        "required": "{{field}} is required.",
+        "email": "Enter a valid email address.",
+        "usernameLength": "Username must be between 3 and 30 characters.",
+        "usernameCharacters": "Username can use letters, numbers and underscores only.",
+        "passwordLength": "Password must be between 8 and 72 characters."
+      }
+    }
+  },
   "wizard": {
     "progressLabel": "Analysis progress",
     "stepCount": "Step {{current}} of {{total}}",

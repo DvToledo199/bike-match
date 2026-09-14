@@ -109,6 +109,55 @@
 .details dt { color: var(--color-text-muted); }
 .details dd { margin: 0; font-weight: 700; text-align: right; }
 
+.primaryButton,
+.secondaryButton {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.primaryButton {
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+}
+
+.secondaryButton {
+  color: var(--color-text);
+  background: transparent;
+  border-color: var(--color-border);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.confirmation {
+  display: grid;
+  gap: var(--space-sm);
+  padding-top: var(--space-sm);
+  color: var(--color-text-muted);
+}
+
+.confirmation p,
+.actionError {
+  margin: 0;
+}
+
+.confirmationActions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.actionError {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
 .message {
   display: grid;
   gap: var(--space-md);

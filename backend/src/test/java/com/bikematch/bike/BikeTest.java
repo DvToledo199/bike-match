@@ -59,6 +59,15 @@ class BikeTest {
         assertThat(bike.getLinkagePoints()).isEqualTo(original);
     }
 
+    @Test
+    void privateBikeCanRequestPublication() {
+        Bike bike = bike();
+
+        bike.requestPublication();
+
+        assertThat(bike.getStatus()).isEqualTo(BikeStatus.PENDING);
+    }
+
     private Bike bike() {
         User owner = new User("owner@example.com", "owner", "password-hash", Role.USER);
         BikeDetails details = new BikeDetails(

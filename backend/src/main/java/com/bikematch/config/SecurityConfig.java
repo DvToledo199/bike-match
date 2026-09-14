@@ -52,9 +52,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                         .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/bikes",
-                                "/api/bikes/{bikeId}"
+                        HttpMethod.GET,
+                        "/api/bikes",
+                                "/api/bikes/{bikeId}",
+                                "/api/bikes/{bikeId}/interpretation"
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/kinematics/preview").permitAll()
                         .requestMatchers(

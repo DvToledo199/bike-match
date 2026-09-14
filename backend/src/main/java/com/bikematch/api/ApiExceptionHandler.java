@@ -9,6 +9,8 @@ import com.bikematch.bike.BikeNotFoundException;
 import com.bikematch.bike.BikeNotPendingException;
 import com.bikematch.bike.InvalidBikePhotoException;
 import com.bikematch.media.ImageStorageException;
+import com.bikematch.interpretation.InterpretationNotAvailableException;
+import com.bikematch.interpretation.InterpretationRateLimitException;
 import com.bikematch.user.CurrentUserNotFoundException;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
@@ -76,6 +78,17 @@ public class ApiExceptionHandler {
     @ExceptionHandler(BikeNotFoundException.class)
     public ProblemDetail handleBikeNotFound(BikeNotFoundException exception) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+    }
+
+    @ExceptionHandler(InterpretationNotAvailableException.class)
+    public ProblemDetail handleInterpretationNotAvailable(
+            InterpretationNotAvailableException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+    }
+
+    @ExceptionHandler(InterpretationRateLimitException.class)
+    public ProblemDetail handleInterpretationRateLimit(InterpretationRateLimitException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS, exception.getMessage());
     }
 
     @ExceptionHandler(BikeNotPendingException.class)

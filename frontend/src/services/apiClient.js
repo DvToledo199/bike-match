@@ -1,3 +1,5 @@
+import { authHeaders } from './session.js'
+
 const apiBaseUrl = import.meta.env?.VITE_API_URL ?? 'http://localhost:8080'
 
 export class ApiError extends Error {
@@ -71,6 +73,7 @@ export async function requestApi(path, options = {}) {
       signal: controller.signal,
       headers: {
         Accept: 'application/json',
+        ...authHeaders(),
         ...options.headers,
       },
     })

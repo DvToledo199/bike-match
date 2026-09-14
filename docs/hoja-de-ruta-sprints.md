@@ -96,6 +96,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [x] Guardar los puntos naturales de la foto y persistir atómicamente el resultado del motor
 - [ ] "Mis bicis" (privadas) y detalle de bici con gráficas y números
   - [x] API `GET /api/my-bikes` con resúmenes privados del propietario (#130)
+  - [x] Cliente frontend preparado para adjuntar el JWT y consultar esa API (#142)
 - [ ] Catálogo público (solo aprobadas) con filtro por categoría y paginación
 - [ ] Swagger al día, con la autenticación documentada
 - [ ] Front (IA): pantallas de registro/login, mis bicis, catálogo y detalle

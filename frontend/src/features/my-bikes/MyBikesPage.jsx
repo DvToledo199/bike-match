@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { listMyBikes } from '../../services/myBikes.js'
+import { listMyBikes, publishBike } from '../../services/myBikes.js'
 import styles from './MyBikesPage.module.css'
 
 function MyBikesPage() {
@@ -8,6 +8,9 @@ function MyBikesPage() {
   const [bikes, setBikes] = useState(null)
   const [error, setError] = useState(null)
   const [reloadKey, setReloadKey] = useState(0)
+  const [confirmingBikeId, setConfirmingBikeId] = useState(null)
+  const [publishingBikeId, setPublishingBikeId] = useState(null)
+  const [publishError, setPublishError] = useState(null)
 
   useEffect(() => {
     let active = true
@@ -24,6 +27,22 @@ function MyBikesPage() {
 
     return () => { active = false }
   }, [reloadKey])
+
+  async function handlePublish(bikeId) {
+    setPublishingBikeId(bikeId)
+    setPublishError(null)
+    try {
+      const result = await publishBike(bikeId)
+      setBikes((current) => current.map((bike) => (
+        bike.id === bikeId ? { ...bike, status: result.status } : bike
+      )))
+      setConfirmingBikeId(null)
+    } catch (requestError) {
+      setPublishError({ bikeId, requestError })
+    } finally {
+      setPublishingBikeId(null)
+    }
+  }
 
   if (error) {
     const message = error.status === 401
@@ -61,7 +80,19 @@ function MyBikesPage() {
         </div>
       ) : (
         <div className={styles.grid}>
-          {bikes.map((bike) => <BikeCard key={bike.id} bike={bike} t={t} />)}
+          {bikes.map((bike) => (
+            <BikeCard
+              key={bike.id}
+              bike={bike}
+              t={t}
+              confirming={confirmingBikeId === bike.id}
+              publishing={publishingBikeId === bike.id}
+              publishError={publishError?.bikeId === bike.id ? publishError.requestError : null}
+              onRequestPublish={() => { setPublishError(null); setConfirmingBikeId(bike.id) }}
+              onCancelPublish={() => setConfirmingBikeId(null)}
+              onConfirmPublish={() => handlePublish(bike.id)}
+            />
+          ))}
         </div>
       )}
     </section>
@@ -78,7 +109,7 @@ function PageHeading({ t }) {
   )
 }
 
-function BikeCard({ bike, t }) {
+function BikeCard({ bike, t, confirming, publishing, publishError, onRequestPublish, onCancelPublish, onConfirmPublish }) {
   const statusKey = bike.status?.toLowerCase() ?? 'unknown'
   const title = [bike.brand, bike.model].filter(Boolean).join(' ')
 
@@ -101,6 +132,33 @@ function BikeCard({ bike, t }) {
           <div><dt>{t('myBikes.fields.category')}</dt><dd>{bike.category ?? t('myBikes.notAvailable')}</dd></div>
           <div><dt>{t('myBikes.fields.analysis')}</dt><dd>{bike.analyzed ? t('myBikes.analysisReady') : t('myBikes.analysisPending')}</dd></div>
         </dl>
+        {bike.status === 'PRIVATE' && bike.analyzed && !confirming && (
+          <button type="button" className={styles.primaryButton} onClick={onRequestPublish}>
+            {t('myBikes.publish.request')}
+          </button>
+        )}
+        {confirming && (
+          <div className={styles.confirmation} role="group" aria-label={t('myBikes.publish.confirmation')}>
+            <p>{t('myBikes.publish.confirmation')}</p>
+            <div className={styles.confirmationActions}>
+              <button type="button" className={styles.secondaryButton} onClick={onCancelPublish} disabled={publishing}>
+                {t('myBikes.publish.cancel')}
+              </button>
+              <button type="button" className={styles.primaryButton} onClick={onConfirmPublish} disabled={publishing}>
+                {publishing ? t('myBikes.publish.submitting') : t('myBikes.publish.confirm')}
+              </button>
+            </div>
+          </div>
+        )}
+        {publishError && (
+          <p className={styles.actionError} role="alert">
+            {publishError.status === 401
+              ? t('myBikes.publish.errors.sessionExpired')
+              : publishError.status === 403
+                ? t('myBikes.publish.errors.forbidden')
+                : t('myBikes.publish.errors.unavailable')}
+          </p>
+        )}
       </div>
     </article>
   )

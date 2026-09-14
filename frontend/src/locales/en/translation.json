@@ -59,6 +59,18 @@
     "notAvailable": "Not available",
     "analysisReady": "Analysis ready",
     "analysisPending": "Analysis not finished",
+    "publish": {
+      "request": "Request publication",
+      "confirmation": "Send this bike to moderation? It will become visible to the community only after approval.",
+      "cancel": "Keep private",
+      "confirm": "Confirm publication",
+      "submitting": "Sending…",
+      "errors": {
+        "sessionExpired": "Your session has expired. Log in again before publishing.",
+        "forbidden": "Only the bike owner can request publication.",
+        "unavailable": "We could not request publication right now. Try again."
+      }
+    },
     "fields": {
       "year": "Year",
       "category": "Category",

@@ -23,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 /**
  * REST API security policy.
  * <p>
- * Health, kinematics preview, registration and login are public. Every other route
+ * Health, kinematics preview, public bike details, registration and login are public. Every other route
  * stays locked unless a future controller declares a more specific rule.
  */
 @Configuration
@@ -51,6 +51,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/bikes/{bikeId}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/kinematics/preview").permitAll()
                         .requestMatchers(
                                 HttpMethod.POST,

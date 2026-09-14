@@ -131,11 +131,17 @@ un flujo de edición y recálculo posterior sin modificar esa fuente.
 
 `GET /api/my-bikes` requiere JWT y devuelve únicamente los resúmenes de las bicicletas
 del usuario autenticado, ordenados de más reciente a más antigua. No expone puntos ni
-curvas: esos datos pertenecen a la futura pantalla de detalle.
+curvas: esos datos pertenecen a la pantalla de detalle.
+
+`GET /api/bikes/{id}` devuelve la ficha completa. Una bici `PUBLIC` se puede consultar
+sin iniciar sesión; una bici `PRIVATE`, `PENDING` o `REJECTED` solo se devuelve a su
+propietario autenticado. La respuesta incluye la foto, los metadatos, el username público
+del propietario y el resultado guardado con sus curvas, descriptores y capacidades. No
+devuelve los puntos internos de marcado, el correo ni ningún dato de autenticación.
 
 Después del login, el cliente HTTP del frontend añade automáticamente el JWT guardado
-en la sesión del navegador a las peticiones privadas. La pantalla de "Mis bicis" se
-conectará a través del servicio `listMyBikes()` en su propia tarea.
+en la sesión del navegador a las peticiones privadas. La pantalla de "Mis bicis" usa
+`listMyBikes()` para los resúmenes y la futura ficha usará el detalle completo.
 
 `POST /api/bikes/{id}/publish` requiere JWT y permite al propietario pedir la
 publicación de una bici privada. La bici pasa a `PENDING`, pendiente de moderación;

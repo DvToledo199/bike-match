@@ -150,6 +150,10 @@ public class Bike {
         return status;
     }
 
+    public boolean canBeViewedBy(Long viewerId) {
+        return status == BikeStatus.PUBLIC || (viewerId != null && isOwnedBy(viewerId));
+    }
+
     public double getDeclaredTravelMm() {
         return declaredTravelMm;
     }
@@ -174,12 +178,20 @@ public class Bike {
         return sprocketTeeth;
     }
 
+    public CassetteType getCassetteType() {
+        return cassetteType;
+    }
+
     public double getSagPercent() {
         return sagPercent;
     }
 
     public String getPhotoUrl() {
         return photoUrl;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
     public void attachPhoto(URI photoUri) {

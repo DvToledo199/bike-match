@@ -97,6 +97,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [ ] "Mis bicis" (privadas) y detalle de bici con gráficas y números
   - [x] API `GET /api/my-bikes` con resúmenes privados del propietario (#130)
   - [x] Cliente frontend preparado para adjuntar el JWT y consultar esa API (#142)
+  - [x] API `GET /api/bikes/{id}` con reglas de visibilidad y resultado persistido (#148)
 - [ ] Catálogo público (solo aprobadas) con filtro por categoría y paginación
 - [ ] Swagger al día, con la autenticación documentada
 - [ ] Front (IA): pantallas de registro/login, mis bicis, catálogo y detalle

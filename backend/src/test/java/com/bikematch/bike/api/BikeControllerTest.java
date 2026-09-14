@@ -26,13 +26,18 @@ import com.bikematch.bike.BikeDetails;
 import com.bikematch.bike.BikeStatus;
 import com.bikematch.bike.CreateBikeService;
 import com.bikematch.bike.FinalizeBikeAnalysisService;
+import com.bikematch.bike.GetBikeDetailService;
+import com.bikematch.bike.GetBikeDetailService.BikeDetail;
+import com.bikematch.bike.GetBikeDetailService.KinematicsResultDetail;
 import com.bikematch.bike.MarkedPhotoGeometry;
 import com.bikematch.bike.PublishBikeService;
+import com.bikematch.kinematics.model.WheelConfiguration;
 import com.bikematch.config.RestAccessDeniedHandler;
 import com.bikematch.config.RestAuthenticationEntryPoint;
 import com.bikematch.config.SecurityConfig;
 import com.bikematch.media.ImageStorageException;
 import io.jsonwebtoken.Claims;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -45,6 +50,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
 
 @WebMvcTest(BikeController.class)
 @Import({
@@ -107,7 +114,50 @@ class BikeControllerTest {
     private PublishBikeService publishBikeService;
 
     @MockitoBean
+    private GetBikeDetailService getBikeDetailService;
+
+    @MockitoBean
     private JwtService jwtService;
+
+    @Test
+    void publicBikeDetailDoesNotNeedAToken() throws Exception {
+        given(getBikeDetailService.get(7L, null)).willReturn(publicBikeDetail());
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .get("/api/bikes/{bikeId}", 7L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(7))
+                .andExpect(jsonPath("$.brand").value("Orange"))
+                .andExpect(jsonPath("$.status").value("PUBLIC"))
+                .andExpect(jsonPath("$.ownerUsername").value("david"))
+                .andExpect(jsonPath("$.result.engineVersion").value("monopivot-reference-v2"))
+                .andExpect(jsonPath("$.linkagePoints").doesNotExist())
+                .andExpect(jsonPath("$.email").doesNotExist());
+    }
+
+    @Test
+    void authenticatedOwnerCanReadTheirPrivateBikeDetail() throws Exception {
+        authenticateUserToken();
+        given(getBikeDetailService.get(7L, 42L)).willReturn(privateBikeDetail());
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .get("/api/bikes/{bikeId}", 7L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("PRIVATE"));
+
+        verify(getBikeDetailService).get(7L, 42L);
+    }
+
+    @Test
+    void invisibleBikeDetailReturns404() throws Exception {
+        given(getBikeDetailService.get(7L, null)).willThrow(new BikeNotFoundException());
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .get("/api/bikes/{bikeId}", 7L))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Bike not found"));
+    }
 
     @Test
     void authenticatedUserCreatesAPrivateBikeWith201() throws Exception {
@@ -412,5 +462,32 @@ class BikeControllerTest {
         byte[] jpeg = {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, 0x00,
                 (byte) 0xFF, (byte) 0xD9};
         return new MockMultipartFile("photo", "bike.jpg", "image/jpeg", jpeg);
+    }
+
+    private BikeDetail publicBikeDetail() {
+        return detail(BikeStatus.PUBLIC);
+    }
+
+    private BikeDetail privateBikeDetail() {
+        return detail(BikeStatus.PRIVATE);
+    }
+
+    private BikeDetail detail(BikeStatus status) {
+        return new BikeDetail(
+                7L, "Orange", "Stage 6", (short) 2020,
+                com.bikematch.bike.BikeCategory.ENDURO,
+                com.bikematch.bike.SuspensionLayout.SINGLE_PIVOT,
+                150, 230, 65, WheelConfiguration.FULL_29,
+                com.bikematch.bike.CassetteType.TWELVE_SPEED,
+                (short) 32, (short) 50, 30,
+                "https://example.com/bike.jpg", status, "david",
+                Instant.parse("2026-09-14T12:00:00Z"),
+                new KinematicsResultDetail(
+                        1,
+                        "monopivot-reference-v2",
+                        JsonNodeFactory.instance.objectNode(),
+                        JsonNodeFactory.instance.objectNode(),
+                        JsonNodeFactory.instance.objectNode(),
+                        Instant.parse("2026-09-14T12:00:00Z")));
     }
 }

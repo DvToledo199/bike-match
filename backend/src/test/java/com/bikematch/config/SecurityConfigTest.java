@@ -43,7 +43,7 @@ class SecurityConfigTest {
 
     @Test
     void protectedRouteWithoutTokenReturns401() throws Exception {
-        mockMvc.perform(get("/api/bikes/test"))
+        mockMvc.perform(get("/api/protected-test"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -52,7 +52,7 @@ class SecurityConfigTest {
         given(jwtService.parseToken("invalid-token"))
                 .willThrow(new MalformedJwtException("Invalid token"));
 
-        mockMvc.perform(get("/api/bikes/test")
+        mockMvc.perform(get("/api/protected-test")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer invalid-token"))
                 .andExpect(status().isUnauthorized());
     }
@@ -62,7 +62,7 @@ class SecurityConfigTest {
         Claims userClaims = claims("42", "USER");
         given(jwtService.parseToken("user-token")).willReturn(userClaims);
 
-        mockMvc.perform(get("/api/bikes/test")
+        mockMvc.perform(get("/api/protected-test")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
                 .andExpect(status().isOk());
     }
@@ -101,7 +101,7 @@ class SecurityConfigTest {
             return "UP";
         }
 
-        @GetMapping("/api/bikes/test")
+        @GetMapping("/api/protected-test")
         String authenticatedRoute() {
             return "available to authenticated users";
         }

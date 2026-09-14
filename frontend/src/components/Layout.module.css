@@ -42,6 +42,17 @@
   font-weight: 700;
 }
 
+.accountActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.sessionLabel {
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
 .logo {
   font-weight: 700;
   font-size: 1.125rem;

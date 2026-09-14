@@ -6,6 +6,8 @@
   },
   "auth": {
     "openRegister": "Sign up",
+    "openLogin": "Log in",
+    "logout": "Log out",
     "continueAsGuest": "Continue as guest",
     "register": {
       "eyebrow": "Your BikeMatch account",
@@ -25,6 +27,21 @@
         "usernameLength": "Username must be between 3 and 30 characters.",
         "usernameCharacters": "Username can use letters, numbers and underscores only.",
         "passwordLength": "Password must be between 8 and 72 characters."
+      }
+    },
+    "login": {
+      "eyebrow": "Your BikeMatch account",
+      "title": "Log in",
+      "description": "Access your saved bikes and private analyses.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "invalidCredentials": "The email or password is incorrect.",
+      "unavailable": "We could not log you in right now. Check that the BikeMatch backend is running and try again.",
+      "errors": {
+        "required": "{{field}} is required.",
+        "email": "Enter a valid email address."
       }
     }
   },

@@ -112,6 +112,33 @@ class BikeRepositoryTest {
                 .containsExactly(true, false);
     }
 
+    @Test
+    void returnsOnlyPendingBikesInPublicationRequestOrder() {
+        User firstOwner = userRepository.saveAndFlush(new User(
+                "first@example.com", "firstowner", "password-hash", Role.USER));
+        User secondOwner = userRepository.saveAndFlush(new User(
+                "second@example.com", "secondowner", "password-hash", Role.USER));
+        Bike firstPending = bikeRepository.saveAndFlush(
+                Bike.createPrivate(firstOwner, details("First pending")));
+        Bike privateBike = bikeRepository.saveAndFlush(
+                Bike.createPrivate(firstOwner, details("Private")));
+        Bike secondPending = bikeRepository.saveAndFlush(
+                Bike.createPrivate(secondOwner, details("Second pending")));
+        firstPending.requestPublication();
+        secondPending.requestPublication();
+        bikeRepository.saveAllAndFlush(List.of(firstPending, privateBike, secondPending));
+        entityManager.clear();
+
+        var summaries = bikeRepository.findPendingSummaries();
+
+        assertThat(summaries)
+                .extracting(summary -> summary.model())
+                .containsExactly("First pending", "Second pending");
+        assertThat(summaries)
+                .extracting(summary -> summary.ownerUsername())
+                .containsExactly("firstowner", "secondowner");
+    }
+
     private BikeDetails details(String model) {
         return new BikeDetails(
                 "Orange", model, (short) 2020, BikeCategory.ENDURO,

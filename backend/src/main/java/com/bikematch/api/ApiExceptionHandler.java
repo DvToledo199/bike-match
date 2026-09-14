@@ -6,6 +6,7 @@ import com.bikematch.bike.BikeAccessDeniedException;
 import com.bikematch.bike.BikeAnalysisLockedException;
 import com.bikematch.bike.BikeAnalysisNotReadyException;
 import com.bikematch.bike.BikeNotFoundException;
+import com.bikematch.bike.BikeNotPendingException;
 import com.bikematch.bike.InvalidBikePhotoException;
 import com.bikematch.media.ImageStorageException;
 import com.bikematch.user.CurrentUserNotFoundException;
@@ -75,6 +76,11 @@ public class ApiExceptionHandler {
     @ExceptionHandler(BikeNotFoundException.class)
     public ProblemDetail handleBikeNotFound(BikeNotFoundException exception) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+    }
+
+    @ExceptionHandler(BikeNotPendingException.class)
+    public ProblemDetail handleBikeNotPending(BikeNotPendingException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
     }
 
     @ExceptionHandler(BikeAccessDeniedException.class)

@@ -137,6 +137,17 @@ curvas: esos datos pertenecen a la futura pantalla de detalle.
 publicación de una bici privada. La bici pasa a `PENDING`, pendiente de moderación;
 otro usuario recibe `403` y una bici inexistente recibe `404`.
 
+La moderación requiere un JWT de una cuenta con rol `MODERATOR`:
+
+- `GET /api/moderation/pending` devuelve la cola de bicicletas pendientes, con sus
+  datos de identificación y el username de quien la solicitó, sin exponer puntos ni
+  resultados completos.
+- `POST /api/moderation/{id}/approve` cambia una bici `PENDING` a `PUBLIC`.
+- `POST /api/moderation/{id}/reject` cambia una bici `PENDING` a `REJECTED`.
+
+Una cuenta `USER` recibe `403` en estas rutas. Una bicicleta inexistente devuelve
+`404`; si ya no estaba pendiente, devuelve `409` y no se modifica.
+
 Son **estimaciones bajo condiciones de referencia**, no medidas individuales ni
 validación de campo. Los clientes sin ruedas conservan el cálculo V1 (sin curvas
 anti ni efecto del piñón). Fuentes, fórmulas, límites y mejoras futuras:

@@ -5,7 +5,7 @@ vi.mock('./apiClient.js', () => ({
 }))
 
 import { requestApi } from './apiClient.js'
-import { getBikeDetail, listMyBikes, toKinematicsData } from './myBikes.js'
+import { getBikeDetail, listMyBikes, listPublicBikes, toKinematicsData } from './myBikes.js'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -25,6 +25,14 @@ it('requests one bike detail', async () => {
   await getBikeDetail(7)
 
   expect(requestApi).toHaveBeenCalledWith('/api/bikes/7')
+})
+
+it('requests a public catalog page and optional category', async () => {
+  requestApi.mockResolvedValue({ items: [] })
+
+  await listPublicBikes({ category: 'ENDURO', page: 2 })
+
+  expect(requestApi).toHaveBeenCalledWith('/api/bikes?page=2&category=ENDURO')
 })
 
 it('adapts persisted curves and descriptors for the existing charts', () => {

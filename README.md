@@ -144,6 +144,9 @@ devuelve bicicletas `PUBLIC` y responde con páginas de 12 tarjetas (`items`, `p
 `totalPages` y `hasNext`). La categoría es opcional y admite `ENDURO`, `E_ENDURO` o
 `DOWNHILL`. El catálogo no incluye curvas ni datos privados: para eso se abre la ficha.
 
+La pantalla de catálogo del frontend usa `listPublicBikes()` para cargar esas páginas,
+permite filtrar por categoría y abre la ficha pública reutilizando `getBikeDetail(id)`.
+
 Después del login, el cliente HTTP del frontend añade automáticamente el JWT guardado
 en la sesión del navegador a las peticiones privadas. La pantalla de "Mis bicis" usa
 `listMyBikes()` para los resúmenes; al abrir una tarjeta, la ficha usa

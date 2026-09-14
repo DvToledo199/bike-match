@@ -5,11 +5,13 @@ import LoginForm from './features/auth/LoginForm.jsx'
 import RegisterForm from './features/auth/RegisterForm.jsx'
 import MyBikesPage from './features/my-bikes/MyBikesPage.jsx'
 import BikeDetailPage from './features/my-bikes/BikeDetailPage.jsx'
+import CatalogPage from './features/catalog/CatalogPage.jsx'
 import { clearSession, getSession } from './services/session.js'
 
 function App() {
   const [screen, setScreen] = useState('analysis')
   const [selectedBikeId, setSelectedBikeId] = useState(null)
+  const [detailOrigin, setDetailOrigin] = useState('myBikes')
   const [session, setSession] = useState(getSession)
 
   function logout() {
@@ -22,6 +24,7 @@ function App() {
   return (
     <Layout
       session={session}
+      onOpenCatalog={() => setScreen('catalog')}
       onOpenRegister={() => setScreen('register')}
       onOpenLogin={() => setScreen('login')}
       onOpenMyBikes={() => setScreen('myBikes')}
@@ -35,9 +38,11 @@ function App() {
           onContinueAsGuest={() => setScreen('analysis')}
         />
       ) : screen === 'myBikes' ? (
-        <MyBikesPage onOpenBikeDetail={(bikeId) => { setSelectedBikeId(bikeId); setScreen('bikeDetail') }} />
+        <MyBikesPage onOpenBikeDetail={(bikeId) => { setSelectedBikeId(bikeId); setDetailOrigin('myBikes'); setScreen('bikeDetail') }} />
+      ) : screen === 'catalog' ? (
+        <CatalogPage onOpenBikeDetail={(bikeId) => { setSelectedBikeId(bikeId); setDetailOrigin('catalog'); setScreen('bikeDetail') }} />
       ) : screen === 'bikeDetail' ? (
-        <BikeDetailPage bikeId={selectedBikeId} onBack={() => setScreen('myBikes')} />
+        <BikeDetailPage bikeId={selectedBikeId} onBack={() => setScreen(detailOrigin)} />
       ) : (
         <AnalysisWizard />
       )}

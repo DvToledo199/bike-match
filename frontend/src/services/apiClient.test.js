@@ -12,7 +12,7 @@ describe('API failures', () => {
     await expect(requestApi('/test')).rejects.toMatchObject({ kind: 'invalidResponse' })
   })
 
-  it.each([[400, 'invalidRequest'], [500, 'server'], [403, 'unavailable']])('explains HTTP %s even with an HTML error body', async (status, kind) => {
+  it.each([[400, 'invalidRequest'], [429, 'rateLimited'], [500, 'server'], [403, 'unavailable']])('explains HTTP %s even with an HTML error body', async (status, kind) => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('error', { status })))
     await expect(requestApi('/test')).rejects.toMatchObject({ kind, status })
   })

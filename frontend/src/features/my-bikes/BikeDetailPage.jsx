@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import KinematicsCharts from '../analysis-wizard/KinematicsCharts.jsx'
+import InterpretationSummary from './InterpretationSummary.jsx'
+import { generateBikeInterpretation, getBikeInterpretation } from '../../services/interpretation.js'
 import { getBikeDetail, toKinematicsData } from '../../services/myBikes.js'
+import { getSession } from '../../services/session.js'
 import styles from './BikeDetailPage.module.css'
 
 function BikeDetailPage({ bikeId, onBack }) {
@@ -9,6 +12,10 @@ function BikeDetailPage({ bikeId, onBack }) {
   const [bike, setBike] = useState(null)
   const [error, setError] = useState(null)
   const [reloadKey, setReloadKey] = useState(0)
+  const [interpretation, setInterpretation] = useState(null)
+  const [interpretationError, setInterpretationError] = useState(null)
+  const [interpretationLoading, setInterpretationLoading] = useState(false)
+  const [interpretationGenerating, setInterpretationGenerating] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -25,6 +32,39 @@ function BikeDetailPage({ bikeId, onBack }) {
 
     return () => { active = false }
   }, [bikeId, reloadKey])
+
+  useEffect(() => {
+    if (!bike) return undefined
+    let active = true
+    setInterpretation(null)
+    setInterpretationError(null)
+    setInterpretationLoading(true)
+
+    getBikeInterpretation(bikeId)
+      .then((result) => {
+        if (active) setInterpretation(result)
+      })
+      .catch((requestError) => {
+        if (active) setInterpretationError(requestError)
+      })
+      .finally(() => {
+        if (active) setInterpretationLoading(false)
+      })
+
+    return () => { active = false }
+  }, [bike, bikeId])
+
+  async function handleGenerateInterpretation() {
+    setInterpretationGenerating(true)
+    setInterpretationError(null)
+    try {
+      setInterpretation(await generateBikeInterpretation(bikeId))
+    } catch (requestError) {
+      setInterpretationError(requestError)
+    } finally {
+      setInterpretationGenerating(false)
+    }
+  }
 
   if (error) {
     const message = error.status === 404
@@ -63,6 +103,8 @@ function BikeDetailPage({ bikeId, onBack }) {
   const title = [bike.brand, bike.model].filter(Boolean).join(' ') || t('myBikes.unnamed')
   const statusKey = bike.status?.toLowerCase() ?? 'unknown'
   const kinematicsData = toKinematicsData(bike)
+  const session = getSession()
+  const canGenerateInterpretation = Boolean(session?.username && session.username === bike.ownerUsername)
 
   return (
     <section className={styles.page} aria-labelledby="bike-detail-title">
@@ -99,6 +141,16 @@ function BikeDetailPage({ bikeId, onBack }) {
           <div><dt>{t('bikeDetail.fields.sag')}</dt><dd>{bike.sagPercent}%</dd></div>
         </dl>
       </section>
+
+      <InterpretationSummary
+        interpretation={interpretation}
+        error={interpretationError}
+        loading={interpretationLoading}
+        generating={interpretationGenerating}
+        canGenerate={canGenerateInterpretation}
+        onGenerate={handleGenerateInterpretation}
+        onRetry={() => setReloadKey((key) => key + 1)}
+      />
 
       {kinematicsData ? (
         <KinematicsCharts data={kinematicsData} />

@@ -31,6 +31,27 @@ it('shows the saved bikes and their statuses', async () => {
   expect(screen.getByRole('img', { name: 'Photo of Orange Stage 6' })).toBeTruthy()
 })
 
+it('opens the selected bike detail', async () => {
+  const onOpenBikeDetail = vi.fn()
+  listMyBikes.mockResolvedValue([{
+    id: 7,
+    brand: 'Orange',
+    model: 'Stage 6',
+    modelYear: 2020,
+    category: 'ENDURO',
+    photoUrl: null,
+    status: 'PRIVATE',
+    analyzed: true,
+  }])
+
+  render(<MyBikesPage onOpenBikeDetail={onOpenBikeDetail} />)
+
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Open bike detail' })).toBeTruthy())
+  screen.getByRole('button', { name: 'Open bike detail' }).click()
+
+  expect(onOpenBikeDetail).toHaveBeenCalledWith(7)
+})
+
 it('shows an empty state when the user has no bikes', async () => {
   listMyBikes.mockResolvedValue([])
 

@@ -101,6 +101,9 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [ ] Catálogo público (solo aprobadas) con filtro por categoría y paginación
 - [ ] Swagger al día, con la autenticación documentada
 - [ ] Front (IA): pantallas de registro/login, mis bicis, catálogo y detalle
+  - [x] Registro/login y sesión frontend (#138, #140, #142)
+  - [x] Mis bicis y solicitud de publicación (#144, #146)
+  - [x] Ficha de bici con foto, metadatos y gráficas guardadas (#150)
 - [ ] Servicio de explicación básica sin cuestionario: reutilización, límites, privacidad y recuperación de errores (#104)
 - [ ] Texto sencillo junto a las gráficas del resultado guardado/detalle y prueba de comprensión (#105)
 

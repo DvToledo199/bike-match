@@ -4,15 +4,18 @@ import AnalysisWizard from './features/analysis-wizard/AnalysisWizard.jsx'
 import LoginForm from './features/auth/LoginForm.jsx'
 import RegisterForm from './features/auth/RegisterForm.jsx'
 import MyBikesPage from './features/my-bikes/MyBikesPage.jsx'
+import BikeDetailPage from './features/my-bikes/BikeDetailPage.jsx'
 import { clearSession, getSession } from './services/session.js'
 
 function App() {
   const [screen, setScreen] = useState('analysis')
+  const [selectedBikeId, setSelectedBikeId] = useState(null)
   const [session, setSession] = useState(getSession)
 
   function logout() {
     clearSession()
     setSession(null)
+    setSelectedBikeId(null)
     setScreen('analysis')
   }
 
@@ -32,7 +35,9 @@ function App() {
           onContinueAsGuest={() => setScreen('analysis')}
         />
       ) : screen === 'myBikes' ? (
-        <MyBikesPage />
+        <MyBikesPage onOpenBikeDetail={(bikeId) => { setSelectedBikeId(bikeId); setScreen('bikeDetail') }} />
+      ) : screen === 'bikeDetail' ? (
+        <BikeDetailPage bikeId={selectedBikeId} onBack={() => setScreen('myBikes')} />
       ) : (
         <AnalysisWizard />
       )}

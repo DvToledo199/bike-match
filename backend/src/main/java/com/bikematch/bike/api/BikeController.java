@@ -5,6 +5,7 @@ import com.bikematch.bike.Bike;
 import com.bikematch.bike.BikePhotoFile;
 import com.bikematch.bike.CreateBikeService;
 import com.bikematch.bike.FinalizeBikeAnalysisService;
+import com.bikematch.bike.GetBikeDetailService;
 import com.bikematch.bike.InvalidBikePhotoException;
 import com.bikematch.bike.PublishBikeService;
 import com.bikematch.kinematics.api.PreviewResponse;
@@ -14,6 +15,7 @@ import java.net.URI;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,17 +32,33 @@ public class BikeController {
     private final AttachBikePhotoService attachBikePhotoService;
     private final FinalizeBikeAnalysisService finalizeBikeAnalysisService;
     private final PublishBikeService publishBikeService;
+    private final GetBikeDetailService getBikeDetailService;
 
     public BikeController(
             CreateBikeService createBikeService,
             AttachBikePhotoService attachBikePhotoService,
             FinalizeBikeAnalysisService finalizeBikeAnalysisService,
-            PublishBikeService publishBikeService
+            PublishBikeService publishBikeService,
+            GetBikeDetailService getBikeDetailService
     ) {
         this.createBikeService = createBikeService;
         this.attachBikePhotoService = attachBikePhotoService;
         this.finalizeBikeAnalysisService = finalizeBikeAnalysisService;
         this.publishBikeService = publishBikeService;
+        this.getBikeDetailService = getBikeDetailService;
+    }
+
+    @GetMapping("/{bikeId}")
+    public BikeDetailResponse getDetail(
+            @AuthenticationPrincipal String authenticatedUserId,
+            @PathVariable long bikeId
+    ) {
+        Long viewerId = authenticatedUserId == null
+                ? null
+                : "anonymousUser".equals(authenticatedUserId)
+                        ? null
+                        : Long.valueOf(authenticatedUserId);
+        return BikeDetailResponse.from(getBikeDetailService.get(bikeId, viewerId));
     }
 
     @PostMapping

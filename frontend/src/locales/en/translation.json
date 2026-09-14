@@ -1,6 +1,10 @@
 {
   "app": {
     "title": "BikeMatch",
+    "homeLabel": "BikeMatch home",
+    "navigation": "Main navigation",
+    "analyze": "Analyze your bike",
+    "footer": "Understand your suspension. Enjoy the ride.",
     "tagline": "Mountain bike suspension kinematics, explained",
     "skipToContent": "Skip to main content"
   },
@@ -442,5 +446,34 @@
       }
     },
     "placeholder": "This step is ready for its next implementation task."
+  },
+  "home": {
+    "eyebrow": "Suspension, made clear",
+    "title": "Know your bike.",
+    "titleAccent": "Find your flow.",
+    "description": "Turn a side photo into a closer look at your rear suspension. Mark a few points, explore the curves, and understand how your bike moves.",
+    "explore": "Explore the catalog",
+    "guest": "Try the analysis without an account. Sign in to save your bike.",
+    "visualTitle": "A closer look at your suspension",
+    "visualCaption": "Illustration · simple single pivot",
+    "howEyebrow": "From photo to understanding",
+    "howTitle": "Start with the bike you ride.",
+    "steps": {
+      "photo": {
+        "title": "Choose a side photo",
+        "description": "A clear, level photo of your bike at full extension. Simple single-pivot bikes are supported today."
+      },
+      "mark": {
+        "title": "Mark. Measure. Calculate.",
+        "description": "Follow six points on the photo and add your bike’s measurements."
+      },
+      "understand": {
+        "title": "Get to know your suspension",
+        "description": "Explore the curves. Save your analysis to read a plain-language summary in your bike’s profile."
+      }
+    },
+    "communityEyebrow": "Made to be shared",
+    "communityTitle": "More bikes. More perspectives.",
+    "communityDescription": "Explore public analyses from the community, or keep your own bike private until you’re ready to share it."
   }
 }

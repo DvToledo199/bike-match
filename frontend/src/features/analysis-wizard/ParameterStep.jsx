@@ -4,9 +4,6 @@ import { getCalibration, getParameterErrors, parameterFields } from './parameter
 import { wheelConfigurations } from '../../models/wheelConfigurations.js'
 import styles from './ParameterStep.module.css'
 
-const calibrationField = parameterFields[0]
-const analysisFields = parameterFields.slice(1)
-
 function ParameterField({ field, error, onBlur, onChange, value }) {
   const { t } = useTranslation()
   const fieldId = `parameter-${field.name}`
@@ -26,11 +23,11 @@ function ParameterField({ field, error, onBlur, onChange, value }) {
           className={styles.input}
           name={field.name}
           type="number"
-          inputMode="decimal"
+          inputMode={field.step === 1 ? "numeric" : "decimal"}
           min={field.minimum}
           max={field.maximum}
           step={field.step}
-          value={value}
+          value={value ?? ''}
           onChange={onChange}
           onBlur={onBlur}
           aria-describedby={describedBy}
@@ -87,38 +84,11 @@ function ParameterStep({ parameters, points, updateWizardData }) {
         <p className={styles.description}>{t('wizard.parameters.description')}</p>
       </div>
 
-      <section className={styles.section} aria-labelledby="calibration-heading">
-        <div>
-          <h2 id="calibration-heading" className={styles.sectionTitle}>{t('wizard.parameters.calibration.title')}</h2>
-          <p className={styles.sectionDescription}>{t('wizard.parameters.calibration.description')}</p>
-        </div>
-        <ParameterField
-          field={calibrationField}
-          value={parameters[calibrationField.name]}
-          error={getVisibleError(calibrationField.name)}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
-
-        {!calibration && (
-          <p className={styles.calibrationHint}>{t('wizard.parameters.calibration.pending')}</p>
-        )}
-        {calibration && !calibration.isValid && (
-          <p className={styles.error} role="alert">{t('wizard.parameters.calibration.invalidReference')}</p>
-        )}
-        {calibration?.isValid && calibration.isHighScale && (
-          <p className={styles.scaleWarning} role="status">
-            {t('wizard.parameters.calibration.highScaleWarning')}
-          </p>
-        )}
-      </section>
-
-      <section className={styles.section} aria-labelledby="analysis-parameters-heading">
-        <div>
-          <h2 id="analysis-parameters-heading" className={styles.sectionTitle}>{t('wizard.parameters.analysis.title')}</h2>
-          <p className={styles.sectionDescription}>{t('wizard.parameters.analysis.description')}</p>
-        </div>
-        <div className={styles.fieldGrid}>
+      <div className={styles.fieldGrid}>
+          {parameterFields.map((field) => (
+            <ParameterField key={field.name} field={field} value={parameters[field.name]}
+              error={getVisibleError(field.name)} onChange={handleChange} onBlur={handleBlur} />
+          ))}
           <div className={styles.field}>
             <label className={styles.label} htmlFor="parameter-wheelConfiguration">{t('wizard.parameters.wheels.label')}</label>
             <p className={styles.helpText} id="wheel-help">{t('wizard.parameters.wheels.help')}</p>
@@ -142,18 +112,13 @@ function ParameterStep({ parameters, points, updateWizardData }) {
               <p id="wheel-error" className={styles.error} role="alert">{t('wizard.parameters.errors.wheelConfiguration')}</p>
             )}
           </div>
-          {analysisFields.map((field) => (
-            <ParameterField
-              key={field.name}
-              field={field}
-              value={parameters[field.name]}
-              error={getVisibleError(field.name)}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
-          ))}
-        </div>
-      </section>
+      </div>
+      {calibration && !calibration.isValid && (
+        <p className={styles.error} role="alert">{t('wizard.parameters.calibration.invalidReference')}</p>
+      )}
+      {calibration?.isValid && calibration.isHighScale && (
+        <p className={styles.scaleWarning} role="status">{t('wizard.parameters.calibration.highScaleWarning')}</p>
+      )}
     </div>
   )
 }

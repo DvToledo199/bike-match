@@ -1,6 +1,8 @@
 .content {
   display: grid;
   gap: var(--space-xl);
+  max-width: 52rem;
+  margin-inline: auto;
 }
 
 .eyebrow {
@@ -12,7 +14,7 @@
 
 .title {
   margin: var(--space-sm) 0 0;
-  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-size: clamp(1.5rem, 3vw, 2rem);
   letter-spacing: -0.02em;
 }
 
@@ -42,12 +44,13 @@
 .fieldGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-lg) var(--space-md);
+  gap: 1.5rem 2rem;
 }
 
 .field {
   display: grid;
   gap: var(--space-xs);
+  align-content: start;
 }
 
 .label {
@@ -55,7 +58,7 @@
 }
 
 .helpText {
-  min-height: 2.5rem;
+  min-height: 2.6em;
   margin: 0;
   font-size: 0.875rem;
 }

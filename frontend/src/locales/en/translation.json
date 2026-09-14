@@ -254,23 +254,16 @@
     },
     "parameters": {
       "label": "Parameters",
-      "title": "Add the bike and shock measurements",
-      "description": "Use the shock as a ruler for the photo, then add the values needed for the analysis.",
+      "title": "Bike setup",
+      "description": "Add your bike’s measurements.",
       "eyebrow": "Step 3 of 4",
       "calibration": {
-        "title": "Calibrate the photo",
-        "description": "The distance between the two shock mounts tells us how much a pixel represents in the real bike.",
-        "pending": "Enter the shock eye-to-eye measurement to check the scale of this photo.",
         "invalidReference": "The two shock mounts are in the same place. Go back and correct one of those marks.",
         "highScaleWarning": "This photo may be too small for reliable marks. A larger side photo would give a more trustworthy result."
       },
-      "analysis": {
-        "title": "Bike and drivetrain values",
-        "description": "These values describe the shock, suspension travel and gears used in the calculation."
-      },
       "wheels": {
         "label": "Wheel setup",
-        "help": "Choose the wheels fitted to this bike. We use reference tyre dimensions; no rider weight is needed.",
+        "help": "Choose your front and rear wheel sizes.",
         "placeholder": "Select wheel setup",
         "options": {
           "FULL_29": "Full 29″ — both wheels",
@@ -281,32 +274,32 @@
       "fields": {
         "eyeToEye": {
           "label": "Shock eye-to-eye",
-          "help": "Measure from the centre of one shock bolt to the centre of the other.",
+          "help": "Centre to centre between the shock mounting bolts.",
           "unit": "mm"
         },
         "shockStroke": {
           "label": "Shock stroke",
-          "help": "How far the shock shaft can move. This is not the bike's suspension travel.",
+          "help": "How far the shock compresses, in millimetres.",
           "unit": "mm"
         },
         "chainring": {
           "label": "Chainring teeth",
-          "help": "The number of teeth on the front chainring used for the kickback and anti-squat estimates.",
+          "help": "Number of teeth on the front chainring.",
           "unit": "teeth"
         },
         "sprocket": {
-          "label": "Sprocket teeth",
-          "help": "The rear gear used for the kickback and anti-squat estimates. Use the same gear when comparing bikes.",
+          "label": "Largest rear sprocket",
+          "help": "Teeth on the biggest cog in your rear cassette.",
           "unit": "teeth"
         },
         "declaredTravel": {
-          "label": "Declared rear travel",
-          "help": "The rear suspension travel stated by the bike manufacturer.",
+          "label": "Rear wheel travel",
+          "help": "Rear suspension travel stated by the bike manufacturer.",
           "unit": "mm"
         },
         "sag": {
           "label": "Sag",
-          "help": "The usual resting compression of the suspension. 30% is a common starting point.",
+          "help": "Suspension compression under your riding weight, as a percentage.",
           "unit": "%"
         }
       },

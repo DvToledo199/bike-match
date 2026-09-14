@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.net.URI;
 import java.util.List;
+import org.springframework.data.domain.PageRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -139,9 +140,44 @@ class BikeRepositoryTest {
                 .containsExactly("firstowner", "secondowner");
     }
 
+    @Test
+    void returnsOnlyPublicBikesAndAppliesTheCategoryFilter() {
+        User owner = userRepository.saveAndFlush(new User(
+                "catalog-owner@example.com", "catalogowner", "password-hash", Role.USER));
+        Bike publicEnduro = bikeRepository.saveAndFlush(
+                Bike.createPrivate(owner, details("Public enduro")));
+        Bike publicDownhill = bikeRepository.saveAndFlush(
+                Bike.createPrivate(owner, details("Public downhill", BikeCategory.DOWNHILL)));
+        Bike privateBike = bikeRepository.saveAndFlush(
+                Bike.createPrivate(owner, details("Private bike")));
+
+        publicEnduro.requestPublication();
+        publicEnduro.approvePublication();
+        publicDownhill.requestPublication();
+        publicDownhill.approvePublication();
+        bikeRepository.saveAllAndFlush(List.of(publicEnduro, publicDownhill, privateBike));
+        entityManager.clear();
+
+        var allPublic = bikeRepository.findPublicSummaries(
+                null, PageRequest.of(0, ListPublicBikesService.PAGE_SIZE));
+        var enduroOnly = bikeRepository.findPublicSummaries(
+                BikeCategory.ENDURO, PageRequest.of(0, ListPublicBikesService.PAGE_SIZE));
+
+        assertThat(allPublic.getContent())
+                .extracting(PublicBikeSummary::model)
+                .containsExactly("Public downhill", "Public enduro");
+        assertThat(enduroOnly.getContent())
+                .extracting(PublicBikeSummary::model)
+                .containsExactly("Public enduro");
+    }
+
     private BikeDetails details(String model) {
+        return details(model, BikeCategory.ENDURO);
+    }
+
+    private BikeDetails details(String model, BikeCategory category) {
         return new BikeDetails(
-                "Orange", model, (short) 2020, BikeCategory.ENDURO,
+                "Orange", model, (short) 2020, category,
                 SuspensionLayout.SINGLE_PIVOT, 150, 230, 65,
                 WheelConfiguration.FULL_29, CassetteType.TWELVE_SPEED,
                 (short) 32, (short) 50, 30);

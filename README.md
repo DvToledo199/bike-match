@@ -139,6 +139,11 @@ propietario autenticado. La respuesta incluye la foto, los metadatos, el usernam
 del propietario y el resultado guardado con sus curvas, descriptores y capacidades. No
 devuelve los puntos internos de marcado, el correo ni ningún dato de autenticación.
 
+`GET /api/bikes?page=0&category=ENDURO` es el catálogo público. No necesita JWT, solo
+devuelve bicicletas `PUBLIC` y responde con páginas de 12 tarjetas (`items`, `page`,
+`totalPages` y `hasNext`). La categoría es opcional y admite `ENDURO`, `E_ENDURO` o
+`DOWNHILL`. El catálogo no incluye curvas ni datos privados: para eso se abre la ficha.
+
 Después del login, el cliente HTTP del frontend añade automáticamente el JWT guardado
 en la sesión del navegador a las peticiones privadas. La pantalla de "Mis bicis" usa
 `listMyBikes()` para los resúmenes; al abrir una tarjeta, la ficha usa

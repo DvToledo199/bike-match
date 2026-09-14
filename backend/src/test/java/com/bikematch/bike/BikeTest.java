@@ -68,6 +68,30 @@ class BikeTest {
         assertThat(bike.getStatus()).isEqualTo(BikeStatus.PENDING);
     }
 
+    @Test
+    void pendingBikeCanBeApprovedOrRejected() {
+        Bike approvedBike = bike();
+        approvedBike.requestPublication();
+        Bike rejectedBike = bike();
+        rejectedBike.requestPublication();
+
+        approvedBike.approvePublication();
+        rejectedBike.rejectPublication();
+
+        assertThat(approvedBike.getStatus()).isEqualTo(BikeStatus.PUBLIC);
+        assertThat(rejectedBike.getStatus()).isEqualTo(BikeStatus.REJECTED);
+    }
+
+    @Test
+    void nonPendingBikeCannotReceiveAModerationDecision() {
+        Bike bike = bike();
+
+        assertThatThrownBy(bike::approvePublication)
+                .isInstanceOf(BikeNotPendingException.class)
+                .hasMessage("Only pending bikes can be approved or rejected");
+        assertThat(bike.getStatus()).isEqualTo(BikeStatus.PRIVATE);
+    }
+
     private Bike bike() {
         User owner = new User("owner@example.com", "owner", "password-hash", Role.USER);
         BikeDetails details = new BikeDetails(

@@ -113,7 +113,7 @@ IA no bloquea los resultados; su integración se valida con ejemplos reales.
 **Objetivo:** cumplir TODOS los obligatorios. Al acabar este sprint podrías entregar y aprobar.
 
 - [x] Publicar bici (PRIVATE → PENDING) desde backend (#132)
-- [ ] Cola de moderación + aprobar/rechazar (solo MODERATOR) + tests de autorización (un USER recibe 403)
+- [x] Cola de moderación + aprobar/rechazar (solo MODERATOR) + tests de autorización (un USER recibe 403) (#134, #135)
 - [ ] Votos (uno por usuario y bici) + rankings por categoría
 - [ ] Comentarios en bicicletas públicas
 - [ ] Perfil público y rango basado en contribuciones aprobadas

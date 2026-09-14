@@ -231,6 +231,21 @@ public class Bike {
         }
     }
 
+    public void approvePublication() {
+        decidePublication(BikeStatus.PUBLIC);
+    }
+
+    public void rejectPublication() {
+        decidePublication(BikeStatus.REJECTED);
+    }
+
+    private void decidePublication(BikeStatus decision) {
+        if (status != BikeStatus.PENDING) {
+            throw new BikeNotPendingException();
+        }
+        status = decision;
+    }
+
     void setKinematicsResult(KinematicsResult kinematicsResult) {
         requireEditableAnalysisSource();
         if (linkagePoints == null) {

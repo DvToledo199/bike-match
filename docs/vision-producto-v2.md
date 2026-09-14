@@ -105,6 +105,10 @@ Estados previstos:
 3. `PUBLIC`: está aprobada y aparece en el catálogo.
 4. `REJECTED`: no se publica y el propietario recibe el estado.
 
+En el MVP, aprobar o rechazar no solicita un motivo ni envía una notificación: la
+bicicleta conserva su estado en "Mis bicis". El motivo de rechazo queda como mejora
+futura para no añadir datos ni pantallas que aún no se usan.
+
 Nunca se convierte una bicicleta privada en pública sin una acción clara de su dueño.
 La publicación pasa por moderación porque una fotografía mal marcada podría generar
 datos engañosos para toda la comunidad.

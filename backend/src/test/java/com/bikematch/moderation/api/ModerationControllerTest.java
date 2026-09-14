@@ -5,16 +5,23 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.bikematch.api.ApiExceptionHandler;
 import com.bikematch.auth.JwtAuthenticationFilter;
 import com.bikematch.auth.JwtService;
+import com.bikematch.bike.Bike;
 import com.bikematch.bike.BikeCategory;
+import com.bikematch.bike.BikeNotFoundException;
+import com.bikematch.bike.BikeNotPendingException;
+import com.bikematch.bike.BikeStatus;
 import com.bikematch.config.RestAccessDeniedHandler;
 import com.bikematch.config.RestAuthenticationEntryPoint;
 import com.bikematch.config.SecurityConfig;
 import com.bikematch.moderation.ListPendingBikesService;
+import com.bikematch.moderation.ModerateBikePublicationService;
 import com.bikematch.moderation.PendingBikeSummary;
 import io.jsonwebtoken.Claims;
 import java.time.Instant;
@@ -29,6 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(ModerationController.class)
 @Import({
+        ApiExceptionHandler.class,
         SecurityConfig.class,
         JwtAuthenticationFilter.class,
         RestAuthenticationEntryPoint.class,
@@ -41,6 +49,9 @@ class ModerationControllerTest {
 
     @MockitoBean
     private ListPendingBikesService listPendingBikesService;
+
+    @MockitoBean
+    private ModerateBikePublicationService moderateBikePublicationService;
 
     @MockitoBean
     private JwtService jwtService;
@@ -79,6 +90,79 @@ class ModerationControllerTest {
                 .andExpect(status().isUnauthorized());
 
         verify(listPendingBikesService, never()).list();
+    }
+
+    @Test
+    void moderatorCanApproveAPendingBike() throws Exception {
+        authenticate("moderator-token", "7", "MODERATOR");
+        Bike bike = mock(Bike.class);
+        given(bike.getId()).willReturn(12L);
+        given(bike.getStatus()).willReturn(BikeStatus.PUBLIC);
+        given(moderateBikePublicationService.approve(12L)).willReturn(bike);
+
+        mockMvc.perform(post("/api/moderation/{bikeId}/approve", 12L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer moderator-token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(12))
+                .andExpect(jsonPath("$.status").value("PUBLIC"));
+
+        verify(moderateBikePublicationService).approve(12L);
+    }
+
+    @Test
+    void moderatorCanRejectAPendingBike() throws Exception {
+        authenticate("moderator-token", "7", "MODERATOR");
+        Bike bike = mock(Bike.class);
+        given(bike.getId()).willReturn(12L);
+        given(bike.getStatus()).willReturn(BikeStatus.REJECTED);
+        given(moderateBikePublicationService.reject(12L)).willReturn(bike);
+
+        mockMvc.perform(post("/api/moderation/{bikeId}/reject", 12L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer moderator-token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("REJECTED"));
+
+        verify(moderateBikePublicationService).reject(12L);
+    }
+
+    @Test
+    void userCannotApproveOrRejectAPendingBike() throws Exception {
+        authenticate("user-token", "42", "USER");
+
+        mockMvc.perform(post("/api/moderation/{bikeId}/approve", 12L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(post("/api/moderation/{bikeId}/reject", 12L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
+                .andExpect(status().isForbidden());
+
+        verify(moderateBikePublicationService, never()).approve(12L);
+        verify(moderateBikePublicationService, never()).reject(12L);
+    }
+
+    @Test
+    void missingBikeReturnsNotFoundWhenModerating() throws Exception {
+        authenticate("moderator-token", "7", "MODERATOR");
+        given(moderateBikePublicationService.approve(12L))
+                .willThrow(new BikeNotFoundException());
+
+        mockMvc.perform(post("/api/moderation/{bikeId}/approve", 12L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer moderator-token"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Bike not found"));
+    }
+
+    @Test
+    void nonPendingBikeReturnsConflictWhenModerating() throws Exception {
+        authenticate("moderator-token", "7", "MODERATOR");
+        given(moderateBikePublicationService.reject(12L))
+                .willThrow(new BikeNotPendingException());
+
+        mockMvc.perform(post("/api/moderation/{bikeId}/reject", 12L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer moderator-token"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.detail")
+                        .value("Only pending bikes can be approved or rejected"));
     }
 
     private void authenticate(String token, String userId, String role) {

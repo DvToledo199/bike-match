@@ -59,6 +59,7 @@
     "notAvailable": "Not available",
     "analysisReady": "Analysis ready",
     "analysisPending": "Analysis not finished",
+    "openDetail": "Open bike detail",
     "publish": {
       "request": "Request publication",
       "confirmation": "Send this bike to moderation? It will become visible to the community only after approval.",
@@ -86,6 +87,27 @@
     "errors": {
       "sessionExpired": "Your session has expired. Log in again to see your bikes.",
       "unavailable": "We could not load your bikes right now. Check that the BikeMatch backend is running."
+    }
+  },
+  "bikeDetail": {
+    "eyebrow": "Bike analysis",
+    "back": "Back to my bikes",
+    "loading": "Loading this bike…",
+    "retry": "Try again",
+    "owner": "Analysis by @{{username}}",
+    "specifications": "Bike specifications",
+    "noResult": "This bike has no saved kinematics result yet.",
+    "fields": {
+      "layout": "Suspension layout",
+      "travel": "Declared rear travel",
+      "wheelConfiguration": "Wheel setup",
+      "sag": "Sag"
+    },
+    "errors": {
+      "title": "We could not open this bike",
+      "notFound": "This bike is private, no longer available, or does not exist.",
+      "sessionExpired": "Your session has expired. Log in again to open this bike.",
+      "unavailable": "We could not load this bike right now. Check that the BikeMatch backend is running."
     }
   },
   "wizard": {

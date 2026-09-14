@@ -110,7 +110,8 @@
 .details dd { margin: 0; font-weight: 700; text-align: right; }
 
 .primaryButton,
-.secondaryButton {
+.secondaryButton,
+.detailButton {
   padding: 0.7rem 0.9rem;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
@@ -127,6 +128,12 @@
   color: var(--color-text);
   background: transparent;
   border-color: var(--color-border);
+}
+
+.detailButton {
+  color: var(--color-primary);
+  background: transparent;
+  border-color: var(--color-primary);
 }
 
 .primaryButton:disabled,

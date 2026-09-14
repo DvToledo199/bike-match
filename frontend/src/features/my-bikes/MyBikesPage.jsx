@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { listMyBikes, publishBike } from '../../services/myBikes.js'
 import styles from './MyBikesPage.module.css'
 
-function MyBikesPage() {
+function MyBikesPage({ onOpenBikeDetail }) {
   const { t } = useTranslation()
   const [bikes, setBikes] = useState(null)
   const [error, setError] = useState(null)
@@ -88,6 +88,7 @@ function MyBikesPage() {
               confirming={confirmingBikeId === bike.id}
               publishing={publishingBikeId === bike.id}
               publishError={publishError?.bikeId === bike.id ? publishError.requestError : null}
+              onOpenDetails={() => onOpenBikeDetail(bike.id)}
               onRequestPublish={() => { setPublishError(null); setConfirmingBikeId(bike.id) }}
               onCancelPublish={() => setConfirmingBikeId(null)}
               onConfirmPublish={() => handlePublish(bike.id)}
@@ -109,7 +110,7 @@ function PageHeading({ t }) {
   )
 }
 
-function BikeCard({ bike, t, confirming, publishing, publishError, onRequestPublish, onCancelPublish, onConfirmPublish }) {
+function BikeCard({ bike, t, confirming, publishing, publishError, onOpenDetails, onRequestPublish, onCancelPublish, onConfirmPublish }) {
   const statusKey = bike.status?.toLowerCase() ?? 'unknown'
   const title = [bike.brand, bike.model].filter(Boolean).join(' ')
 
@@ -132,6 +133,9 @@ function BikeCard({ bike, t, confirming, publishing, publishError, onRequestPubl
           <div><dt>{t('myBikes.fields.category')}</dt><dd>{bike.category ?? t('myBikes.notAvailable')}</dd></div>
           <div><dt>{t('myBikes.fields.analysis')}</dt><dd>{bike.analyzed ? t('myBikes.analysisReady') : t('myBikes.analysisPending')}</dd></div>
         </dl>
+        <button type="button" className={styles.detailButton} onClick={onOpenDetails}>
+          {t('myBikes.openDetail')}
+        </button>
         {bike.status === 'PRIVATE' && bike.analyzed && !confirming && (
           <button type="button" className={styles.primaryButton} onClick={onRequestPublish}>
             {t('myBikes.publish.request')}

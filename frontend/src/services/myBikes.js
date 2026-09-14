@@ -4,6 +4,12 @@ export function listMyBikes() {
   return requestApi('/api/my-bikes')
 }
 
+export function listPublicBikes({ category = '', page = 0 } = {}) {
+  const params = new URLSearchParams({ page: String(page) })
+  if (category) params.set('category', category)
+  return requestApi(`/api/bikes?${params.toString()}`)
+}
+
 export function getBikeDetail(bikeId) {
   return requestApi(`/api/bikes/${bikeId}`)
 }

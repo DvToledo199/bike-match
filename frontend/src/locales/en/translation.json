@@ -110,6 +110,35 @@
       "unavailable": "We could not load this bike right now. Check that the BikeMatch backend is running."
     }
   },
+  "catalog": {
+    "navLabel": "Catalog",
+    "eyebrow": "Community bikes",
+    "title": "Explore analysed bikes",
+    "description": "Browse public suspension analyses shared by the BikeMatch community.",
+    "filterLabel": "Wheel and bike category",
+    "loading": "Loading the public catalog…",
+    "retry": "Try again",
+    "empty": "No public bikes match this category yet.",
+    "openDetail": "Open bike detail",
+    "photoAlt": "Photo of {{name}}",
+    "noPhoto": "No photo",
+    "unnamed": "Unnamed bike",
+    "filters": {
+      "all": "All categories",
+      "enduro": "Enduro",
+      "eEnduro": "E-Enduro",
+      "downhill": "Downhill"
+    },
+    "pagination": {
+      "label": "Catalog pages",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{page}} of {{total}}"
+    },
+    "errors": {
+      "unavailable": "We could not load the public catalog right now. Check that the BikeMatch backend is running."
+    }
+  },
   "wizard": {
     "progressLabel": "Analysis progress",
     "stepCount": "Step {{current}} of {{total}}",

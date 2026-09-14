@@ -9,7 +9,7 @@ import PreviewStatus from './PreviewStatus.jsx'
 import { isStepComplete, wizardSteps } from './wizardSteps.js'
 import styles from './AnalysisWizard.module.css'
 
-function AnalysisWizard() {
+function AnalysisWizard({ active = true }) {
   const { t } = useTranslation()
   const {
     activeStepIndex,
@@ -23,11 +23,11 @@ function AnalysisWizard() {
   const previousStep = useRef(activeStepIndex)
 
   useEffect(() => {
-    if (previousStep.current !== activeStepIndex) {
+    if (active && previousStep.current !== activeStepIndex) {
       panelRef.current?.focus()
       previousStep.current = activeStepIndex
     }
-  }, [activeStepIndex])
+  }, [activeStepIndex, active])
 
   useEffect(() => {
     return () => {

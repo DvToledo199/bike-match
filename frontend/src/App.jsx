@@ -1,51 +1,58 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Layout from './components/Layout.jsx'
+import HomePage from './features/home/HomePage.jsx'
 import AnalysisWizard from './features/analysis-wizard/AnalysisWizard.jsx'
 import LoginForm from './features/auth/LoginForm.jsx'
 import RegisterForm from './features/auth/RegisterForm.jsx'
 import MyBikesPage from './features/my-bikes/MyBikesPage.jsx'
 import BikeDetailPage from './features/my-bikes/BikeDetailPage.jsx'
 import CatalogPage from './features/catalog/CatalogPage.jsx'
+import useAppRoute from './hooks/useAppRoute.js'
 import { clearSession, getSession } from './services/session.js'
 
 function App() {
-  const [screen, setScreen] = useState('analysis')
-  const [selectedBikeId, setSelectedBikeId] = useState(null)
-  const [detailOrigin, setDetailOrigin] = useState('myBikes')
+  const route = useAppRoute()
+  const [detailOrigin, setDetailOrigin] = useState('/my-bikes')
   const [session, setSession] = useState(getSession)
+  const previousScreen = useRef(route.screen)
+  const navigate = (path) => { window.location.hash = path }
+
+  useEffect(() => {
+    if (previousScreen.current !== route.screen) {
+      document.getElementById('main-content')?.focus()
+      window.scrollTo?.(0, 0)
+      previousScreen.current = route.screen
+    }
+  }, [route.screen])
 
   function logout() {
     clearSession()
     setSession(null)
-    setSelectedBikeId(null)
-    setScreen('analysis')
+    navigate('/')
   }
 
+  function openBike(bikeId, origin) {
+    setDetailOrigin(origin)
+    navigate(`/bikes/${bikeId}`)
+  }
+
+  const needsLogin = route.screen === 'myBikes' && !session
+
   return (
-    <Layout
-      session={session}
-      onOpenCatalog={() => setScreen('catalog')}
-      onOpenRegister={() => setScreen('register')}
-      onOpenLogin={() => setScreen('login')}
-      onOpenMyBikes={() => setScreen('myBikes')}
-      onLogout={logout}
-    >
-      {screen === 'register' ? (
-        <RegisterForm onContinueAsGuest={() => setScreen('analysis')} />
-      ) : screen === 'login' ? (
-        <LoginForm
-          onLoggedIn={(nextSession) => { setSession(nextSession); setScreen('analysis') }}
-          onContinueAsGuest={() => setScreen('analysis')}
-        />
-      ) : screen === 'myBikes' ? (
-        <MyBikesPage onOpenBikeDetail={(bikeId) => { setSelectedBikeId(bikeId); setDetailOrigin('myBikes'); setScreen('bikeDetail') }} />
-      ) : screen === 'catalog' ? (
-        <CatalogPage onOpenBikeDetail={(bikeId) => { setSelectedBikeId(bikeId); setDetailOrigin('catalog'); setScreen('bikeDetail') }} />
-      ) : screen === 'bikeDetail' ? (
-        <BikeDetailPage bikeId={selectedBikeId} onBack={() => setScreen(detailOrigin)} />
-      ) : (
-        <AnalysisWizard />
+    <Layout session={session} screen={route.screen} onLogout={logout}>
+      {/* Keep the draft mounted so visiting the catalog or login preserves it. */}
+      <div hidden={route.screen !== 'analysis'}>
+        <AnalysisWizard active={route.screen === 'analysis'} />
+      </div>
+      {route.screen === 'home' && <HomePage />}
+      {route.screen === 'register' && <RegisterForm onContinueAsGuest={() => navigate('/analyze')} />}
+      {(route.screen === 'login' || needsLogin) && (
+        <LoginForm onLoggedIn={(nextSession) => { setSession(nextSession); navigate('/analyze') }}
+          onContinueAsGuest={() => navigate('/analyze')} />
       )}
+      {route.screen === 'myBikes' && session && <MyBikesPage onOpenBikeDetail={(id) => openBike(id, '/my-bikes')} />}
+      {route.screen === 'catalog' && <CatalogPage onOpenBikeDetail={(id) => openBike(id, '/catalog')} />}
+      {route.screen === 'bikeDetail' && <BikeDetailPage key={route.bikeId} bikeId={route.bikeId} onBack={() => navigate(detailOrigin)} />}
     </Layout>
   )
 }

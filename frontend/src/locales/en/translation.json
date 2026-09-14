@@ -45,6 +45,37 @@
       }
     }
   },
+  "myBikes": {
+    "navLabel": "My bikes",
+    "eyebrow": "Your garage",
+    "title": "My bikes",
+    "description": "Your saved analyses and their current visibility status.",
+    "loading": "Loading your bikes…",
+    "empty": "You have not saved a bike yet. Start an analysis to create one.",
+    "retry": "Try again",
+    "photoAlt": "Photo of {{name}}",
+    "noPhoto": "No photo",
+    "unnamed": "Unnamed bike",
+    "notAvailable": "Not available",
+    "analysisReady": "Analysis ready",
+    "analysisPending": "Analysis not finished",
+    "fields": {
+      "year": "Year",
+      "category": "Category",
+      "analysis": "Analysis"
+    },
+    "status": {
+      "private": "Private",
+      "pending": "Pending review",
+      "public": "Public",
+      "rejected": "Rejected",
+      "unknown": "Unknown"
+    },
+    "errors": {
+      "sessionExpired": "Your session has expired. Log in again to see your bikes.",
+      "unavailable": "We could not load your bikes right now. Check that the BikeMatch backend is running."
+    }
+  },
   "wizard": {
     "progressLabel": "Analysis progress",
     "stepCount": "Step {{current}} of {{total}}",

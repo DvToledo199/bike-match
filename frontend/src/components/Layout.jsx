@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import styles from './Layout.module.css'
 
-function Layout({ children, session, onOpenRegister, onOpenLogin, onLogout }) {
+function Layout({ children, session, onOpenRegister, onOpenLogin, onOpenMyBikes, onLogout }) {
   const { t } = useTranslation()
 
   return (
@@ -12,6 +12,9 @@ function Layout({ children, session, onOpenRegister, onOpenLogin, onLogout }) {
         <div className={styles.accountActions}>
           {session ? (
             <>
+              <button type="button" className={styles.accountButton} onClick={onOpenMyBikes}>
+                {t('myBikes.navLabel')}
+              </button>
               <span className={styles.sessionLabel}>{session.username}</span>
               <button type="button" className={styles.accountButton} onClick={onLogout}>
                 {t('auth.logout')}

@@ -83,4 +83,50 @@ class BikeRepositoryTest {
         assertThat(capabilities.get("antiSquat").asBoolean()).isTrue();
         assertThat(capabilities.get("antiRise").asBoolean()).isTrue();
     }
+
+    @Test
+    void returnsOnlyTheOwnersSummariesWithDraftAndAnalysisState() {
+        User owner = userRepository.saveAndFlush(new User(
+                "summary-owner@example.com", "summaryowner", "password-hash", Role.USER));
+        User anotherOwner = userRepository.saveAndFlush(new User(
+                "another-owner@example.com", "anotherowner", "password-hash", Role.USER));
+        Bike draft = bikeRepository.saveAndFlush(Bike.createPrivate(owner, details("Draft bike")));
+        Bike analyzed = bikeRepository.saveAndFlush(Bike.createPrivate(owner, details("Analyzed bike")));
+        bikeRepository.saveAndFlush(Bike.createPrivate(anotherOwner, details("Other owner's bike")));
+
+        analyzed.attachPhoto(URI.create("https://example.com/analyzed-bike.jpg"));
+        analyzed.attachLinkagePoints(geometry());
+        bikeRepository.saveAndFlush(analyzed);
+        resultRepository.saveAndFlush(new KinematicsResult(
+                analyzed, 1, "monopivot-reference-v2", "{\"leverageCurve\":[]}",
+                "{\"conditions\":{}}", "{\"antiSquat\":true}"));
+        entityManager.clear();
+
+        List<OwnedBikeSummary> summaries = bikeRepository.findSummariesByOwnerId(owner.getId());
+
+        assertThat(summaries)
+                .extracting(OwnedBikeSummary::id)
+                .containsExactly(analyzed.getId(), draft.getId());
+        assertThat(summaries)
+                .extracting(OwnedBikeSummary::analyzed)
+                .containsExactly(true, false);
+    }
+
+    private BikeDetails details(String model) {
+        return new BikeDetails(
+                "Orange", model, (short) 2020, BikeCategory.ENDURO,
+                SuspensionLayout.SINGLE_PIVOT, 150, 230, 65,
+                WheelConfiguration.FULL_29, CassetteType.TWELVE_SPEED,
+                (short) 32, (short) 50, 30);
+    }
+
+    private MarkedPhotoGeometry geometry() {
+        return MarkedPhotoGeometry.create(1800, 1200, List.of(
+                new MarkedPhotoPoint(PointType.MAIN_PIVOT, 805, 796),
+                new MarkedPhotoPoint(PointType.SHOCK_FRAME, 923, 640),
+                new MarkedPhotoPoint(PointType.SHOCK_SWINGARM, 760, 661),
+                new MarkedPhotoPoint(PointType.BOTTOM_BRACKET, 778, 855),
+                new MarkedPhotoPoint(PointType.REAR_AXLE, 409, 826),
+                new MarkedPhotoPoint(PointType.FRONT_AXLE, 1433, 826)));
+    }
 }

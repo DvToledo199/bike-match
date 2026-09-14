@@ -18,5 +18,22 @@ public interface BikeRepository extends JpaRepository<Bike, Long> {
             @Param("bikeId") Long bikeId,
             @Param("ownerId") Long ownerId);
 
-    List<Bike> findAllByOwnerIdOrderByCreatedAtDesc(Long ownerId);
+    @Query("""
+            select new com.bikematch.bike.OwnedBikeSummary(
+                bike.id,
+                bike.brand,
+                bike.model,
+                bike.modelYear,
+                bike.category,
+                bike.photoUrl,
+                bike.status,
+                case when result.id is null then false else true end,
+                bike.createdAt
+            )
+            from Bike bike
+            left join bike.kinematicsResult result
+            where bike.owner.id = :ownerId
+            order by bike.createdAt desc, bike.id desc
+            """)
+    List<OwnedBikeSummary> findSummariesByOwnerId(@Param("ownerId") Long ownerId);
 }

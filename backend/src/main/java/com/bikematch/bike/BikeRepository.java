@@ -1,6 +1,7 @@
 package com.bikematch.bike;
 
 import jakarta.persistence.LockModeType;
+import com.bikematch.moderation.PendingBikeSummary;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Lock;
@@ -40,4 +41,21 @@ public interface BikeRepository extends JpaRepository<Bike, Long> {
             order by bike.createdAt desc, bike.id desc
             """)
     List<OwnedBikeSummary> findSummariesByOwnerId(@Param("ownerId") Long ownerId);
+
+    @Query("""
+            select new com.bikematch.moderation.PendingBikeSummary(
+                bike.id,
+                bike.brand,
+                bike.model,
+                bike.modelYear,
+                bike.category,
+                bike.photoUrl,
+                bike.owner.username,
+                bike.createdAt
+            )
+            from Bike bike
+            where bike.status = com.bikematch.bike.BikeStatus.PENDING
+            order by bike.createdAt asc, bike.id asc
+            """)
+    List<PendingBikeSummary> findPendingSummaries();
 }

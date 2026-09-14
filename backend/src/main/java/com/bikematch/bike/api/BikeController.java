@@ -4,7 +4,9 @@ import com.bikematch.bike.AttachBikePhotoService;
 import com.bikematch.bike.Bike;
 import com.bikematch.bike.BikePhotoFile;
 import com.bikematch.bike.CreateBikeService;
+import com.bikematch.bike.FinalizeBikeAnalysisService;
 import com.bikematch.bike.InvalidBikePhotoException;
+import com.bikematch.kinematics.api.PreviewResponse;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
@@ -25,13 +27,16 @@ public class BikeController {
 
     private final CreateBikeService createBikeService;
     private final AttachBikePhotoService attachBikePhotoService;
+    private final FinalizeBikeAnalysisService finalizeBikeAnalysisService;
 
     public BikeController(
             CreateBikeService createBikeService,
-            AttachBikePhotoService attachBikePhotoService
+            AttachBikePhotoService attachBikePhotoService,
+            FinalizeBikeAnalysisService finalizeBikeAnalysisService
     ) {
         this.createBikeService = createBikeService;
         this.attachBikePhotoService = attachBikePhotoService;
+        this.finalizeBikeAnalysisService = finalizeBikeAnalysisService;
     }
 
     @PostMapping
@@ -63,5 +68,19 @@ public class BikeController {
         } catch (IOException exception) {
             throw new InvalidBikePhotoException("Photo could not be read", exception);
         }
+    }
+
+    @PostMapping("/{bikeId}/analysis")
+    public ResponseEntity<PreviewResponse> finalizeAnalysis(
+            @AuthenticationPrincipal String authenticatedUserId,
+            @PathVariable long bikeId,
+            @Valid @RequestBody FinalizeBikeAnalysisRequest request
+    ) {
+        long ownerId = Long.parseLong(authenticatedUserId);
+        PreviewResponse response = finalizeBikeAnalysisService.finalizeAnalysis(
+                ownerId, bikeId, request.toGeometry());
+        return ResponseEntity
+                .created(URI.create("/api/bikes/" + bikeId + "/analysis"))
+                .body(response);
     }
 }

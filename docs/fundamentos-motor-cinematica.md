@@ -35,8 +35,16 @@ mecánicos relevantes. Cada punto viaja con una **etiqueta** que identifica su p
 | Anclajes del amortiguador (2) | Sus extremos; la variación de su distancia mide la compresión |
 | Eje de pedalier | Referencia para el crecimiento de cadena (kickback) |
 
-Los puntos se almacenan **normalizados (0–1)** respecto a las dimensiones de la imagen,
-para ser independientes del dispositivo y del tamaño de pantalla.
+Los puntos se almacenan en **píxeles de la imagen original**, acompañados por su ancho,
+alto y la versión del formato. No son los píxeles con los que la foto aparece en pantalla:
+el `viewBox` del marcador SVG conserva la correspondencia al verla grande, pequeña o en
+otro dispositivo.
+
+Mientras el análisis solo sea una previsualización, se pueden corregir la foto y los
+puntos. Al guardar el primer resultado de una bicicleta, ambos pasan a ser su fuente
+inmutable. Para usar otra foto o volver a marcar se crea otro análisis, aunque represente
+la misma bicicleta. Los parámetros técnicos sí podrán recalcular el resultado sin cambiar
+esa fuente.
 
 **Parámetros de ficha técnica:** carrera del amortiguador, recorrido trasero declarado,
 desarrollo de cálculo (dientes de plato y piñón, derivados del tipo de cassette) y

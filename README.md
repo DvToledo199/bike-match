@@ -3,15 +3,17 @@
 MVP de un bootcamp Java: foto lateral de una bici → seis puntos → medidas → curvas
 de leverage, kickback, trayectoria del eje, anti-squat y anti-rise de referencia.
 Los descriptores serán entrada de una futura explicación con IA. El backend ya tiene
-registro/login JWT y control de acceso por roles; persistencia de bicis e IA siguen
-pendientes.
+registro/login JWT, control de acceso por roles y persistencia de bicicletas, fotos,
+puntos y resultados. La interfaz de producto y la explicación con IA siguen pendientes.
 
 ## Estado
 
 Sprint 1 completado: motor monopivote simple y asistente React operativos, incluida
 la validación manual de una foto real contra Linkage Design ([#54](https://github.com/DvToledo199/bike-match/issues/54)).
-Comienza Sprint 2: cuentas y persistencia. El preview actual no guarda la foto ni
-datos en la base de datos. PostgreSQL es necesario para arrancar Spring y Flyway.
+Sprint 2 en curso: el backend ya permite registrar, iniciar sesión, crear una bicicleta,
+subir su foto y finalizar un análisis persistente. El frontend continúa usando el preview
+público, que no guarda la foto ni datos en la base de datos. PostgreSQL es necesario para
+arrancar Spring y Flyway.
 No soporta monopivotes con bieleta que modifica el accionamiento del amortiguador,
 cuatro barras ni pivotes virtuales. Son estimaciones, no mediciones de laboratorio.
 
@@ -46,8 +48,10 @@ configurar `SERVER_ADDRESS`, `CORS_ALLOWED_ORIGINS`, secretos y TLS: **esto no e
 despliegue de producción**. Cambiar una contraseña en `.env` no la cambia dentro de
 un volumen PostgreSQL ya inicializado; no borres ese volumen sin proteger sus datos.
 
-Si falla la conexión, comprueba Docker y health. El botón de reintento conserva tus
-marcas. Recargar o cerrar la pestaña **sí las pierde**: solo viven en memoria.
+Si falla la conexión durante el asistente público, comprueba Docker y health. El botón
+de reintento conserva tus marcas. Recargar o cerrar la pestaña **sí las pierde**: ese
+preview solo vive en memoria. El flujo autenticado para guardar una bicicleta ya existe
+en backend, pero todavía no está conectado a la interfaz.
 
 ## Autenticación y roles
 
@@ -97,9 +101,9 @@ npm run build
 npm audit
 ```
 
-GitHub Actions ejecuta Java y, por separado, tests/lint/build del frontend. Auditoría
-actualizada el 13 de septiembre: **135 tests Java y 34 frontend**. JaCoCo y la cobertura ≥60%
-siguen previstos para Sprint 3: el número de tests no acredita ese porcentaje.
+GitHub Actions ejecuta Java y, por separado, tests/lint/build del frontend. JaCoCo y la
+cobertura ≥60% siguen previstos para Sprint 3: el número de tests no acredita por sí solo
+ese porcentaje.
 
 ## Organización y contrato
 
@@ -117,6 +121,13 @@ La foto debe ser lateral, nivelada y con suspensión extendida; puede mirar a am
 lados. Selector Full 29/Mullet/Full 27,5, sin pedir peso. El cálculo ampliado incluye
 piñón, radios nominales, CG de referencia y corrección de inclinación teniendo en
 cuenta ruedas distintas. Versiones y supuestos viajan con los resultados.
+
+El flujo persistente requiere JWT: `POST /api/bikes` guarda los metadatos privados,
+`POST /api/bikes/{id}/photo` adjunta la foto y `POST /api/bikes/{id}/analysis` recibe
+las dimensiones naturales y los seis puntos, calcula las curvas y guarda fuente y
+resultado en una misma transacción. Desde entonces foto y puntos quedan bloqueados;
+volver a marcarlos crea otra bicicleta/análisis. Los parámetros técnicos podrán tener
+un flujo de edición y recálculo posterior sin modificar esa fuente.
 
 Son **estimaciones bajo condiciones de referencia**, no medidas individuales ni
 validación de campo. Los clientes sin ruedas conservan el cálculo V1 (sin curvas

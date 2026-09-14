@@ -99,6 +99,28 @@ GitHub cuando aplica).
 
 ## API REST
 
+### Fuente inmutable del análisis guardado
+
+- **Decisión:** mientras una bicicleta no tenga resultado se puede corregir su foto. Al
+  guardar el primer análisis, foto y puntos quedan bloqueados; repetir el marcado crea
+  otra bicicleta/análisis. El preview público sigue siendo editable porque no persiste.
+- **Persistencia:** los puntos usan el sistema de coordenadas de la imagen original y
+  guardan ancho, alto y versión. PostgreSQL conserva junto a ellos un único resultado
+  actual. El cálculo y ambos guardados comparten transacción.
+- **Concurrencia:** subir foto y finalizar toman un bloqueo de escritura sobre esa bici,
+  para que dos peticiones simultáneas no puedan saltarse la regla.
+- **Recalcular:** foto y puntos son la fuente; curvas y explicación son derivados. Una
+  futura edición de medidas/desarrollo actualizará el resultado y sus textos, pero una
+  bici pública deberá volver a moderación.
+
+### Entrega de fotos privadas mediante URL
+
+- **Qué:** la aplicación protege la relación bici-foto por propietario, pero Cloudinary
+  entrega actualmente una URL HTTPS normal. Quien conozca exactamente esa URL podría
+  abrirla fuera de BikeMatch.
+- **Mejora futura:** si la privacidad estricta lo exige, usar recursos autenticados,
+  URLs firmadas de corta duración o servir la imagen mediante el backend.
+
 ### 7. La respuesta reutiliza los records del dominio (sin DTOs de salida)
 - **Qué:** `PreviewResponse` agrupa directamente los records del motor (series de
   curvas, descriptores, `TravelCheck`) en lugar de copiarlos a DTOs de respuesta propios.

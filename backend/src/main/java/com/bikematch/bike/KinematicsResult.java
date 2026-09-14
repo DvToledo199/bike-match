@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.Objects;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -51,12 +52,15 @@ public class KinematicsResult {
 
     public KinematicsResult(Bike bike, int resultVersion, String engineVersion, String curves,
                             String descriptors, String capabilities) {
-        this.bike = bike;
+        this.bike = Objects.requireNonNull(bike, "Bike is required");
+        if (resultVersion < 1) {
+            throw new IllegalArgumentException("Result version must be positive");
+        }
         this.resultVersion = resultVersion;
-        this.engineVersion = engineVersion;
-        this.curves = curves;
-        this.descriptors = descriptors;
-        this.capabilities = capabilities;
+        this.engineVersion = requireText(engineVersion, "Engine version");
+        this.curves = requireText(curves, "Curves");
+        this.descriptors = requireText(descriptors, "Descriptors");
+        this.capabilities = requireText(capabilities, "Capabilities");
         this.computedAt = Instant.now();
         bike.setKinematicsResult(this);
     }
@@ -71,5 +75,32 @@ public class KinematicsResult {
 
     public String getEngineVersion() {
         return engineVersion;
+    }
+
+    public int getResultVersion() {
+        return resultVersion;
+    }
+
+    public String getCurves() {
+        return curves;
+    }
+
+    public String getDescriptors() {
+        return descriptors;
+    }
+
+    public String getCapabilities() {
+        return capabilities;
+    }
+
+    public Instant getComputedAt() {
+        return computedAt;
+    }
+
+    private static String requireText(String value, String name) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(name + " is required");
+        }
+        return value;
     }
 }

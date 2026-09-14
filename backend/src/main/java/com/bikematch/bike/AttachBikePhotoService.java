@@ -20,7 +20,7 @@ public class AttachBikePhotoService {
     @Transactional
     public Bike attach(long ownerId, long bikeId, BikePhotoFile photo) {
         Objects.requireNonNull(photo, "Photo is required");
-        Bike bike = bikeRepository.findByIdAndOwnerId(bikeId, ownerId)
+        Bike bike = bikeRepository.findOwnedByIdForUpdate(bikeId, ownerId)
                 .orElseThrow(BikeNotFoundException::new);
 
         bike.requireEditableAnalysisSource();

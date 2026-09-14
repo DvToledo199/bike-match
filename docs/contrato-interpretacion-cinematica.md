@@ -17,19 +17,26 @@ Es como separar una hoja de resultados de un comentarista deportivo: el marcador
 sale del partido y el comentarista lo traduce para quien no lo ha visto. El
 comentario no puede cambiar el marcador.
 
-El contrato de persistencia no cambia todavía el JSON público de
-`POST /api/kinematics/preview`. Define el resultado completo que #6 debe guardar
-después de ejecutar ese endpoint internamente.
+La persistencia no cambia el JSON público de `POST /api/kinematics/preview`.
+El flujo autenticado reutiliza el mismo motor y guarda el resultado completo definido
+en este contrato.
 
 ## 2. Resultado canónico que se guarda
 
 Cada bicicleta tendrá un único resultado actual (`kinematics_results`, relación
-1:1 con `bikes`). Al crear o editar la bici se recalcula y se reemplaza de forma
-atómica; no se recalcula en cada consulta. El historial de ejecuciones es una
-posible mejora futura, no una tabla prematura del MVP.
+1:1 con `bikes`). `POST /api/bikes/{id}/analysis` calcula y guarda en una misma
+transacción los puntos de origen y ese resultado; si el cálculo falla, no persiste
+ninguno. `POST /api/kinematics/preview` continúa siendo público y no sella datos.
 
-La migración de #6 debe conservar estos campos, aunque algunos estén duplicados
-de forma útil entre columnas y JSON:
+Tras el primer resultado guardado, la foto y los puntos son inmutables. Corregirlos
+implica crear otra bicicleta/análisis, incluso si se reutiliza la misma foto. Una futura
+edición de parámetros técnicos podrá recalcular y reemplazar atómicamente el resultado
+actual, sin recalcular en cada consulta ni alterar la fuente. Si la bici está pendiente
+o pública, esos cambios deberán devolverla a privada o pasar de nuevo por moderación.
+El historial de ejecuciones es una posible mejora futura, no una tabla prematura del MVP.
+
+La persistencia conserva estos campos, aunque algunos estén duplicados de forma útil
+entre columnas y JSON:
 
 | Campo de `kinematics_results` | Tipo previsto | Contenido | Motivo |
 |---|---|---|---|
@@ -57,10 +64,10 @@ de las curvas son los nombres reales de `PreviewResponse`:
   "engineVersion": "monopivot-reference-v2",
   "curves": {
     "leverageCurve": [{ "wheelTravelMm": 0.0, "ratio": 2.65 }],
-    "kickbackCurve": [{ "wheelTravelMm": 0.0, "degrees": 0.0 }],
+    "kickbackCurve": [{ "wheelTravelMm": 0.0, "kickbackDegrees": 0.0 }],
     "axlePath": [{ "x": 0.0, "y": 0.0 }],
-    "antiSquatCurve": [{ "wheelTravelMm": 0.0, "percentage": 112.0 }],
-    "antiRiseCurve": [{ "wheelTravelMm": 0.0, "percentage": 78.0 }]
+    "antiSquatCurve": [{ "wheelTravelMm": 0.0, "percent": 112.0 }],
+    "antiRiseCurve": [{ "wheelTravelMm": 0.0, "percent": 78.0 }]
   },
   "descriptors": {
     "leverageDescriptors": { "usefulProgressionPercent": 18.0 },
@@ -248,8 +255,8 @@ caché pública.
 
 ## 9. Consecuencia para las siguientes issues
 
-- **#6** crea la migración y persiste el resultado con las columnas y el contenido
-  de la sección 2. No guarda todavía una explicación generada.
+- **#6** ya dispone de migración y persistencia de los puntos y del resultado con las
+  columnas y el contenido de la sección 2. No guarda todavía una explicación generada.
 - **#104** crea el adaptador de contexto, las reglas/fallback, proveedor y caché
   versionada respetando las secciones 4, 5 y 8.
 - **#105** muestra el resumen junto a la foto, las gráficas y las evidencias de la

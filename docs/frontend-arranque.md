@@ -11,7 +11,9 @@ El Sprint 1 implementa motor monopivote simple y endpoint REST
 **`POST /api/kinematics/preview`** (público, no persiste datos), junto con el frontend:
 foto lateral → **marcar puntos** → parámetros → **curvas y descriptores**.
 La prueba real de #54 está completada. El arranque de Spring sí necesita PostgreSQL.
-El proyecto debe quedar **EXPLICABLE**; cuentas, persistencia e IA son posteriores.
+El proyecto debe quedar **EXPLICABLE**. Esta guía describe el preview de V1; en Sprint 2
+el backend ya añadió cuentas y el guardado de bicicletas, fotos, puntos y resultados,
+pero el frontend todavía no consume ese flujo. La IA sigue pendiente.
 
 ## 1. Perfil de David y forma de trabajar (IMPORTANTE)
 - **David** es estudiante de bootcamp. El **backend lo ha hecho él a mano**; en **frontend parte

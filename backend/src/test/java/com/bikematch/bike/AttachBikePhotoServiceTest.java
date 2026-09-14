@@ -44,7 +44,7 @@ class AttachBikePhotoServiceTest {
     void uploadsAndAttachesAPhotoToTheOwnersBike() {
         BikePhotoFile photo = validPhoto();
         URI storedPhoto = URI.create("https://res.cloudinary.com/demo/image/upload/bike.jpg");
-        given(bikeRepository.findByIdAndOwnerId(7L, 42L)).willReturn(Optional.of(bike));
+        given(bikeRepository.findOwnedByIdForUpdate(7L, 42L)).willReturn(Optional.of(bike));
         given(bike.getId()).willReturn(7L);
         given(imageStorage.upload(any(byte[].class), eq("bikematch/bikes/7")))
                 .willReturn(storedPhoto);
@@ -62,7 +62,7 @@ class AttachBikePhotoServiceTest {
 
     @Test
     void hidesBikesThatDoNotBelongToTheAuthenticatedUser() {
-        given(bikeRepository.findByIdAndOwnerId(7L, 42L)).willReturn(Optional.empty());
+        given(bikeRepository.findOwnedByIdForUpdate(7L, 42L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.attach(42L, 7L, validPhoto()))
                 .isInstanceOf(BikeNotFoundException.class);
@@ -73,7 +73,7 @@ class AttachBikePhotoServiceTest {
 
     @Test
     void storageFailureDoesNotAttachABrokenUrl() {
-        given(bikeRepository.findByIdAndOwnerId(7L, 42L)).willReturn(Optional.of(bike));
+        given(bikeRepository.findOwnedByIdForUpdate(7L, 42L)).willReturn(Optional.of(bike));
         given(bike.getId()).willReturn(7L);
         given(imageStorage.upload(any(), anyString()))
                 .willThrow(new ImageStorageException());
@@ -87,7 +87,7 @@ class AttachBikePhotoServiceTest {
 
     @Test
     void rejectsAnAnalyzedBikeBeforeOverwritingItsStoredPhoto() {
-        given(bikeRepository.findByIdAndOwnerId(7L, 42L)).willReturn(Optional.of(bike));
+        given(bikeRepository.findOwnedByIdForUpdate(7L, 42L)).willReturn(Optional.of(bike));
         org.mockito.BDDMockito.willThrow(new BikeAnalysisLockedException())
                 .given(bike).requireEditableAnalysisSource();
 

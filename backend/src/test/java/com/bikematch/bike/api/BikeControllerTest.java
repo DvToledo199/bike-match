@@ -24,6 +24,8 @@ import com.bikematch.bike.BikePhotoFile;
 import com.bikematch.bike.BikeDetails;
 import com.bikematch.bike.BikeStatus;
 import com.bikematch.bike.CreateBikeService;
+import com.bikematch.bike.FinalizeBikeAnalysisService;
+import com.bikematch.bike.MarkedPhotoGeometry;
 import com.bikematch.config.RestAccessDeniedHandler;
 import com.bikematch.config.RestAuthenticationEntryPoint;
 import com.bikematch.config.SecurityConfig;
@@ -72,6 +74,21 @@ class BikeControllerTest {
             }
             """;
 
+    private static final String VALID_ANALYSIS_REQUEST = """
+            {
+              "imageWidth": 1800,
+              "imageHeight": 1200,
+              "points": [
+                {"type":"MAIN_PIVOT","x":804.9,"y":795.8},
+                {"type":"SHOCK_FRAME","x":922.5,"y":640.0},
+                {"type":"SHOCK_SWINGARM","x":760.4,"y":660.6},
+                {"type":"BOTTOM_BRACKET","x":778.4,"y":855.4},
+                {"type":"REAR_AXLE","x":409.0,"y":826.1},
+                {"type":"FRONT_AXLE","x":1432.5,"y":826.1}
+              ]
+            }
+            """;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -80,6 +97,9 @@ class BikeControllerTest {
 
     @MockitoBean
     private AttachBikePhotoService attachBikePhotoService;
+
+    @MockitoBean
+    private FinalizeBikeAnalysisService finalizeBikeAnalysisService;
 
     @MockitoBean
     private JwtService jwtService;
@@ -268,6 +288,57 @@ class BikeControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail")
                         .value("An analyzed bike's photo and marked points cannot be changed"));
+    }
+
+    @Test
+    void authenticatedOwnerFinalizesAndStoresAnAnalysis() throws Exception {
+        authenticateUserToken();
+
+        mockMvc.perform(post("/api/bikes/{bikeId}/analysis", 7L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_ANALYSIS_REQUEST))
+                .andExpect(status().isCreated())
+                .andExpect(header().string(
+                        HttpHeaders.LOCATION, "/api/bikes/7/analysis"));
+
+        ArgumentCaptor<MarkedPhotoGeometry> geometryCaptor =
+                ArgumentCaptor.forClass(MarkedPhotoGeometry.class);
+        verify(finalizeBikeAnalysisService)
+                .finalizeAnalysis(eq(42L), eq(7L), geometryCaptor.capture());
+        org.assertj.core.api.Assertions.assertThat(geometryCaptor.getValue().imageWidth())
+                .isEqualTo(1800);
+        org.assertj.core.api.Assertions.assertThat(geometryCaptor.getValue().points())
+                .hasSize(6);
+    }
+
+    @Test
+    void missingTokenCannotFinalizeAnAnalysis() throws Exception {
+        mockMvc.perform(post("/api/bikes/{bikeId}/analysis", 7L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_ANALYSIS_REQUEST))
+                .andExpect(status().isUnauthorized());
+
+        verify(finalizeBikeAnalysisService, never())
+                .finalizeAnalysis(anyLong(), anyLong(), any(MarkedPhotoGeometry.class));
+    }
+
+    @Test
+    void pointOutsideOriginalImageReturns400BeforeCalculation() throws Exception {
+        authenticateUserToken();
+        String invalidRequest = VALID_ANALYSIS_REQUEST.replace(
+                "\"x\":804.9", "\"x\":1801");
+
+        mockMvc.perform(post("/api/bikes/{bikeId}/analysis", 7L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRequest))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail")
+                        .value("Point MAIN_PIVOT must be inside the original image"));
+
+        verify(finalizeBikeAnalysisService, never())
+                .finalizeAnalysis(anyLong(), anyLong(), any(MarkedPhotoGeometry.class));
     }
 
     private void authenticateUserToken() {

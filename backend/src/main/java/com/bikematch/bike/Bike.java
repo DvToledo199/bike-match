@@ -77,7 +77,7 @@ public class Bike {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "linkage_points", columnDefinition = "jsonb")
-    private String linkagePoints;
+    private MarkedPhotoGeometry linkagePoints;
 
     @Enumerated(EnumType.STRING)
     private BikeStatus status;
@@ -146,6 +146,34 @@ public class Bike {
         return status;
     }
 
+    public double getDeclaredTravelMm() {
+        return declaredTravelMm;
+    }
+
+    public double getShockEyeToEyeMm() {
+        return shockEyeToEyeMm;
+    }
+
+    public double getShockStrokeMm() {
+        return shockStrokeMm;
+    }
+
+    public WheelConfiguration getWheelConfiguration() {
+        return wheelConfiguration;
+    }
+
+    public short getChainringTeeth() {
+        return chainringTeeth;
+    }
+
+    public short getSprocketTeeth() {
+        return sprocketTeeth;
+    }
+
+    public double getSagPercent() {
+        return sagPercent;
+    }
+
     public String getPhotoUrl() {
         return photoUrl;
     }
@@ -172,11 +200,34 @@ public class Bike {
         }
     }
 
+    void requireReadyForAnalysis() {
+        requireEditableAnalysisSource();
+        if (photoUrl == null) {
+            throw new BikeAnalysisNotReadyException(
+                    "Attach a bike photo before saving its analysis");
+        }
+    }
+
+    void attachLinkagePoints(MarkedPhotoGeometry geometry) {
+        requireReadyForAnalysis();
+        this.linkagePoints = Objects.requireNonNull(geometry, "Marked photo geometry is required");
+    }
+
+    public MarkedPhotoGeometry getLinkagePoints() {
+        return linkagePoints;
+    }
+
     public KinematicsResult getKinematicsResult() {
         return kinematicsResult;
     }
 
     void setKinematicsResult(KinematicsResult kinematicsResult) {
-        this.kinematicsResult = kinematicsResult;
+        requireEditableAnalysisSource();
+        if (linkagePoints == null) {
+            throw new BikeAnalysisNotReadyException(
+                    "Marked points are required before saving an analysis result");
+        }
+        this.kinematicsResult = Objects.requireNonNull(
+                kinematicsResult, "Kinematics result is required");
     }
 }

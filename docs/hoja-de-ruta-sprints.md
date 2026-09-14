@@ -1,10 +1,11 @@
 # Hoja de ruta por sprints — mini-tareas ordenadas
 
-> Estado revisado el 7 de septiembre de 2026. Sprint actual: **2**. Sprint 1 y su
+> Estado revisado el 14 de septiembre de 2026. Sprint actual: **2**. Sprint 1 y su
 > demo real contra referencia (#54) están completados. Despliegue y aprobación del
 > mentor no se dan por hechos. La visión comunitaria está en
-> [`vision-producto-v2.md`](vision-producto-v2.md). El primer paso es unificar #1 y
-> #5: propuesta de email privado para login y username único para el perfil público.
+> [`vision-producto-v2.md`](vision-producto-v2.md). Identidad, seguridad y persistencia
+> del análisis ya están en backend; la siguiente parte convierte esos datos en vistas
+> de producto: Mis bicis y la ficha de detalle.
 
 **Regla de oro contra la saturación:** solo existe el sprint actual. No mires los demás. Haz la primera tarea sin marcar, márcala, pasa a la siguiente. Si una tarea te lleva más de un día, pártela en dos.
 
@@ -82,7 +83,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [x] Selector de ruedas, cinco gráficas y condiciones/versiones API (#109)
 - [ ] Contraste externo con coordenadas/CG/ruedas/marcha conocidos (#31)
 
-- [ ] Confirmar email de acceso + username público y consolidar #1 dentro de #5
+- [x] Confirmar email de acceso + username público y consolidar el contrato de identidad
 - [x] Migraciones: users, bikes, kinematics_results (#92, #118)
 - [x] Antes de cerrar resultados de #6: contrato de interpretación, capacidades y versiones (#103).
   Ver [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
@@ -92,7 +93,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
   muestra quedan para la issue de creación/catálogo.
 - [x] Crear una bici privada y guardar sus metadatos (#122)
 - [x] Subir su foto a Cloudinary y guardar la URL con control de propietario (#124)
-- [ ] Guardar los puntos marcados y persistir los resultados del motor
+- [x] Guardar los puntos naturales de la foto y persistir atómicamente el resultado del motor
 - [ ] "Mis bicis" (privadas) y detalle de bici con gráficas y números
 - [ ] Catálogo público (solo aprobadas) con filtro por categoría y paginación
 - [ ] Swagger al día, con la autenticación documentada

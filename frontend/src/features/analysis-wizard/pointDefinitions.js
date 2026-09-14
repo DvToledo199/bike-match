@@ -4,16 +4,16 @@ export const pointDefinitions = [
     translationKey: 'wizard.marking.points.mainPivot',
   },
   {
+    type: 'BOTTOM_BRACKET',
+    translationKey: 'wizard.marking.points.bottomBracket',
+  },
+  {
     type: 'SHOCK_FRAME',
     translationKey: 'wizard.marking.points.shockFrame',
   },
   {
     type: 'SHOCK_SWINGARM',
     translationKey: 'wizard.marking.points.shockSwingarm',
-  },
-  {
-    type: 'BOTTOM_BRACKET',
-    translationKey: 'wizard.marking.points.bottomBracket',
   },
   {
     type: 'REAR_AXLE',
@@ -28,4 +28,3 @@ export const pointDefinitions = [
 export function hasAllPoints(points) {
   return pointDefinitions.every((point) => points[point.type])
 }
-

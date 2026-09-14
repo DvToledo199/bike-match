@@ -1,251 +1,48 @@
-.content {
-  display: grid;
-  gap: var(--space-xl);
+.content { display: grid; gap: 1.1rem; }
+.eyebrow, .progress { margin: 0; color: var(--color-text-muted); font-size: 0.8rem; font-weight: 600; }
+.title { margin: 0.3rem 0 0; font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: -0.035em; }
+.description { margin: 0.5rem 0 0; color: var(--color-text-muted); }
+.markerFrame { position: relative; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-image-background); }
+.marker { display: block; width: 100%; height: clamp(20rem, 65vh, 44rem); touch-action: pan-y; cursor: crosshair; }
+.marker[data-dragging='true'] { cursor: grabbing; }
+.marker:focus-visible { outline: 3px solid var(--color-primary); outline-offset: -3px; }
+.overlay { position: absolute; inset: 1rem 1rem auto; z-index: 1; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; pointer-events: none; }
+.guidance, .precisionControls { color: var(--color-text); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 0.8rem; box-shadow: var(--shadow-md); }
+.guidance { width: 16rem; max-width: 42%; border-top: 3px solid var(--color-primary); }
+.pointName { margin: 0.4rem 0; font-size: 1.1rem; line-height: 1.3; }
+.pointDescription { margin: 0; font-size: 0.8rem; color: var(--color-text-muted); }
+.precisionControls { pointer-events: auto; display: grid; gap: 0.5rem; }
+.controlButtons, .panButtons { display: flex; align-items: center; gap: 0.2rem; }
+.controlButton, .panButton, .resetButton { min-width: 2.5rem; min-height: 2.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-text); font: inherit; cursor: pointer; }
+.resetButton { font-size: 0.8rem; padding: 0.35rem 0.5rem; }
+.controlButton:hover:not(:disabled), .panButton:hover, .resetButton:hover:not(:disabled) { border-color: var(--color-primary); }
+.controlButton:disabled, .resetButton:disabled { opacity: 0.45; cursor: not-allowed; }
+.zoomValue { min-width: 3.5rem; font-size: 0.8rem; text-align: center; font-variant-numeric: tabular-nums; }
+.moveControls summary { font-size: 0.8rem; cursor: pointer; padding: 0.25rem; }
+.panButtons { margin-top: 0.5rem; display: grid; grid-template-columns: repeat(2, 1fr); }
+.keyboardCursor { fill: transparent; stroke: white; stroke-width: 2; filter: drop-shadow(0 0 1px black); pointer-events: none; }
+.keyboardCursor line, .keyboardCursor circle { vector-effect: non-scaling-stroke; }
+.markerPoint { pointer-events: none; filter: drop-shadow(0 1px 2px black); }
+.markerPoint path { stroke: #57ef95; stroke-width: 3; stroke-linecap: round; }
+.markerPoint circle { fill: #57ef95; }
+.markerPoint[data-selected='true'] path { stroke: #ffcf4a; }
+.markerPoint[data-selected='true'] circle { fill: #ffcf4a; }
+.markerPoint text { fill: white; font-family: var(--font-sans); font-size: 16px; font-weight: 700; stroke: #101214; stroke-width: 3px; paint-order: stroke; }
+.hints { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; font-size: 0.8rem; color: var(--color-text-muted); }
+.hints p { margin: 0; }.hints details p { padding-top: 0.5rem; max-width: 32rem; }.hints summary { cursor: pointer; }
+.pointList { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; margin: 0; padding: 0; list-style: none; }
+.pointButton { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; width: 100%; gap: 0.25rem 0.65rem; padding: 0.7rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-text); text-align: left; cursor: pointer; }
+.pointButton:hover, .pointButton[data-selected='true'] { border-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 6%, var(--color-surface)); }
+.pointNumber { display: grid; width: 1.6rem; height: 1.6rem; place-items: center; border: 1px solid var(--color-border); border-radius: 50%; color: var(--color-text-muted); font-size: 0.75rem; font-weight: 700; grid-row: span 2; }
+.pointLabel { min-width: 0; font-size: 0.85rem; font-weight: 700; }
+.pointStatus { grid-column: 2; color: var(--color-text-muted); font-size: 0.75rem; }
+.pointStatus[data-marked='true'] { color: var(--color-success); }
+@media (max-width: 46rem) {
+  .overlay { position: relative; inset: auto; padding: 0.5rem; background: var(--color-surface); gap: 0.5rem; }
+  .guidance { max-width: none; width: auto; flex: 1; padding: 0.5rem; box-shadow: none; }
+  .precisionControls { padding: 0.4rem; box-shadow: none; }
+  .pointDescription { font-size: 0.75rem; }
+  .marker { height: 55vh; min-height: 18rem; }
+  .pointList { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-
-.eyebrow,
-.progress {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.title {
-  margin: var(--space-sm) 0 0;
-  font-size: clamp(1.75rem, 5vw, 2.5rem);
-  letter-spacing: -0.02em;
-}
-
-.description,
-.pointDescription,
-.instructions {
-  margin: var(--space-sm) 0 0;
-  color: var(--color-text-muted);
-}
-
-.guidance {
-  padding: var(--space-md);
-  border-left: 3px solid var(--color-primary);
-  background-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
-}
-
-.pointName {
-  margin: var(--space-xs) 0 0;
-  font-size: 1.125rem;
-}
-
-.markerFrame {
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-image-background);
-}
-
-.markerFrame:focus-within {
-  outline: 3px solid var(--color-text);
-  outline-offset: 3px;
-}
-
-.keyboardCursor {
-  fill: transparent;
-  stroke: white;
-  stroke-width: 2;
-  filter: drop-shadow(0 0 1px black);
-  pointer-events: none;
-}
-
-.keyboardCursor line,
-.keyboardCursor circle {
-  vector-effect: non-scaling-stroke;
-}
-
-.marker {
-  display: block;
-  width: 100%;
-  height: auto;
-  touch-action: none;
-  cursor: crosshair;
-}
-
-.marker:focus-visible {
-  outline: 3px solid var(--color-text);
-  outline-offset: -3px;
-}
-
-.markerPoint {
-  pointer-events: none;
-}
-
-.markerPoint line {
-  stroke: var(--color-primary);
-  stroke-width: 3;
-  stroke-linecap: round;
-}
-
-.markerPoint circle {
-  fill: var(--color-primary);
-}
-
-.markerPoint[data-selected='true'] line,
-.markerPoint[data-selected='true'] circle {
-  stroke: var(--color-warning);
-  fill: var(--color-warning);
-}
-
-.markerPoint text {
-  fill: var(--color-on-primary);
-  font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 700;
-  stroke: var(--color-image-background);
-  stroke-width: 3px;
-  paint-order: stroke;
-  text-anchor: start;
-}
-
-.precisionControls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-md);
-  padding: var(--space-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-}
-
-.controlGroup {
-  display: grid;
-  gap: var(--space-xs);
-}
-
-.controlLabel {
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.controlButtons,
-.panButtons {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.controlButton,
-.panButton,
-.resetButton {
-  min-width: 2.25rem;
-  min-height: 2.25rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  font: inherit;
-  cursor: pointer;
-}
-
-.resetButton {
-  padding: 0 var(--space-sm);
-}
-
-.controlButton:hover:not(:disabled),
-.panButton:hover,
-.resetButton:hover:not(:disabled) {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.controlButton:focus-visible,
-.panButton:focus-visible,
-.resetButton:focus-visible {
-  outline: 3px solid var(--color-text);
-  outline-offset: 2px;
-}
-
-.controlButton:disabled,
-.resetButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.zoomValue {
-  min-width: 3.5rem;
-  color: var(--color-text-muted);
-  font-size: 0.875rem;
-  text-align: center;
-}
-
-.pointList {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-sm);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.pointButton {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  width: 100%;
-  gap: var(--space-sm);
-  padding: var(--space-sm);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-
-.pointButton:hover,
-.pointButton[data-selected='true'] {
-  border-color: var(--color-primary);
-}
-
-.pointButton:focus-visible {
-  outline: 3px solid var(--color-text);
-  outline-offset: 2px;
-}
-
-.pointNumber {
-  display: grid;
-  width: 1.5rem;
-  height: 1.5rem;
-  place-items: center;
-  border: 1px solid var(--color-border);
-  border-radius: 50%;
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.pointLabel {
-  min-width: 0;
-  font-size: 0.875rem;
-  font-weight: 700;
-}
-
-.pointStatus {
-  grid-column: 2;
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-}
-
-.pointStatus[data-marked='true'] {
-  color: var(--color-success);
-}
-
-@media (max-width: 34rem) {
-  .precisionControls {
-    display: grid;
-  }
-
-  .pointList {
-    grid-template-columns: 1fr;
-  }
-}
+@media (max-width: 24rem) { .pointList { grid-template-columns: 1fr; }.pointName { font-size: 0.95rem; } }

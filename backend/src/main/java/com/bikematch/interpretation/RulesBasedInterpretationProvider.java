@@ -12,6 +12,17 @@ import org.springframework.stereotype.Component;
 public class RulesBasedInterpretationProvider implements InterpretationProvider {
 
     private static final String PROVIDER_VERSION = "rules-1";
+    private static final String PROMPT_VERSION = "interpretation-prompt-1";
+
+    @Override
+    public String providerVersion() {
+        return PROVIDER_VERSION;
+    }
+
+    @Override
+    public String promptVersion() {
+        return PROMPT_VERSION;
+    }
 
     @Override
     public Interpretation generate(InterpretationContext context) {

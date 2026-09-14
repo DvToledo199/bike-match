@@ -10,8 +10,13 @@ public record Interpretation(
         List<InterpretationContext.Evidence> evidence
 ) {
 
+    public static final int MAX_SUMMARY_LENGTH = 1_200;
+
     public Interpretation {
         summary = requireText(summary, "Interpretation summary");
+        if (summary.length() > MAX_SUMMARY_LENGTH) {
+            throw new IllegalArgumentException("Interpretation summary is too long");
+        }
         source = Objects.requireNonNull(source, "Interpretation source is required");
         providerVersion = requireText(providerVersion, "Provider version");
         evidence = List.copyOf(Objects.requireNonNull(evidence, "Interpretation evidence is required"));

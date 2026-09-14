@@ -39,6 +39,10 @@ function getErrorKind(response, body) {
     return 'duplicate'
   }
 
+  if (response.status === 401) {
+    return 'invalidCredentials'
+  }
+
   return body?.title ? 'unexpected' : 'unavailable'
 }
 

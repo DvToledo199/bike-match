@@ -1,10 +1,11 @@
 const apiBaseUrl = import.meta.env?.VITE_API_URL ?? 'http://localhost:8080'
 
 export class ApiError extends Error {
-  constructor(kind, status) {
+  constructor(kind, status, detail) {
     super(kind)
     this.kind = kind
     this.status = status
+    this.detail = detail
   }
 }
 
@@ -34,7 +35,22 @@ function getErrorKind(response, body) {
     return 'server'
   }
 
+  if (response.status === 409) {
+    return 'duplicate'
+  }
+
   return body?.title ? 'unexpected' : 'unavailable'
+}
+
+async function readErrorBody(response) {
+  if (!response.headers.get('content-type')?.includes('json')) return null
+
+  try {
+    const body = await response.json()
+    return body && typeof body === 'object' ? body : null
+  } catch {
+    return null
+  }
 }
 
 export async function requestApi(path, options = {}) {
@@ -55,7 +71,8 @@ export async function requestApi(path, options = {}) {
       },
     })
     if (!response.ok) {
-      throw new ApiError(getErrorKind(response, null), response.status)
+      const body = await readErrorBody(response)
+      throw new ApiError(getErrorKind(response, body), response.status, body?.detail)
     }
     return await readResponseBody(response)
   } catch (error) {

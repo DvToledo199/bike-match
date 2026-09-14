@@ -17,6 +17,19 @@ describe('API failures', () => {
     await expect(requestApi('/test')).rejects.toMatchObject({ kind, status })
   })
 
+  it('keeps the duplicate error from the registration API', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(
+      JSON.stringify({ detail: 'Email or username already exists' }),
+      { status: 409, headers: { 'content-type': 'application/problem+json' } },
+    )))
+
+    await expect(requestApi('/api/auth/register')).rejects.toMatchObject({
+      kind: 'duplicate',
+      status: 409,
+      detail: 'Email or username already exists',
+    })
+  })
+
   it('times out an unresponsive server', async () => {
     vi.useFakeTimers()
     vi.stubGlobal('fetch', vi.fn((_url, { signal }) => new Promise((_resolve, reject) => {

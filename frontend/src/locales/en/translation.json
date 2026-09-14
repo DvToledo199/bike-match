@@ -97,6 +97,28 @@
     "owner": "Analysis by @{{username}}",
     "specifications": "Bike specifications",
     "noResult": "This bike has no saved kinematics result yet.",
+    "interpretation": {
+      "eyebrow": "In plain language",
+      "title": "What this analysis suggests",
+      "loading": "Loading the explanation…",
+      "ownerMissing": "This saved analysis does not have an explanation yet. Generate one from its verified result.",
+      "publicMissing": "An explanation has not been published for this analysis yet. The curves remain available below.",
+      "unavailable": "The explanation is unavailable right now. The saved curves are still available below.",
+      "rateLimited": "Please wait a moment before requesting another explanation.",
+      "generate": "Generate explanation",
+      "retry": "Try again",
+      "rulesSource": "Rules-based summary",
+      "aiSource": "AI-generated summary",
+      "limit": "This is a reference explanation of the geometry. It is not a personal setup recommendation or a laboratory measurement.",
+      "evidence": {
+        "usefulProgression": "Useful progression",
+        "maxRearward": "Maximum rearward movement",
+        "maxKickback": "Maximum kickback",
+        "calculatedTravel": "Calculated travel",
+        "leverageAtSag": "Leverage at sag",
+        "unknown": "Supporting value"
+      }
+    },
     "fields": {
       "layout": "Suspension layout",
       "travel": "Declared rear travel",
@@ -413,6 +435,7 @@
         "invalidResponse": "The service returned incomplete or invalid results. Your marks are safe; try again.",
         "invalidRequest": "Check the marks, shock measurements and wheel setup. Use a level side photo on flat ground and a supported single-pivot layout, then try again.",
         "network": "We could not reach the calculation service. Check that the BikeMatch backend is running, then try again.",
+        "rateLimited": "Please wait a moment before requesting another explanation.",
         "server": "The calculation service had a problem. Try again in a moment.",
         "unavailable": "The calculation service is not available right now. Try again in a moment.",
         "unexpected": "Something unexpected happened while preparing the calculation. Try again."

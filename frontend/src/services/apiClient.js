@@ -45,6 +45,10 @@ function getErrorKind(response, body) {
     return 'invalidCredentials'
   }
 
+  if (response.status === 429) {
+    return 'rateLimited'
+  }
+
   return body?.title ? 'unexpected' : 'unavailable'
 }
 

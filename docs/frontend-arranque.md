@@ -1,6 +1,6 @@
 # Arranque del frontend — paquete de traspaso
 
-> **Guía vigente, revisada el 10 de septiembre de 2026.** El frontend del Sprint 1 ya
+> **Guía vigente, revisada el 14 de septiembre de 2026.** El frontend del Sprint 1 ya
 > está implementado. Lee esta guía y el README antes de ampliarlo. El estudio histórico está en
 > [`investigaciones/frontend-stack-y-diseno-INFORME.md`](investigaciones/frontend-stack-y-diseno-INFORME.md).
 
@@ -12,8 +12,10 @@ El Sprint 1 implementa motor monopivote simple y endpoint REST
 foto lateral → **marcar puntos** → parámetros → **curvas y descriptores**.
 La prueba real de #54 está completada. El arranque de Spring sí necesita PostgreSQL.
 El proyecto debe quedar **EXPLICABLE**. Esta guía describe el preview de V1; en Sprint 2
-el backend ya añadió cuentas y el guardado de bicicletas, fotos, puntos y resultados,
-pero el frontend todavía no consume ese flujo. La IA sigue pendiente.
+el backend ya añadió cuentas y el guardado de bicicletas, fotos, puntos y resultados.
+El servicio de interpretación del backend (#104) ya existe; esta issue (#105) conecta
+la explicación guardada con el detalle frontend. El preview anónimo sigue calculando
+y mostrando gráficas sin generar explicaciones de IA.
 
 ## 1. Perfil de David y forma de trabajar (IMPORTANTE)
 - **David** es estudiante de bootcamp. El **backend lo ha hecho él a mano**; en **frontend parte
@@ -142,6 +144,15 @@ es lo natural — el backend calibra px→mm internamente con el eye-to-eye):
   mejoras futuras en [`modelo-referencia-cinematica.md`](modelo-referencia-cinematica.md).
 - **Errores → 400** con cuerpo `ProblemDetail` (`{ type, title, status, detail }`): validación
   de entrada (`@Valid`) y punto obligatorio ausente / geometría imposible.
+
+### Interpretación de un análisis guardado
+
+La ficha de una bicicleta guardada puede leer una explicación ya generada con
+`GET /api/bikes/{id}/interpretation?language=en`. El propietario puede solicitarla con
+`POST` si todavía no existe; una visita pública solo lee la caché y nunca genera una
+llamada al proveedor. La respuesta contiene un resumen breve, su procedencia (`RULES` o
+`AI`) y entre 2 y 4 evidencias numéricas. El frontend valida esa forma antes de mostrarla.
+El preview anónimo no llama a este servicio.
 
 ## 5. Mirando al futuro (NO construir ahora, pero no cerrarnos puertas)
 - **Login, cuentas de usuario y guardar bicis SÍ son parte del MVP**, pero van en un **sprint

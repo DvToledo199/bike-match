@@ -99,6 +99,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
   - [x] Cliente frontend preparado para adjuntar el JWT y consultar esa API (#142)
   - [x] API `GET /api/bikes/{id}` con reglas de visibilidad y resultado persistido (#148)
 - [ ] Catálogo público (solo aprobadas) con filtro por categoría y paginación
+  - [x] API pública paginada y filtrable por categoría (#152)
 - [ ] Swagger al día, con la autenticación documentada
 - [ ] Front (IA): pantallas de registro/login, mis bicis, catálogo y detalle
   - [x] Registro/login y sesión frontend (#138, #140, #142)

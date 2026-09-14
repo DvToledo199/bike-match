@@ -18,6 +18,7 @@ import com.bikematch.auth.JwtAuthenticationFilter;
 import com.bikematch.auth.JwtService;
 import com.bikematch.bike.AttachBikePhotoService;
 import com.bikematch.bike.Bike;
+import com.bikematch.bike.BikeAnalysisLockedException;
 import com.bikematch.bike.BikeNotFoundException;
 import com.bikematch.bike.BikePhotoFile;
 import com.bikematch.bike.BikeDetails;
@@ -253,6 +254,20 @@ class BikeControllerTest {
                 .andExpect(status().isBadGateway())
                 .andExpect(jsonPath("$.detail")
                         .value("Photo storage is temporarily unavailable"));
+    }
+
+    @Test
+    void analyzedBikePhotoCannotBeReplaced() throws Exception {
+        authenticateUserToken();
+        given(attachBikePhotoService.attach(eq(42L), eq(7L), any(BikePhotoFile.class)))
+                .willThrow(new BikeAnalysisLockedException());
+
+        mockMvc.perform(multipart("/api/bikes/{bikeId}/photo", 7L)
+                        .file(validPhoto())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.detail")
+                        .value("An analyzed bike's photo and marked points cannot be changed"));
     }
 
     private void authenticateUserToken() {

@@ -151,6 +151,7 @@ public class Bike {
     }
 
     public void attachPhoto(URI photoUri) {
+        requireEditableAnalysisSource();
         Objects.requireNonNull(photoUri, "Photo URI is required");
         String value = photoUri.toString();
         if (!"https".equalsIgnoreCase(photoUri.getScheme())
@@ -159,6 +160,16 @@ public class Bike {
             throw new IllegalArgumentException("Photo URI must be a valid HTTPS address");
         }
         this.photoUrl = value;
+    }
+
+    public boolean isAnalyzed() {
+        return kinematicsResult != null;
+    }
+
+    void requireEditableAnalysisSource() {
+        if (isAnalyzed()) {
+            throw new BikeAnalysisLockedException();
+        }
     }
 
     public KinematicsResult getKinematicsResult() {

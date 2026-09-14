@@ -23,6 +23,7 @@ public class AttachBikePhotoService {
         Bike bike = bikeRepository.findByIdAndOwnerId(bikeId, ownerId)
                 .orElseThrow(BikeNotFoundException::new);
 
+        bike.requireEditableAnalysisSource();
         URI photoUri = imageStorage.upload(
                 photo.content(),
                 "bikematch/bikes/" + bike.getId());

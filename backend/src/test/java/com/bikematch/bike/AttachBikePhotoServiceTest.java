@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 
 import com.bikematch.media.ImageStorage;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.InOrder;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,6 +53,9 @@ class AttachBikePhotoServiceTest {
         Bike result = service.attach(42L, 7L, photo);
 
         assertThat(result).isSameAs(bike);
+        InOrder order = inOrder(bike, imageStorage);
+        order.verify(bike).requireEditableAnalysisSource();
+        order.verify(imageStorage).upload(any(byte[].class), eq("bikematch/bikes/7"));
         verify(bike).attachPhoto(storedPhoto);
         verify(bikeRepository).saveAndFlush(bike);
     }
@@ -76,6 +81,20 @@ class AttachBikePhotoServiceTest {
         assertThatThrownBy(() -> service.attach(42L, 7L, validPhoto()))
                 .isInstanceOf(ImageStorageException.class);
 
+        verify(bike, never()).attachPhoto(any());
+        verify(bikeRepository, never()).saveAndFlush(any(Bike.class));
+    }
+
+    @Test
+    void rejectsAnAnalyzedBikeBeforeOverwritingItsStoredPhoto() {
+        given(bikeRepository.findByIdAndOwnerId(7L, 42L)).willReturn(Optional.of(bike));
+        org.mockito.BDDMockito.willThrow(new BikeAnalysisLockedException())
+                .given(bike).requireEditableAnalysisSource();
+
+        assertThatThrownBy(() -> service.attach(42L, 7L, validPhoto()))
+                .isInstanceOf(BikeAnalysisLockedException.class);
+
+        verify(imageStorage, never()).upload(any(), anyString());
         verify(bike, never()).attachPhoto(any());
         verify(bikeRepository, never()).saveAndFlush(any(Bike.class));
     }

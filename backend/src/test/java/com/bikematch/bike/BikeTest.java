@@ -4,9 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bikematch.kinematics.model.WheelConfiguration;
+import com.bikematch.kinematics.model.PointType;
 import com.bikematch.user.Role;
 import com.bikematch.user.User;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class BikeTest {
@@ -29,6 +32,7 @@ class BikeTest {
     void analyzedBikeCannotReplaceItsPhoto() {
         Bike bike = bike();
         bike.attachPhoto(FIRST_PHOTO);
+        bike.attachLinkagePoints(geometry());
         new KinematicsResult(bike, 1, "monopivot-reference-v2", "{}", "{}", "{}");
 
         assertThatThrownBy(() -> bike.attachPhoto(SECOND_PHOTO))
@@ -36,6 +40,23 @@ class BikeTest {
                 .hasMessage("An analyzed bike's photo and marked points cannot be changed");
         assertThat(bike.getPhotoUrl()).isEqualTo(FIRST_PHOTO.toString());
         assertThat(bike.isAnalyzed()).isTrue();
+    }
+
+    @Test
+    void analyzedBikeCannotReplaceItsMarkedPoints() {
+        Bike bike = bike();
+        bike.attachPhoto(FIRST_PHOTO);
+        MarkedPhotoGeometry original = geometry();
+        bike.attachLinkagePoints(original);
+        new KinematicsResult(bike, 1, "monopivot-reference-v2", "{}", "{}", "{}");
+        List<MarkedPhotoPoint> movedPoints = new ArrayList<>(original.points());
+        MarkedPhotoPoint pivot = movedPoints.get(0);
+        movedPoints.set(0, new MarkedPhotoPoint(pivot.type(), pivot.x() + 1, pivot.y()));
+
+        assertThatThrownBy(() -> bike.attachLinkagePoints(
+                MarkedPhotoGeometry.create(1800, 1200, movedPoints)))
+                .isInstanceOf(BikeAnalysisLockedException.class);
+        assertThat(bike.getLinkagePoints()).isEqualTo(original);
     }
 
     private Bike bike() {
@@ -46,5 +67,15 @@ class BikeTest {
                 WheelConfiguration.FULL_29, CassetteType.TWELVE_SPEED,
                 (short) 32, (short) 50, 30);
         return Bike.createPrivate(owner, details);
+    }
+
+    private MarkedPhotoGeometry geometry() {
+        return MarkedPhotoGeometry.create(1800, 1200, List.of(
+                new MarkedPhotoPoint(PointType.MAIN_PIVOT, 805, 796),
+                new MarkedPhotoPoint(PointType.SHOCK_FRAME, 923, 640),
+                new MarkedPhotoPoint(PointType.SHOCK_SWINGARM, 760, 661),
+                new MarkedPhotoPoint(PointType.BOTTOM_BRACKET, 778, 855),
+                new MarkedPhotoPoint(PointType.REAR_AXLE, 409, 826),
+                new MarkedPhotoPoint(PointType.FRONT_AXLE, 1433, 826)));
     }
 }

@@ -1,7 +1,7 @@
 # IA — explicar la cinemática para quien empieza
 
-> Plan acordado el 9 de septiembre de 2026. Épica #10. La planificación del
-> contrato de datos (#103) está cerrada; el servicio y la interfaz siguen sin
+> Plan acordado el 9 de septiembre de 2026 y revisado el 14 de septiembre. Épica #10.
+> El contrato de datos (#103) y la persistencia numérica están cerrados; el servicio y la interfaz siguen sin
 > implementación. Este documento concreta el alcance y prevalece sobre el antiguo
 > plan que dejaba toda la IA como extra posterior al sistema de cuatro barras.
 
@@ -55,10 +55,10 @@ La IA recibirá datos estructurados y reglas de interpretación, no una captura 
 gráfica. El cálculo y las clasificaciones siguen siendo deterministas. El motor no
 necesita una dependencia de IA ni una segunda implementación de sus fórmulas.
 
-Antes de cerrar las migraciones de resultados en #6, #103 define cómo conservar
+Al cerrar la persistencia de resultados, se aplicó el contrato de #103 para conservar
 curvas, descriptores, unidades/convenciones, condiciones, aviso de recorrido y versión
-del motor. Las capacidades y limitaciones se identifican por esa versión, para poder
-reconstruir un contexto coherente desde los resultados guardados.
+del motor. Las capacidades y limitaciones se identifican por esa versión, de modo que
+pueda reconstruirse un contexto coherente desde los resultados guardados.
 
 El contrato de interpretación está en
 [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
@@ -76,10 +76,11 @@ permite añadirlo sin rehacer el solver ni las gráficas.
 El servicio y el adaptador del proveedor vivirán fuera del dominio del motor. El
 contrato de #103 ya fija sus datos, capacidades, privacidad y límites antes de
 programarlo. El resumen general se consultará
-por bicicleta/resultado; el endpoint inicialmente previsto
-`POST /api/bikes/{id}/analysis` queda para la personalización con cuestionario.
-Las rutas y estados HTTP definitivos se cerrarán en #103/#104, sin modificar ahora
-el contrato público de `POST /api/kinematics/preview`.
+por bicicleta/resultado. `POST /api/bikes/{id}/analysis` finaliza y guarda el análisis
+numérico; la futura personalización con cuestionario reservará una ruta distinta, como
+`POST /api/bikes/{id}/interpretation`.
+Las rutas y estados HTTP de la interpretación se cerrarán en #104, sin modificar
+el contrato público de `POST /api/kinematics/preview` ni el guardado numérico.
 
 ## Límites que el contexto debe expresar
 

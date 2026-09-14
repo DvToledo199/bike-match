@@ -29,9 +29,10 @@ llamar al motor Java y mostrar curvas y descriptores. La prueba manual con una O
 Stage 6 29'' 2020 quedó validada contra Linkage Design en la issue #54.
 
 La V1 no incluía cuentas, persistencia de bicicletas, catálogo ni publicación. El
-Sprint 2 ya ha añadido el registro/login y el backend para crear una bicicleta privada
-y asociarle una foto alojada en Cloudinary. La interfaz todavía no usa ese flujo y el
-endpoint de preview sigue sin guardar los puntos ni los resultados.
+Sprint 2 ya ha añadido registro/login y el backend para crear una bicicleta privada,
+asociarle una foto alojada en Cloudinary y finalizar su análisis guardando puntos y
+resultado en una transacción. La interfaz todavía no usa ese flujo; el endpoint público
+de preview continúa siendo una prueba sin persistencia.
 
 ## Experiencia de producto V2
 
@@ -56,6 +57,11 @@ La eliminación del botón inerte `View results` se entregó en #113. El guardad
 foto se incorpora en #124; la ficha, Mis bicis y la IA continúan como trabajo de
 #3/#6/#103–#105, no como funciones que ya existan por documentarlas. La foto temporal
 del preview no basta para recuperarla al abrir una bicicleta guardada.
+
+Una bicicleta guardada con resultado conserva como fuente inmutable la foto y sus puntos.
+No se muestran las cruces en su ficha y no se permite sustituirlos: un nuevo marcado crea
+otro análisis. Los parámetros técnicos podrán editarse y recalcular el resultado actual.
+Una bici pendiente o pública no cambiará sus cifras sin volver a privada o a moderación.
 
 ### Visitante
 
@@ -136,7 +142,9 @@ diseñarán planes y permisos sin acoplar el dominio de bicicletas a un proveedo
 
 ## Orden de construcción del backend
 
-David implementará el backend con acompañamiento, una tarea pequeña cada vez:
+David implementará el backend con acompañamiento, una tarea pequeña cada vez. Los
+pasos 1–7 ya están completados en backend; el frontend persistente y las vistas de
+consulta aún no:
 
 1. Cerrar el modelo de cuenta y consolidar #1 dentro de #5.
 2. Migración versionada de `users`, entidad y repositorio.

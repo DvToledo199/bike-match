@@ -22,7 +22,9 @@ Documento de trabajo. Orden operativo: qué cerrar antes de codificar, cómo tra
 El usuario marca puntos en píxeles sobre la foto; el motor necesita distancias reales.
 - **Opción recomendada:** el usuario introduce la medida **eye-to-eye del amortiguador** (dato estándar y conocido, p. ej. 230×65). Como ya marca los dos anclajes del amortiguador en la foto, la escala sale de: `mm reales / píxeles entre anclajes`.
 - **Alternativa/verificación cruzada:** distancia entre ejes (wheelbase) de la ficha oficial, marcando ambos ejes. Es lo que usa el proyecto de referencia.
-- **Regla técnica:** guardar los puntos **normalizados (0–1) respecto a las dimensiones naturales de la imagen**, no en píxeles de pantalla, o el canvas responsive descuadrará las coordenadas según el dispositivo.
+- **Regla técnica vigente:** guardar los puntos en **píxeles de la imagen original**, junto
+  con su ancho, alto y una versión del formato. No son píxeles de pantalla: el `viewBox`
+  SVG mantiene la correspondencia aunque la foto se muestre más pequeña en otro dispositivo.
 - **Sanity check integrado:** el motor calcula el recorrido trasero; si difiere mucho del recorrido declarado por el usuario (>±10%), avisar de que los puntos o la calibración están mal. Esto convierte un punto débil (precisión del marcado) en una funcionalidad de calidad.
 
 ### 1.3 Datos mínimos a pedir por bici
@@ -49,8 +51,9 @@ Marca, modelo, año, categoría (Enduro / e-Enduro / DH), diseño del sistema de
 Implementación de #124: el backend recibe `multipart/form-data` en
 `POST /api/bikes/{id}/photo`, comprueba propietario, tamaño y formato, y sube el archivo
 con credenciales privadas desde `CLOUDINARY_URL`. PostgreSQL guarda únicamente la URL
-HTTPS devuelta. El navegador nunca recibe el secreto de Cloudinary. Una nueva foto usa
-el mismo identificador remoto de la bici y sustituye la anterior.
+HTTPS devuelta. El navegador nunca recibe el secreto de Cloudinary. Mientras la bici no
+tenga un resultado guardado, una nueva foto usa el mismo identificador remoto y sustituye
+la anterior. Al finalizar el primer análisis, la foto y sus puntos quedan bloqueados.
 
 ---
 
@@ -138,10 +141,13 @@ Cumple el reparto que pide el enunciado: negocio (1, 2, 4, 5, 7, 8), auth y role
 
 ## 6. Modelo de datos (borrador)
 
-- **users**: id, email (único), password_hash, role (`USER`/`MODERATOR`), created_at.
+- **users**: id, email (único y privado), username (único y público), password_hash,
+  role (`USER`/`MODERATOR`), created_at.
 - **bikes**: id, owner_id → users, brand, model, year, category (enum), suspension_layout (enum), travel_declared_mm, shock_eye_to_eye_mm, shock_stroke_mm, wheel_size, cassette_type (enum), chainring_teeth, photo_url, status (`PRIVATE` / `PENDING` / `PUBLIC` / `REJECTED`), created_at.
-- **bikes.linkage_points** (jsonb): puntos etiquetados con coordenadas normalizadas + datos de calibración. Es jsonb porque el conjunto de puntos varía según la topología.
-- **kinematics_results**: bike_id (1:1), result_version, curves (jsonb: arrays de las curvas), descriptors (jsonb: progresión útil, LR en sag, retroceso del eje, comprobación de recorrido y condiciones de medida), capabilities (jsonb), engine_version y computed_at. Se calcula una vez al crear/editar y se persiste (no recalcular en cada GET). `engine_version` permite recalcular todo si el motor mejora; el formato exacto y sus límites están en [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
+- **bikes.linkage_points** (jsonb): versión del formato, dimensiones naturales de la foto
+  y puntos etiquetados en píxeles de esa imagen original. Es jsonb porque el conjunto de
+  puntos variará según la topología.
+- **kinematics_results**: bike_id (1:1), result_version, curves (jsonb: arrays de las curvas), descriptors (jsonb: progresión útil, LR en sag, retroceso del eje, comprobación de recorrido y condiciones de medida), capabilities (jsonb), engine_version y computed_at. Se calcula al finalizar la bici y se persiste (no recalcular en cada GET). Cambiar en el futuro un parámetro técnico que afecte al cálculo sustituirá atómicamente este resultado, pero nunca la foto ni los puntos. `engine_version` permite recalcular todo si el motor mejora; el formato exacto y sus límites están en [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
 - **votes**: user_id + bike_id (PK compuesta / unique) → relación **N:M**, created_at.
 - *(stretch)* **comments**.
 
@@ -151,7 +157,7 @@ Relaciones que pide el enunciado: 1:N (users→bikes, bikes→results) y N:M (vo
 
 ## 7. Motor de cinemática: enfoque técnico
 
-**Pipeline:** puntos normalizados → calibración a mm → solver según topología → barrido del recorrido → curvas → descriptores → clasificaciones por reglas.
+**Pipeline:** puntos en píxeles naturales → calibración a mm → solver según topología → barrido del recorrido → curvas → descriptores → clasificaciones por reglas.
 
 - **Entrada del motor** (ya en mm, tras calibrar): puntos etiquetados según topología (pivote principal, anclajes de amortiguador, eje trasero, eje de pedalier; en Horst: pivote Horst, unión bieleta-tirante, pivote de bieleta), carrera del amortiguador, plato y piñón de cálculo, rueda, % de sag (30% por defecto).
 - **Barrido:** discretizar la carrera del amortiguador en ~100 pasos; en cada paso resolver la posición del eje trasero.
@@ -175,14 +181,14 @@ Relaciones que pide el enunciado: 1:N (users→bikes, bikes→results) y N:M (vo
   = 403. `POST /api/kinematics/preview` permanece público para modo invitado.
 - `GET /api/bikes?category=&sort=votes&page=` (públicas y aprobadas) · `GET /api/bikes/{id}`
 - `GET /api/my-bikes` (auth)
-- `POST /api/bikes` (auth; metadatos) · `POST /api/bikes/{id}/photo` (multipart → Cloudinary)
-- `PUT /api/bikes/{id}/linkage` (puntos + calibración → dispara cálculo → devuelve curvas y descriptores)
+- `POST /api/bikes` (auth; metadatos) · `POST /api/bikes/{id}/photo` (multipart → Cloudinary mientras no esté analizada)
+- `POST /api/bikes/{id}/analysis` (auth y dueño; dimensiones + puntos → calcula, guarda y devuelve curvas y descriptores)
 - `POST /api/bikes/{id}/publish` (auth, dueño) → estado PENDING
 - `GET /api/moderation/pending` · `POST /api/moderation/{id}/approve|reject` (solo MODERATOR)
 - `PUT /api/bikes/{id}/vote` · `DELETE /api/bikes/{id}/vote` (auth)
 - `GET /api/rankings?category=`
 - Resumen básico por resultado/bicicleta (#104): generación controlada y lectura reutilizable según permisos; cerrar rutas y contrato en #103.
-- *(ampliación posterior)* `POST /api/bikes/{id}/analysis` (respuestas del cuestionario → texto personalizado)
+- *(ampliación posterior)* `POST /api/bikes/{id}/interpretation` (respuestas del cuestionario → texto personalizado)
 
 Respuestas de error consistentes (handler global): `{timestamp, status, error, message, path}`.
 

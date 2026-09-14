@@ -30,6 +30,44 @@ describe('API failures', () => {
     })
   })
 
+  it('attaches the current session token to API calls', async () => {
+    sessionStorage.setItem('bikematch.session', JSON.stringify({
+      accessToken: 'session-token',
+      tokenType: 'Bearer',
+    }))
+    const fetchMock = vi.fn().mockResolvedValue(new Response('{}', {
+      headers: { 'content-type': 'application/json' },
+    }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await requestApi('/api/my-bikes')
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:8080/api/my-bikes',
+      expect.objectContaining({
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer session-token',
+        },
+      }),
+    )
+  })
+
+  it('lets a specific request override the default authorization header', async () => {
+    sessionStorage.setItem('bikematch.session', JSON.stringify({
+      accessToken: 'session-token',
+      tokenType: 'Bearer',
+    }))
+    const fetchMock = vi.fn().mockResolvedValue(new Response('{}', {
+      headers: { 'content-type': 'application/json' },
+    }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await requestApi('/test', { headers: { Authorization: 'Bearer other-token' } })
+
+    expect(fetchMock.mock.calls[0][1].headers.Authorization).toBe('Bearer other-token')
+  })
+
   it('times out an unresponsive server', async () => {
     vi.useFakeTimers()
     vi.stubGlobal('fetch', vi.fn((_url, { signal }) => new Promise((_resolve, reject) => {

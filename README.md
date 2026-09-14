@@ -133,6 +133,10 @@ un flujo de edición y recálculo posterior sin modificar esa fuente.
 del usuario autenticado, ordenados de más reciente a más antigua. No expone puntos ni
 curvas: esos datos pertenecen a la futura pantalla de detalle.
 
+Después del login, el cliente HTTP del frontend añade automáticamente el JWT guardado
+en la sesión del navegador a las peticiones privadas. La pantalla de "Mis bicis" se
+conectará a través del servicio `listMyBikes()` en su propia tarea.
+
 `POST /api/bikes/{id}/publish` requiere JWT y permite al propietario pedir la
 publicación de una bici privada. La bici pasa a `PENDING`, pendiente de moderación;
 otro usuario recibe `403` y una bici inexistente recibe `404`.

@@ -113,6 +113,16 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [x] Texto sencillo junto a las gráficas del detalle (#105)
 - [x] Guardado desde el asistente sin perder el análisis al iniciar sesión (#161)
 - [ ] Prueba real: subida a Cloudinary, explicación por reglas/Gemini y comprensión con David (#170)
+  - [x] Bloques 0–4: configuración de Cloudinary, cuenta, guardado, marcado y moderación
+  - [ ] Bloque 5: explicación con Gemini
+  - [x] Tests con base de datos propia (#178)
+  - [x] Backend: punto final del resumen, fecha de solicitud en moderación y log de fallos de Cloudinary (#179)
+  - [x] Frontend: foto al guardar y sesión iniciada tras registrarse (#180)
+  - [x] Borrar una bici: el dueño (#181, #182) y el moderador, con aviso al dueño (#183, #184)
+  - [x] README y limitaciones: Cloudinary, moderador inicial y traducción automática (#185)
+  - [ ] Decidir si el registro pide repetir correo y contraseña
+  - [ ] Recuperar la contraseña, pendiente de elegir cómo enviar correos (#186)
+  - [ ] Botón «Denunciar foto»: opciones y decisión en #167
 - [x] Navegación de inicio, controles de marcado y formulario compacto (#158–#160)
 - [x] Portada comunitaria centrada en fotos reales del catálogo público (#169)
   Ver [`diseno-y-prueba-frontend.md`](diseno-y-prueba-frontend.md) para límites y mejoras pendientes.

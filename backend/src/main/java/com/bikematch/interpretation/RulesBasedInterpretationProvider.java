@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RulesBasedInterpretationProvider implements InterpretationProvider {
 
-    private static final String PROVIDER_VERSION = "rules-1";
+    private static final String PROVIDER_VERSION = "rules-2";
     private static final String PROMPT_VERSION = "interpretation-prompt-1";
 
     @Override
@@ -38,6 +38,7 @@ public class RulesBasedInterpretationProvider implements InterpretationProvider 
         StringBuilder summary = new StringBuilder("This saved analysis shows ");
         appendLeverage(summary, context);
         appendAxlePath(summary, context);
+        summary.append('.');
         appendReferenceMetrics(summary, context);
         summary.append(" These are geometric tendencies from a marked photo, not a personal setup recommendation or a laboratory measurement.");
 
@@ -75,7 +76,7 @@ public class RulesBasedInterpretationProvider implements InterpretationProvider 
 
     private void appendReferenceMetrics(StringBuilder summary, InterpretationContext context) {
         if (context.capabilities().antiSquat() || context.capabilities().antiRise()) {
-            summary.append(". The anti-squat and anti-rise figures are reference-model estimates");
+            summary.append(" The anti-squat and anti-rise figures are reference-model estimates.");
         }
     }
 

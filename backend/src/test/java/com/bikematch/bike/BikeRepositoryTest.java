@@ -177,6 +177,27 @@ class BikeRepositoryTest {
                 .containsExactly("Public enduro");
     }
 
+    @Test
+    void deletingABikeAlsoDeletesItsSavedResult() {
+        User owner = userRepository.saveAndFlush(new User(
+                "delete-owner@example.com", "deleteowner", "password-hash", Role.USER));
+        Bike bike = bikeRepository.saveAndFlush(Bike.createPrivate(owner, details("Deleted bike")));
+        bike.attachPhoto(URI.create("https://example.com/deleted-bike.jpg"));
+        bike.attachLinkagePoints(geometry());
+        bikeRepository.saveAndFlush(bike);
+        resultRepository.saveAndFlush(new KinematicsResult(
+                bike, 1, "monopivot-reference-v2", "{\"leverageCurve\":[]}",
+                "{\"conditions\":{}}", "{\"antiSquat\":true}"));
+        entityManager.clear();
+
+        int deletedRows = bikeRepository.deleteBikeById(bike.getId());
+
+        assertThat(deletedRows).isEqualTo(1);
+        assertThat(bikeRepository.findById(bike.getId())).isEmpty();
+        assertThat(resultRepository.findByBikeId(bike.getId())).isEmpty();
+        assertThat(userRepository.findById(owner.getId())).isPresent();
+    }
+
     private BikeDetails details(String model) {
         return details(model, BikeCategory.ENDURO);
     }

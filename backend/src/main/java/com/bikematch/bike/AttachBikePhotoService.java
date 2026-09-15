@@ -24,9 +24,7 @@ public class AttachBikePhotoService {
                 .orElseThrow(BikeNotFoundException::new);
 
         bike.requireEditableAnalysisSource();
-        URI photoUri = imageStorage.upload(
-                photo.content(),
-                "bikematch/bikes/" + bike.getId());
+        URI photoUri = imageStorage.upload(photo.content(), BikePhotos.publicId(bike.getId()));
         bike.attachPhoto(photoUri);
         return bikeRepository.saveAndFlush(bike);
     }

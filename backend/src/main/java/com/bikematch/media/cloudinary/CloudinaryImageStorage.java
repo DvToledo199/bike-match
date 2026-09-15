@@ -67,6 +67,18 @@ public class CloudinaryImageStorage implements ImageStorage {
         return uri;
     }
 
+    @Override
+    public void delete(String publicId) {
+        try {
+            cloudinary.uploader().destroy(publicId, ObjectUtils.asMap(
+                    "resource_type", "image",
+                    "invalidate", true));
+        } catch (IOException | RuntimeException exception) {
+            log.warn("Cloudinary could not delete {}: {}", publicId, exception.getMessage());
+            throw new ImageStorageException(exception);
+        }
+    }
+
     private static ImageStorageException invalidResponse(String publicId) {
         log.warn("Cloudinary returned an unusable upload response for {}", publicId);
         return new ImageStorageException();

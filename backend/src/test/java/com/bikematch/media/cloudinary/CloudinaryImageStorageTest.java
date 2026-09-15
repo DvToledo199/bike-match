@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 import com.bikematch.media.ImageStorageException;
@@ -91,5 +92,25 @@ class CloudinaryImageStorageTest {
                 "secure_url", "http://example.com/bike.jpg"));
         assertThatThrownBy(() -> storage.upload(new byte[]{1}, "bikematch/bikes/7"))
                 .isInstanceOf(ImageStorageException.class);
+    }
+
+    @Test
+    void deletesThePhotoAndInvalidatesCachedCopies() throws IOException {
+        storage.delete("bikematch/bikes/7");
+
+        ArgumentCaptor<Map<?, ?>> options = ArgumentCaptor.forClass(Map.class);
+        org.mockito.Mockito.verify(uploader).destroy(eq("bikematch/bikes/7"), options.capture());
+        assertThat(options.getValue().get("resource_type")).isEqualTo("image");
+        assertThat(options.getValue().get("invalidate")).isEqualTo(true);
+    }
+
+    @Test
+    void logsAndReportsDeletionFailures(CapturedOutput output) throws IOException {
+        given(uploader.destroy(any(), anyMap())).willThrow(new IOException("provider down"));
+
+        assertThatThrownBy(() -> storage.delete("bikematch/bikes/7"))
+                .isInstanceOf(ImageStorageException.class);
+
+        assertThat(output).contains("could not delete bikematch/bikes/7");
     }
 }

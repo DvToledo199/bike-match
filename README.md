@@ -205,6 +205,11 @@ en la sesión del navegador a las peticiones privadas. La pantalla de "Mis bicis
 publicación de una bici privada. La bici pasa a `PENDING`, pendiente de moderación;
 otro usuario recibe `403` y una bici inexistente recibe `404`.
 
+`DELETE /api/bikes/{id}` requiere JWT y permite al propietario borrar su bici en
+cualquier estado, también si ya es pública. El borrado es definitivo: desaparecen la
+ficha, los puntos, el resultado, la explicación y la foto de Cloudinary. Una bici de
+otro usuario o inexistente recibe `404`.
+
 La moderación requiere un JWT de una cuenta con rol `MODERATOR`:
 
 - `GET /api/moderation/pending` devuelve la cola de bicicletas pendientes, con sus

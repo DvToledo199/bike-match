@@ -136,8 +136,29 @@
   border-color: var(--color-primary);
 }
 
+.deleteButton,
+.dangerButton {
+  color: var(--color-danger);
+  background: transparent;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.deleteButton {
+  justify-self: start;
+  padding: var(--space-xs) 0;
+  border: 0;
+}
+
+.dangerButton {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-sm);
+}
+
 .primaryButton:disabled,
-.secondaryButton:disabled {
+.secondaryButton:disabled,
+.dangerButton:disabled {
   cursor: wait;
   opacity: 0.65;
 }

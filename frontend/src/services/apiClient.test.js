@@ -2,6 +2,14 @@ import { describe, expect, it, vi } from 'vitest'
 import { requestApi } from './apiClient.js'
 import { validatePreview } from './previewValidation.js'
 
+describe('API responses', () => {
+  it('accepts a successful response without content', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 204 })))
+
+    await expect(requestApi('/api/bikes/7', { method: 'DELETE' })).resolves.toBeNull()
+  })
+})
+
 describe('API failures', () => {
   it.each([
     ['text/html', '<html>error</html>'],

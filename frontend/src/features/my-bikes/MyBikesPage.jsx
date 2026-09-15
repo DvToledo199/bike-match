@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { listMyBikes, publishBike } from '../../services/myBikes.js'
+import { deleteBike, listMyBikes, publishBike } from '../../services/myBikes.js'
 import styles from './MyBikesPage.module.css'
 
 function MyBikesPage({ onOpenBikeDetail }) {
@@ -11,6 +11,9 @@ function MyBikesPage({ onOpenBikeDetail }) {
   const [confirmingBikeId, setConfirmingBikeId] = useState(null)
   const [publishingBikeId, setPublishingBikeId] = useState(null)
   const [publishError, setPublishError] = useState(null)
+  const [confirmingDeleteBikeId, setConfirmingDeleteBikeId] = useState(null)
+  const [deletingBikeId, setDeletingBikeId] = useState(null)
+  const [deleteError, setDeleteError] = useState(null)
 
   useEffect(() => {
     let active = true
@@ -42,6 +45,26 @@ function MyBikesPage({ onOpenBikeDetail }) {
     } finally {
       setPublishingBikeId(null)
     }
+  }
+
+  async function handleDelete(bikeId) {
+    setDeletingBikeId(bikeId)
+    setDeleteError(null)
+    try {
+      await deleteBike(bikeId)
+      removeBike(bikeId)
+    } catch (requestError) {
+      // A bike that no longer exists was already deleted, for example from another tab.
+      if (requestError.status === 404) removeBike(bikeId)
+      else setDeleteError({ bikeId, requestError })
+    } finally {
+      setDeletingBikeId(null)
+    }
+  }
+
+  function removeBike(bikeId) {
+    setBikes((current) => current.filter((bike) => bike.id !== bikeId))
+    setConfirmingDeleteBikeId(null)
   }
 
   if (error) {
@@ -88,10 +111,16 @@ function MyBikesPage({ onOpenBikeDetail }) {
               confirming={confirmingBikeId === bike.id}
               publishing={publishingBikeId === bike.id}
               publishError={publishError?.bikeId === bike.id ? publishError.requestError : null}
+              confirmingDelete={confirmingDeleteBikeId === bike.id}
+              deleting={deletingBikeId === bike.id}
+              deleteError={deleteError?.bikeId === bike.id ? deleteError.requestError : null}
               onOpenDetails={() => onOpenBikeDetail(bike.id)}
-              onRequestPublish={() => { setPublishError(null); setConfirmingBikeId(bike.id) }}
+              onRequestPublish={() => { setPublishError(null); setConfirmingDeleteBikeId(null); setConfirmingBikeId(bike.id) }}
               onCancelPublish={() => setConfirmingBikeId(null)}
               onConfirmPublish={() => handlePublish(bike.id)}
+              onRequestDelete={() => { setDeleteError(null); setConfirmingBikeId(null); setConfirmingDeleteBikeId(bike.id) }}
+              onCancelDelete={() => setConfirmingDeleteBikeId(null)}
+              onConfirmDelete={() => handleDelete(bike.id)}
             />
           ))}
         </div>
@@ -110,7 +139,12 @@ function PageHeading({ t }) {
   )
 }
 
-function BikeCard({ bike, t, confirming, publishing, publishError, onOpenDetails, onRequestPublish, onCancelPublish, onConfirmPublish }) {
+function BikeCard({
+  bike, t,
+  confirming, publishing, publishError, onRequestPublish, onCancelPublish, onConfirmPublish,
+  confirmingDelete, deleting, deleteError, onRequestDelete, onCancelDelete, onConfirmDelete,
+  onOpenDetails,
+}) {
   const statusKey = bike.status?.toLowerCase() ?? 'unknown'
   const title = [bike.brand, bike.model].filter(Boolean).join(' ')
 
@@ -162,6 +196,31 @@ function BikeCard({ bike, t, confirming, publishing, publishError, onOpenDetails
               : publishError.status === 403
                 ? t('myBikes.publish.errors.forbidden')
                 : t('myBikes.publish.errors.unavailable')}
+          </p>
+        )}
+        {!confirmingDelete && (
+          <button type="button" className={styles.deleteButton} onClick={onRequestDelete}>
+            {t('myBikes.delete.request')}
+          </button>
+        )}
+        {confirmingDelete && (
+          <div className={styles.confirmation} role="group" aria-label={t('myBikes.delete.confirmation')}>
+            <p>{t('myBikes.delete.confirmation')}</p>
+            <div className={styles.confirmationActions}>
+              <button type="button" className={styles.secondaryButton} onClick={onCancelDelete} disabled={deleting}>
+                {t('myBikes.delete.cancel')}
+              </button>
+              <button type="button" className={styles.dangerButton} onClick={onConfirmDelete} disabled={deleting}>
+                {deleting ? t('myBikes.delete.submitting') : t('myBikes.delete.confirm')}
+              </button>
+            </div>
+          </div>
+        )}
+        {deleteError && (
+          <p className={styles.actionError} role="alert">
+            {deleteError.status === 401
+              ? t('myBikes.delete.errors.sessionExpired')
+              : t('myBikes.delete.errors.unavailable')}
           </p>
         )}
       </div>

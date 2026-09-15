@@ -5,9 +5,10 @@ import MyBikesPage from './MyBikesPage.jsx'
 vi.mock('../../services/myBikes.js', () => ({
   listMyBikes: vi.fn(),
   publishBike: vi.fn(),
+  deleteBike: vi.fn(),
 }))
 
-import { listMyBikes, publishBike } from '../../services/myBikes.js'
+import { deleteBike, listMyBikes, publishBike } from '../../services/myBikes.js'
 
 it('shows the saved bikes and their statuses', async () => {
   listMyBikes.mockResolvedValue([
@@ -92,4 +93,100 @@ it('confirms publication and updates the bike to pending review', async () => {
   await waitFor(() => expect(screen.getByText('Pending review')).toBeTruthy())
   expect(publishBike).toHaveBeenCalledWith(7)
   expect(screen.queryByRole('button', { name: 'Request publication' })).toBeNull()
+})
+
+it('confirms deletion and removes the bike from the list', async () => {
+  listMyBikes.mockResolvedValue([{
+    id: 7,
+    brand: 'Orange',
+    model: 'Stage 6',
+    modelYear: 2020,
+    category: 'ENDURO',
+    photoUrl: null,
+    status: 'PUBLIC',
+    analyzed: true,
+  }])
+  deleteBike.mockResolvedValue(null)
+
+  render(<MyBikesPage />)
+
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Delete bike' })).toBeTruthy())
+  screen.getByRole('button', { name: 'Delete bike' }).click()
+  await waitFor(() => expect(screen.getByText(/Delete this bike permanently\? .* This cannot be undone\./)).toBeTruthy())
+  screen.getByRole('button', { name: 'Delete permanently' }).click()
+
+  await waitFor(() => expect(screen.getByText('You have not saved a bike yet. Start an analysis to create one.')).toBeTruthy())
+  expect(deleteBike).toHaveBeenCalledWith(7)
+})
+
+it('keeps the bike when the deletion is cancelled', async () => {
+  listMyBikes.mockResolvedValue([{
+    id: 7,
+    brand: 'Orange',
+    model: 'Stage 6',
+    modelYear: 2020,
+    category: 'ENDURO',
+    photoUrl: null,
+    status: 'PRIVATE',
+    analyzed: false,
+  }])
+
+  render(<MyBikesPage />)
+
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Delete bike' })).toBeTruthy())
+  screen.getByRole('button', { name: 'Delete bike' }).click()
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Keep bike' })).toBeTruthy())
+  screen.getByRole('button', { name: 'Keep bike' }).click()
+
+  await waitFor(() => expect(screen.queryByText(/Delete this bike permanently/)).toBeNull())
+  expect(screen.getByRole('heading', { name: 'Orange Stage 6' })).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Delete bike' })).toBeTruthy()
+})
+
+it('keeps the bike and explains when the deletion fails', async () => {
+  listMyBikes.mockResolvedValue([{
+    id: 7,
+    brand: 'Orange',
+    model: 'Stage 6',
+    modelYear: 2020,
+    category: 'ENDURO',
+    photoUrl: null,
+    status: 'PRIVATE',
+    analyzed: true,
+  }])
+  deleteBike.mockRejectedValue({ status: 500 })
+
+  render(<MyBikesPage />)
+
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Delete bike' })).toBeTruthy())
+  screen.getByRole('button', { name: 'Delete bike' }).click()
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Delete permanently' })).toBeTruthy())
+  screen.getByRole('button', { name: 'Delete permanently' }).click()
+
+  await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('We could not delete this bike right now. Try again.'))
+  expect(screen.getByRole('heading', { name: 'Orange Stage 6' })).toBeTruthy()
+})
+
+it('removes a bike that was already deleted elsewhere', async () => {
+  listMyBikes.mockResolvedValue([{
+    id: 7,
+    brand: 'Orange',
+    model: 'Stage 6',
+    modelYear: 2020,
+    category: 'ENDURO',
+    photoUrl: null,
+    status: 'PRIVATE',
+    analyzed: true,
+  }])
+  deleteBike.mockRejectedValue({ status: 404 })
+
+  render(<MyBikesPage />)
+
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Delete bike' })).toBeTruthy())
+  screen.getByRole('button', { name: 'Delete bike' }).click()
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Delete permanently' })).toBeTruthy())
+  screen.getByRole('button', { name: 'Delete permanently' }).click()
+
+  await waitFor(() => expect(screen.getByText('You have not saved a bike yet. Start an analysis to create one.')).toBeTruthy())
+  expect(screen.queryByRole('alert')).toBeNull()
 })

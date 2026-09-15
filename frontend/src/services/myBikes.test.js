@@ -5,7 +5,7 @@ vi.mock('./apiClient.js', () => ({
 }))
 
 import { requestApi } from './apiClient.js'
-import { getBikeDetail, listMyBikes, listPublicBikes, toKinematicsData } from './myBikes.js'
+import { deleteBike, getBikeDetail, listMyBikes, listPublicBikes, toKinematicsData } from './myBikes.js'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -25,6 +25,14 @@ it('requests one bike detail', async () => {
   await getBikeDetail(7)
 
   expect(requestApi).toHaveBeenCalledWith('/api/bikes/7')
+})
+
+it('deletes one bike', async () => {
+  requestApi.mockResolvedValue(null)
+
+  await deleteBike(7)
+
+  expect(requestApi).toHaveBeenCalledWith('/api/bikes/7', { method: 'DELETE' })
 })
 
 it('requests a public catalog page and optional category', async () => {

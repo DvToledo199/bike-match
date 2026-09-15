@@ -77,6 +77,17 @@
         "unavailable": "We could not request publication right now. Try again."
       }
     },
+    "delete": {
+      "request": "Delete bike",
+      "confirmation": "Delete this bike permanently? Its photo, marked points, curves and explanation will be removed, also from the community if it is public. This cannot be undone.",
+      "cancel": "Keep bike",
+      "confirm": "Delete permanently",
+      "submitting": "Deleting…",
+      "errors": {
+        "sessionExpired": "Your session has expired. Log in again before deleting.",
+        "unavailable": "We could not delete this bike right now. Try again."
+      }
+    },
     "fields": {
       "year": "Year",
       "category": "Category",

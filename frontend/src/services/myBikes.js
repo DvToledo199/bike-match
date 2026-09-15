@@ -26,3 +26,7 @@ export function toKinematicsData(bike) {
 export function publishBike(bikeId) {
   return requestApi(`/api/bikes/${bikeId}/publish`, { method: 'POST' })
 }
+
+export function deleteBike(bikeId) {
+  return requestApi(`/api/bikes/${bikeId}`, { method: 'DELETE' })
+}

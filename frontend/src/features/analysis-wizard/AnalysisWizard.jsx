@@ -88,7 +88,7 @@ function AnalysisWizard({ active = true, session = null, onSaved = () => {} }) {
       </nav>
 
       <div className={styles.panel} ref={panelRef} tabIndex={-1} aria-labelledby="wizard-title">
-        <div hidden={!isLastStep || !data || isLoading || Boolean(error)}>
+        <div id="save-analysis-panel" className={styles.savePanel} tabIndex={-1} hidden={!isLastStep || !data || isLoading || Boolean(error)}>
           <SaveAnalysisPanel key={saveKey} session={session} wizardData={wizardData}
             onLockedChange={setSaveLocked} onSaved={onSaved} onStartNew={startNewAnalysis} />
         </div>
@@ -131,6 +131,25 @@ function AnalysisWizard({ active = true, session = null, onSaved = () => {} }) {
             <p className={styles.description}>{t(`${activeStep.translationKey}.description`)}</p>
             <p className={styles.placeholder}>{t('wizard.placeholder')}</p>
           </>
+        )}
+        {isLastStep && data && !isLoading && !error && (
+          <section className={styles.saveReminder} aria-label={t('saveAnalysis.resultsActionLabel')}>
+            <p>{t('saveAnalysis.reminder')}</p>
+            <div className={styles.saveActions}>
+              {session ? (
+                <button type="button" className={styles.primaryButton} onClick={() => {
+                  const panel = document.getElementById('save-analysis-panel')
+                  panel?.focus({ preventScroll: true })
+                  panel?.scrollIntoView({ block: 'start' })
+                }}>{t(saveLocked ? 'saveAnalysis.reviewSave' : 'saveAnalysis.save')}</button>
+              ) : (
+                <>
+                  <a className={styles.primaryButton} href="#/register">{t('saveAnalysis.registerToSave')}</a>
+                  <a className={styles.secondaryButton} href="#/login">{t('saveAnalysis.loginToSave')}</a>
+                </>
+              )}
+            </div>
+          </section>
         )}
       </div>
 

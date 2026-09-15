@@ -459,9 +459,9 @@
   },
   "saveAnalysis": {
     "eyebrow": "Keep your analysis",
-    "title": "Your bike, explained.",
+    "title": "Save your bike",
     "description": "Save privately to get a plain-language summary alongside your curves. You can choose to share it later.",
-    "guest": "Sign in to save this analysis and get a plain-language summary. Your photo, marks and measurements will stay here while you log in.",
+    "guest": "Keep your curves and get a simple explanation of your bike. Sign up to save this analysis privately. Your photo, marks and measurements will stay here while you sign up or log in.",
     "details": "About your bike",
     "fields": {
       "brand": "Brand",
@@ -481,7 +481,7 @@
     },
     "choose": "Select an option",
     "photoNotice": "Saving uploads your photo to Cloudinary. Your bike stays private in BikeMatch. Photo and marks are fixed after saving; a new marking creates another analysis.",
-    "save": "Save bike & read summary",
+    "save": "Save bike",
     "retry": "Resume saving",
     "working": "Saving…",
     "saved": "Your bike is saved",
@@ -502,6 +502,11 @@
       "invalid": "Check the bike details and measurements before trying again.",
       "resume": "Saving stopped before it finished. Your private bike has been kept; resume saving to continue from the confirmed step.",
       "unavailable": "We could not save your bike. Please try again."
-    }
+    },
+    "registerToSave": "Sign up to save your bike",
+    "loginToSave": "Already have an account? Log in",
+    "reminder": "Want to keep these results?",
+    "resultsActionLabel": "Save your results",
+    "reviewSave": "View saving status"
   }
 }

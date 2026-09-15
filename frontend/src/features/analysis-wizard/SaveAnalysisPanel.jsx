@@ -55,12 +55,12 @@ export default function SaveAnalysisPanel({ session, wizardData, onLockedChange,
   return (
     <section className={styles.panel} aria-labelledby="save-analysis-title" aria-busy={busy}>
       <p className={styles.eyebrow}>{t('saveAnalysis.eyebrow')}</p>
-      <h2 id="save-analysis-title">{t('saveAnalysis.title')}</h2>
+      <h2 id="save-analysis-title" tabIndex={-1}>{t('saveAnalysis.title')}</h2>
       <p>{t(session ? 'saveAnalysis.description' : 'saveAnalysis.guest')}</p>
       {!session ? (
         <div className={styles.actions}>
-          <a className={styles.primary} href="#/login">{t('auth.openLogin')}</a>
-          <a className={styles.secondary} href="#/register">{t('auth.openRegister')}</a>
+          <a className={styles.primary} href="#/register">{t('saveAnalysis.registerToSave')}</a>
+          <a className={styles.secondary} href="#/login">{t('saveAnalysis.loginToSave')}</a>
         </div>
       ) : (
         <form onSubmit={handleSave}>

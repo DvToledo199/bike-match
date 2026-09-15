@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeEach, expect, it, vi } from 'vitest'
 import AnalysisWizard from './AnalysisWizard.jsx'
 
@@ -56,4 +56,48 @@ it('still calculates from valid parameters without a second confirmation', () =>
   fireEvent.click(calculate)
   expect(state.wizard.goToNextStep).toHaveBeenCalledOnce()
   expect(state.preview.requestPreview).toHaveBeenCalledWith(state.wizard.wizardData)
+})
+
+it('shows explicit registration actions above and below completed curves for a guest', () => {
+  state.preview.data = {}
+  render(<AnalysisWizard />)
+  const links = screen.getAllByRole('link', { name: 'Sign up to save your bike' })
+  expect(links).toHaveLength(2)
+  expect(links.every((link) => link.getAttribute('href') === '#/register')).toBe(true)
+  const curves = screen.getByRole('heading', { name: 'Calculated curves' })
+  expect(links[0].compareDocumentPosition(curves) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  expect(curves.compareDocumentPosition(links[1]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  expect(screen.getAllByRole('link', { name: 'Already have an account? Log in' })).toHaveLength(2)
+})
+
+it('offers the signed-in user a save form and a footer shortcut that focuses it', () => {
+  state.preview.data = {}
+  render(<AnalysisWizard session={{ username: 'rider' }} />)
+  expect(screen.queryByRole('link', { name: 'Sign up to save your bike' })).toBeNull()
+  const form = screen.getByRole('region', { name: 'Save your bike' })
+  expect(within(form).getByRole('button', { name: 'Save bike' }).type).toBe('submit')
+  const panel = document.getElementById('save-analysis-panel')
+  panel.scrollIntoView = vi.fn()
+  fireEvent.click(within(screen.getByRole('region', { name: 'Save your results' })).getByRole('button', { name: 'Save bike' }))
+  expect(document.activeElement).toBe(panel)
+  expect(panel.scrollIntoView).toHaveBeenCalledWith({ block: 'start' })
+  expect(state.preview.requestPreview).not.toHaveBeenCalled()
+})
+
+it.each([{ isLoading: true }, { error: { kind: 'network' } }])('does not offer to save an unfinished calculation: %j', (preview) => {
+  Object.assign(state.preview, preview)
+  render(<AnalysisWizard />)
+  expect(screen.queryByRole('link', { name: 'Sign up to save your bike' })).toBeNull()
+  expect(screen.queryByRole('region', { name: 'Save your results' })).toBeNull()
+})
+
+it('updates saving actions when a guest logs in without recalculating', () => {
+  state.preview.data = {}
+  const { rerender } = render(<AnalysisWizard />)
+  expect(screen.getAllByRole('link', { name: 'Sign up to save your bike' })).toHaveLength(2)
+  rerender(<AnalysisWizard session={{ username: 'rider' }} />)
+  expect(screen.getByRole('heading', { name: 'Calculated curves' })).toBeTruthy()
+  expect(screen.queryByRole('link', { name: 'Sign up to save your bike' })).toBeNull()
+  expect(screen.getAllByRole('button', { name: 'Save bike' })).toHaveLength(2)
+  expect(state.preview.requestPreview).not.toHaveBeenCalled()
 })

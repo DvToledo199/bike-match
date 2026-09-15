@@ -16,6 +16,7 @@ sin copiar su identidad ni presentar funciones sociales que todavía no existen.
 | #163 | Futuro: sugerencias de transmisión, catálogo/ficha y evolución visual |
 | #169 | Revisión de portada: galería comunitaria con fotos reales, sin ilustración |
 | #170 | Prueba manual con foto, guardado, explicación y publicaciones reales |
+| #172 | Corrección de contraste del CTA y registro/guardado explícito en resultados |
 
 Cada entrega tiene su propia rama, commit y PR.
 
@@ -124,3 +125,25 @@ Para desarrollo, abrir http://localhost:5173: el backend permite ese origen.
 Abrir 127.0.0.1:5173 con la configuración actual provoca rechazo CORS. No se
 relaja CORS globalmente. Una prueba que requiera ambos orígenes debe configurarlos
 explícitamente en CORS_ALLOWED_ORIGINS.
+
+### Correcciones de la prueba manual (#172)
+
+El enlace «Analyze your bike» tenía texto, pero el estilo de navegación activa
+lo pintaba con el mismo verde que su fondo. Comprobado en el navegador: ambos
+eran rgb(34, 194, 107). Se excluye ese CTA de los estilos de color de enlaces
+normales; conserva `--color-on-primary` al estar activo o pasar el ratón.
+
+El bloque de guardado sí estaba visible antes de las curvas, pero decía «Your bike,
+explained» con botones genéricos de login/registro. Ahora dice «Save your bike»;
+para invitados destaca «Sign up to save your bike» y ofrece login secundario.
+Al final de las gráficas se repite la llamada. Con sesión, el botón final lleva al
+formulario de guardado (o estado del guardado) mediante foco y scroll, sin cambiar
+la ruta ni recalcular. No se permite guardar un preview cargando o fallido.
+
+Regresiones: contraste activo/hover, invitado y usuario autenticado, CTA antes y
+después de curvas, foco en formulario y transición de sesión sin recalcular.
+Durante la actualización de desarrollo se reinició el asistente abierto; el
+borrador no guardado se perdió. No confundir conservar estado al navegar con
+persistencia ante recargas/actualizaciones: esa recuperación sigue pendiente en #163.
+La prueba manual #170 debe repetirse con la versión actualizada y sin editar
+archivos mientras David marca la bici.

@@ -6,8 +6,9 @@
 .logoMark { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; background: var(--color-primary); color: var(--color-on-primary); font-weight: 900; }
 .accountActions { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 1rem; }
 .accountActions a, .accountActions button { text-decoration: none; color: var(--color-text-muted); background: none; border: none; padding: 0.55rem 0.25rem; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
-.accountActions a:hover, .accountActions button:hover, .accountActions a[aria-current] { color: var(--color-primary); }
+.accountActions a:not(.analyzeLink):hover, .accountActions button:hover, .accountActions a:not(.analyzeLink)[aria-current] { color: var(--color-primary); }
 .accountActions .analyzeLink { padding: 0.7rem 1.1rem; border-radius: var(--radius-sm); background: var(--color-primary); color: var(--color-on-primary); }
+.accountActions .analyzeLink:hover { filter: brightness(1.08); }
 .main { flex: 1; width: 100%; max-width: 76rem; margin: 0 auto; padding: clamp(1.25rem, 4vw, 3rem) 1.5rem; }
 .main[data-screen='login'], .main[data-screen='register'] { max-width: 36rem; }
 .main[data-screen='bikeDetail'] { max-width: 64rem; }

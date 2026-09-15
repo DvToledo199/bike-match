@@ -10,7 +10,8 @@ beforeEach(() => { save.mockReset() })
 
 it('offers account links to a guest without sending the photo or generating an explanation', () => {
   render(<SaveAnalysisPanel session={null} />)
-  expect(screen.getByRole('link', { name: 'Log in' }).getAttribute('href')).toBe('#/login')
+  expect(screen.getByRole('link', { name: 'Already have an account? Log in' }).getAttribute('href')).toBe('#/login')
+  expect(screen.getByRole('link', { name: 'Sign up to save your bike' }).getAttribute('href')).toBe('#/register')
   expect(screen.getByText(/Your photo, marks and measurements will stay here/)).toBeTruthy()
   expect(save).not.toHaveBeenCalled()
 })
@@ -23,7 +24,7 @@ it('passes metadata to the workflow and opens the saved bike', async () => {
   fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Stage 6' } })
   fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'ENDURO' } })
   fireEvent.change(screen.getByLabelText('Cassette'), { target: { value: 'TWELVE_SPEED' } })
-  fireEvent.click(screen.getByRole('button', { name: 'Save bike & read summary' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Save bike' }))
   await waitFor(() => expect(onSaved).toHaveBeenCalledWith(42))
   expect(onLockedChange).toHaveBeenCalledWith(true)
   expect(screen.getByRole('link', { name: 'Open saved bike' }).getAttribute('href')).toBe('#/bikes/42')

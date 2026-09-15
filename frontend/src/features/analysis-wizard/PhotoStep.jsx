@@ -98,6 +98,7 @@ function PhotoStep({ photo, suspensionLayout, updateWizardData }) {
           {t(photo ? 'wizard.photo.changeInputLabel' : 'wizard.photo.inputLabel')}
         </button>
         <p id="bike-photo-help" className={styles.helpText}>{t('wizard.photo.inputHelp')}</p>
+        <p className={styles.helpText}>{t('wizard.photo.rightsNotice')}</p>
         <input
           id="bike-photo"
           ref={inputRef}

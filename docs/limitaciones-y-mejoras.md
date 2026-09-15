@@ -135,6 +135,20 @@ GitHub cuando aplica).
 
 ---
 
+## Fotos subidas por los usuarios
+
+### Derechos de las fotos publicadas: solo un aviso
+- **Qué:** la aplicación no comprueba de quién es la foto. Se limita a avisar, al
+  elegirla y al solicitar la publicación, de que para publicar una bici la foto debe
+  ser propia o tener permiso de su autor. Para el análisis privado vale cualquier foto.
+- **Por qué ahora:** es un proyecto de curso. Resolverlo de verdad necesita
+  asesoramiento legal y un proceso de moderación y retirada de fotos que aún no existe.
+- **Impacto:** un usuario puede publicar una foto que no es suya. El aviso demuestra
+  buena fe, pero no elimina por sí solo la responsabilidad de publicarla.
+- **Dónde:** aviso en #174; asesoramiento y solución definitiva en #167.
+
+---
+
 ## Alcance (decisiones de producto, no atajos)
 
 - **Orientación:** izquierda/derecha y corrección de inclinación de hasta 15° con

@@ -67,6 +67,7 @@
     "publish": {
       "request": "Request publication",
       "confirmation": "Send this bike to moderation? It will become visible to the community only after approval.",
+      "photoRights": "Only publish if you took this photo or have permission from its author.",
       "cancel": "Keep private",
       "confirm": "Confirm publication",
       "submitting": "Sending…",
@@ -188,6 +189,7 @@
       "inputLabel": "Bike photo",
       "changeInputLabel": "Choose a different photo",
       "inputHelp": "JPG, PNG or WebP. Maximum file size: 10 MB.",
+      "rightsNotice": "To publish your bike later, use a photo you took or have permission to share. Photos from other websites are only for private analysis.",
       "previewAlt": "Preview of {{fileName}}",
       "dimensions": "{{width}} × {{height}} px",
       "lowResolutionWarning": "This image is smaller than {{minimumPixels}} px on its longest side. Use a larger photo if possible: small images make the marking less reliable.",

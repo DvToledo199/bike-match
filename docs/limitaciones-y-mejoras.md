@@ -147,6 +147,16 @@ GitHub cuando aplica).
   buena fe, pero no elimina por sí solo la responsabilidad de publicarla.
 - **Dónde:** aviso en #174; asesoramiento y solución definitiva en #167.
 
+### Borrar una bici: la foto se elimina después de la base de datos
+- **Qué:** al borrar una bici se eliminan primero sus filas en la base de datos y,
+  una vez confirmado, su foto en Cloudinary. Si Cloudinary falla en ese momento, la
+  bici ya no existe pero su foto sigue almacenada; el fallo queda en el log.
+- **Por qué ahora:** es preferible una foto huérfana a una bici a medias que el
+  usuario ya no podría ver ni volver a borrar.
+- **Impacto:** puede quedar alguna foto sin bici en Cloudinary, ocupando espacio.
+- **Mejora futura:** una tarea periódica que localice y borre fotos sin bici asociada.
+- **Dónde:** #181.
+
 ---
 
 ## Alcance (decisiones de producto, no atajos)

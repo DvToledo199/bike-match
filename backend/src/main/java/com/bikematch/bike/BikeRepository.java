@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -24,6 +25,11 @@ public interface BikeRepository extends JpaRepository<Bike, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select bike from Bike bike join fetch bike.owner where bike.id = :bikeId")
     Optional<Bike> findByIdForUpdate(@Param("bikeId") Long bikeId);
+
+    /** Deletes the bike row; the database cascades to its result and explanations. */
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("delete from Bike bike where bike.id = :bikeId")
+    int deleteBikeById(@Param("bikeId") Long bikeId);
 
     @Query("""
             select new com.bikematch.bike.OwnedBikeSummary(

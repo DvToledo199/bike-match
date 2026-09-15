@@ -4,9 +4,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -25,6 +27,7 @@ import com.bikematch.bike.BikePhotoFile;
 import com.bikematch.bike.BikeDetails;
 import com.bikematch.bike.BikeStatus;
 import com.bikematch.bike.CreateBikeService;
+import com.bikematch.bike.DeleteBikeService;
 import com.bikematch.bike.FinalizeBikeAnalysisService;
 import com.bikematch.bike.GetBikeDetailService;
 import com.bikematch.bike.GetBikeDetailService.BikeDetail;
@@ -115,6 +118,9 @@ class BikeControllerTest {
 
     @MockitoBean
     private GetBikeDetailService getBikeDetailService;
+
+    @MockitoBean
+    private DeleteBikeService deleteBikeService;
 
     @MockitoBean
     private JwtService jwtService;
@@ -441,6 +447,36 @@ class BikeControllerTest {
                 .willThrow(new BikeNotFoundException());
 
         mockMvc.perform(post("/api/bikes/{bikeId}/publish", 7L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Bike not found"));
+    }
+
+    @Test
+    void ownerDeletesABikeWith204() throws Exception {
+        authenticateUserToken();
+
+        mockMvc.perform(delete("/api/bikes/{bikeId}", 7L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
+                .andExpect(status().isNoContent());
+
+        verify(deleteBikeService).deleteOwnedBike(42L, 7L);
+    }
+
+    @Test
+    void missingTokenCannotDeleteABike() throws Exception {
+        mockMvc.perform(delete("/api/bikes/{bikeId}", 7L))
+                .andExpect(status().isUnauthorized());
+
+        verify(deleteBikeService, never()).deleteOwnedBike(anyLong(), anyLong());
+    }
+
+    @Test
+    void missingOrForeignBikeReturns404WhenDeleting() throws Exception {
+        authenticateUserToken();
+        willThrow(new BikeNotFoundException()).given(deleteBikeService).deleteOwnedBike(42L, 7L);
+
+        mockMvc.perform(delete("/api/bikes/{bikeId}", 7L)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.detail").value("Bike not found"));

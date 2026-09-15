@@ -4,6 +4,7 @@ import com.bikematch.bike.AttachBikePhotoService;
 import com.bikematch.bike.Bike;
 import com.bikematch.bike.BikePhotoFile;
 import com.bikematch.bike.CreateBikeService;
+import com.bikematch.bike.DeleteBikeService;
 import com.bikematch.bike.FinalizeBikeAnalysisService;
 import com.bikematch.bike.GetBikeDetailService;
 import com.bikematch.bike.InvalidBikePhotoException;
@@ -16,21 +17,24 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/bikes")
-@Tag(name = "Bikes", description = "Create, analyse, publish and view saved bikes")
+@Tag(name = "Bikes", description = "Create, analyse, publish, view and delete saved bikes")
 public class BikeController {
 
     private final CreateBikeService createBikeService;
@@ -38,19 +42,22 @@ public class BikeController {
     private final FinalizeBikeAnalysisService finalizeBikeAnalysisService;
     private final PublishBikeService publishBikeService;
     private final GetBikeDetailService getBikeDetailService;
+    private final DeleteBikeService deleteBikeService;
 
     public BikeController(
             CreateBikeService createBikeService,
             AttachBikePhotoService attachBikePhotoService,
             FinalizeBikeAnalysisService finalizeBikeAnalysisService,
             PublishBikeService publishBikeService,
-            GetBikeDetailService getBikeDetailService
+            GetBikeDetailService getBikeDetailService,
+            DeleteBikeService deleteBikeService
     ) {
         this.createBikeService = createBikeService;
         this.attachBikePhotoService = attachBikePhotoService;
         this.finalizeBikeAnalysisService = finalizeBikeAnalysisService;
         this.publishBikeService = publishBikeService;
         this.getBikeDetailService = getBikeDetailService;
+        this.deleteBikeService = deleteBikeService;
     }
 
     @GetMapping("/{bikeId}")
@@ -154,5 +161,20 @@ public class BikeController {
         long ownerId = Long.parseLong(authenticatedUserId);
         Bike bike = publishBikeService.publish(ownerId, bikeId);
         return PublishBikeResponse.from(bike);
+    }
+
+    @DeleteMapping("/{bikeId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete my bike",
+            description = "Permanently deletes the bike in any status, with its marked points, saved result, "
+                    + "explanation and photo. It cannot be undone.")
+    @ApiResponse(responseCode = "204", description = "Bike deleted")
+    @ApiResponse(responseCode = "401", content = @Content, description = "Missing, invalid or expired token")
+    @ApiResponse(responseCode = "404", content = @Content, description = "Bike not found or not owned by the caller")
+    public void delete(
+            @AuthenticationPrincipal String authenticatedUserId,
+            @PathVariable long bikeId
+    ) {
+        deleteBikeService.deleteOwnedBike(Long.parseLong(authenticatedUserId), bikeId);
     }
 }

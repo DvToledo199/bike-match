@@ -85,6 +85,7 @@ export async function requestApi(path, options = {}) {
       const body = await readErrorBody(response)
       throw new ApiError(getErrorKind(response, body), response.status, body?.detail)
     }
+    if (response.status === 204) return null
     return await readResponseBody(response)
   } catch (error) {
     if (controller.signal.aborted) throw new ApiError(timedOut ? 'timeout' : 'aborted')

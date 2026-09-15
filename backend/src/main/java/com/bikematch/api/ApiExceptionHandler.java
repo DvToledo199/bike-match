@@ -11,6 +11,7 @@ import com.bikematch.bike.InvalidBikePhotoException;
 import com.bikematch.media.ImageStorageException;
 import com.bikematch.interpretation.InterpretationNotAvailableException;
 import com.bikematch.interpretation.InterpretationRateLimitException;
+import com.bikematch.moderation.RemovalNoticeNotFoundException;
 import com.bikematch.user.CurrentUserNotFoundException;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
@@ -77,6 +78,11 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(BikeNotFoundException.class)
     public ProblemDetail handleBikeNotFound(BikeNotFoundException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+    }
+
+    @ExceptionHandler(RemovalNoticeNotFoundException.class)
+    public ProblemDetail handleRemovalNoticeNotFound(RemovalNoticeNotFoundException exception) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
     }
 

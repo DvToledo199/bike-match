@@ -224,7 +224,14 @@ La moderación requiere un JWT de una cuenta con rol `MODERATOR`:
   reciben `404`.
 
 Una cuenta `USER` recibe `403` en estas rutas. Una bicicleta inexistente devuelve
-`404`; si ya no estaba pendiente, devuelve `409` y no se modifica.
+`404`; al aprobar o rechazar una que ya no estaba pendiente, devuelve `409` y no se
+modifica.
+
+`GET /api/my-notices` requiere JWT y devuelve los avisos que el usuario aún no ha
+descartado: sus bicis retiradas por moderación, con marca, modelo, motivo y fecha, de
+la más reciente a la más antigua. `POST /api/my-notices/{id}/dismiss` descarta un
+aviso; uno de otro usuario o inexistente recibe `404`. El aviso por correo queda para
+más adelante.
 
 Son **estimaciones bajo condiciones de referencia**, no medidas individuales ni
 validación de campo. Los clientes sin ruedas conservan el cálculo V1 (sin curvas

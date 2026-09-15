@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { registerUser } from '../../services/auth.js'
+import { loginUser } from '../../services/authLogin.js'
+import { saveSession } from '../../services/session.js'
 import { validateRegisterForm } from './registerValidation.js'
 import styles from './RegisterForm.module.css'
 
 const emptyValues = { email: '', username: '', password: '' }
 
-function RegisterForm({ onContinueAsGuest }) {
+function RegisterForm({ onRegistered, onContinueAsGuest }) {
   const { t } = useTranslation()
   const [values, setValues] = useState(emptyValues)
   const [errors, setErrors] = useState({})
@@ -26,15 +28,19 @@ function RegisterForm({ onContinueAsGuest }) {
     if (Object.keys(validationErrors).length > 0) return
 
     setStatus('loading')
+    const credentials = { email: values.email.trim(), password: values.password }
     try {
-      await registerUser({
-        email: values.email.trim(),
-        username: values.username.trim(),
-        password: values.password,
-      })
-      setStatus('success')
+      await registerUser({ ...credentials, username: values.username.trim() })
     } catch (error) {
       setStatus(error.kind === 'duplicate' ? 'duplicate' : 'error')
+      return
+    }
+
+    try {
+      onRegistered(saveSession(await loginUser(credentials)))
+    } catch {
+      // The account already exists: if the automatic sign-in fails, offer the manual login.
+      setStatus('success')
     }
   }
 

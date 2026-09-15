@@ -25,6 +25,11 @@ function App() {
     }
   }, [route.screen])
 
+  function startSession(nextSession) {
+    setSession(nextSession)
+    navigate('/analyze')
+  }
+
   function logout() {
     clearSession()
     setSession(null)
@@ -45,10 +50,9 @@ function App() {
         <AnalysisWizard active={route.screen === 'analysis'} session={session} onSaved={(id) => openBike(id, '/my-bikes')} />
       </div>
       {route.screen === 'home' && <HomePage onOpenBikeDetail={(id) => openBike(id, '/')} />}
-      {route.screen === 'register' && <RegisterForm onContinueAsGuest={() => navigate('/analyze')} />}
+      {route.screen === 'register' && <RegisterForm onRegistered={startSession} onContinueAsGuest={() => navigate('/analyze')} />}
       {(route.screen === 'login' || needsLogin) && (
-        <LoginForm onLoggedIn={(nextSession) => { setSession(nextSession); navigate('/analyze') }}
-          onContinueAsGuest={() => navigate('/analyze')} />
+        <LoginForm onLoggedIn={startSession} onContinueAsGuest={() => navigate('/analyze')} />
       )}
       {route.screen === 'myBikes' && session && <MyBikesPage onOpenBikeDetail={(id) => openBike(id, '/my-bikes')} />}
       {route.screen === 'catalog' && <CatalogPage onOpenBikeDetail={(id) => openBike(id, '/catalog')} />}

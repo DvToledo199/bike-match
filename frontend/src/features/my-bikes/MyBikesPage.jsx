@@ -144,6 +144,7 @@ function BikeCard({ bike, t, confirming, publishing, publishError, onOpenDetails
         {confirming && (
           <div className={styles.confirmation} role="group" aria-label={t('myBikes.publish.confirmation')}>
             <p>{t('myBikes.publish.confirmation')}</p>
+            <p>{t('myBikes.publish.photoRights')}</p>
             <div className={styles.confirmationActions}>
               <button type="button" className={styles.secondaryButton} onClick={onCancelPublish} disabled={publishing}>
                 {t('myBikes.publish.cancel')}

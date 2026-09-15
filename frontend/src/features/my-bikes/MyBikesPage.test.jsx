@@ -86,6 +86,7 @@ it('confirms publication and updates the bike to pending review', async () => {
   await waitFor(() => expect(screen.getByRole('button', { name: 'Request publication' })).toBeTruthy())
   screen.getByRole('button', { name: 'Request publication' }).click()
   await waitFor(() => expect(screen.getByText(/Send this bike to moderation/)).toBeTruthy())
+  expect(screen.getByText(/took this photo or have permission from its author/)).toBeTruthy()
   screen.getByRole('button', { name: 'Confirm publication' }).click()
 
   await waitFor(() => expect(screen.getByText('Pending review')).toBeTruthy())

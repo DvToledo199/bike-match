@@ -39,3 +39,8 @@ it('ignores stale decodes and releases their URLs, including after unmount', asy
   expect(revoke).toHaveBeenCalledWith('blob:third.jpg')
   expect(update).toHaveBeenCalledTimes(1)
 })
+
+it('explains that only own or permitted photos can be published', () => {
+  render(<PhotoStep updateWizardData={vi.fn()} />)
+  expect(screen.getByText(/use a photo you took or have permission to share/)).toBeTruthy()
+})

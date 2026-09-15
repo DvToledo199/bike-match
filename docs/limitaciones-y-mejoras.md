@@ -157,6 +157,33 @@ GitHub cuando aplica).
 - **Mejora futura:** una tarea periódica que localice y borre fotos sin bici asociada.
 - **Dónde:** #181.
 
+### Clave de Cloudinary con un rol amplio
+- **Qué:** en local, la clave de Cloudinary de BikeMatch tiene un rol de administración
+  completo (Master Admin), aunque el backend solo necesita subir y borrar imágenes.
+- **Por qué ahora:** una clave sin rol no podía subir fotos y la prueba manual necesitaba
+  avanzar. La clave solo vive en el `.env` local, que no se sube al repositorio.
+- **Impacto:** si la clave se filtrara, permitiría gestionar toda la cuenta de Cloudinary,
+  no solo las fotos de BikeMatch.
+- **Mejora futura:** antes de desplegar, usar un rol a medida con permisos de subida y
+  borrado (limitado a la carpeta `bikematch/` si el plan lo permite) y rotar la clave.
+- **Dónde:** #170, #185.
+
+---
+
+## Interfaz web
+
+### Traducción automática del navegador
+- **Qué:** la interfaz está en inglés y no impide que el navegador la traduzca.
+- **Por qué ahora:** en la prueba manual (#170) la traducción de Safari funcionó sin
+  fallos visibles. Bloquearla dejaría sin ayuda a quien no lee inglés.
+- **Impacto:** un traductor cambia por su cuenta los textos de la página. En la misma
+  prueba, el panel de Cloudinary dejó de funcionar al traducirlo; con el traductor de
+  Chrome, que aquí no se ha probado, otras aplicaciones React han mostrado errores
+  parecidos.
+- **Mejora futura:** la solución de fondo es ofrecer la interfaz en español; los textos
+  ya están centralizados en los ficheros de traducción de react-i18next.
+- **Dónde:** #170, #185.
+
 ---
 
 ## Alcance (decisiones de producto, no atajos)

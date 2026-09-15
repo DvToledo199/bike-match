@@ -50,8 +50,25 @@ un volumen PostgreSQL ya inicializado; no borres ese volumen sin proteger sus da
 
 Si falla la conexión durante el asistente público, comprueba Docker y health. El botón
 de reintento conserva tus marcas. Recargar o cerrar la pestaña **sí las pierde**: ese
-preview solo vive en memoria. El flujo autenticado para guardar una bicicleta ya existe
-en backend, pero todavía no está conectado a la interfaz.
+preview solo vive en memoria. Con sesión iniciada, el asistente guarda la bici en
+"Mis bicis" con su foto y su análisis.
+
+### Fotos con Cloudinary
+
+Guardar una bici sube su foto a Cloudinary, así que el backend necesita `CLOUDINARY_URL`
+en el `.env` raíz:
+
+1. En el panel de Cloudinary, crea una clave API propia para BikeMatch en lugar de usar
+   la clave Root de la cuenta.
+2. Asigna a esa clave un **rol con permiso para subir y borrar imágenes**. Sin rol,
+   Cloudinary responde `Request forbidden due to missing permissions`: la foto no se
+   guarda y el motivo queda en el log del backend. En la prueba local se usó Master
+   Admin; restringirlo queda anotado en las [limitaciones](docs/limitaciones-y-mejoras.md).
+3. Copia la variable completa, `cloudinary://<api_key>:<api_secret>@<cloud_name>`, y
+   sustituye los marcadores que muestra el panel (`<your_api_key>`, `<your_api_secret>`)
+   por los valores de la clave. Si queda algún marcador, la subida falla.
+
+El `api_secret` es un secreto: no lo compartas ni lo subas al repositorio.
 
 ## Autenticación y roles
 
@@ -80,6 +97,12 @@ contraseña. Con Docker instalado puedes generar uno sin que se muestre la contr
 docker run --rm -it httpd:2.4-alpine htpasswd -nBC 12 moderator
 ```
 
+En macOS, `htpasswd` ya viene instalado y no hace falta Docker:
+
+```bash
+htpasswd -nBC 12 moderator
+```
+
 El comando la solicita de forma oculta y muestra `moderator:$2...`; copia solo la
 parte que empieza por `$2` como `INITIAL_MODERATOR_PASSWORD_HASH`. Al arrancar, la
 aplicación crea la cuenta si no existe. Con las tres variables vacías no hace nada;
@@ -87,6 +110,10 @@ una configuración incompleta, un hash que no sea BCrypt o un conflicto con otra
 detienen el arranque para no crear una cuenta insegura ni promocionar a alguien por
 accidente. El esquema sigue perteneciendo a Flyway: esto es un dato inicial local, no
 una contraseña dentro de una migración versionada.
+
+Para iniciar sesión como moderador usa `INITIAL_MODERATOR_EMAIL` y la **contraseña que
+escribiste al generar el hash**, nunca el hash, que solo sirve para que el backend
+compruebe esa contraseña. Si la cuenta ya existe, cambiar estas variables no la modifica.
 
 ## Documentación de la API (Swagger)
 

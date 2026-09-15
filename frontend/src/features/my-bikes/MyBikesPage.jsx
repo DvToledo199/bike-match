@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { deleteBike, listMyBikes, publishBike } from '../../services/myBikes.js'
+import { deleteBike, dismissNotice, listMyBikes, listMyNotices, publishBike } from '../../services/myBikes.js'
 import styles from './MyBikesPage.module.css'
 
 function MyBikesPage({ onOpenBikeDetail }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [bikes, setBikes] = useState(null)
   const [error, setError] = useState(null)
   const [reloadKey, setReloadKey] = useState(0)
@@ -14,6 +14,9 @@ function MyBikesPage({ onOpenBikeDetail }) {
   const [confirmingDeleteBikeId, setConfirmingDeleteBikeId] = useState(null)
   const [deletingBikeId, setDeletingBikeId] = useState(null)
   const [deleteError, setDeleteError] = useState(null)
+  const [notices, setNotices] = useState([])
+  const [dismissingNoticeId, setDismissingNoticeId] = useState(null)
+  const [dismissError, setDismissError] = useState(null)
 
   useEffect(() => {
     let active = true
@@ -26,6 +29,15 @@ function MyBikesPage({ onOpenBikeDetail }) {
       })
       .catch((requestError) => {
         if (active) setError(requestError)
+      })
+
+    // Notices are secondary: if they cannot be loaded, My bikes still works without them.
+    listMyNotices()
+      .then((result) => {
+        if (active) setNotices(result)
+      })
+      .catch(() => {
+        if (active) setNotices([])
       })
 
     return () => { active = false }
@@ -67,6 +79,25 @@ function MyBikesPage({ onOpenBikeDetail }) {
     setConfirmingDeleteBikeId(null)
   }
 
+  async function handleDismissNotice(noticeId) {
+    setDismissingNoticeId(noticeId)
+    setDismissError(null)
+    try {
+      await dismissNotice(noticeId)
+      removeNotice(noticeId)
+    } catch (requestError) {
+      // A notice that no longer exists was already dismissed, for example from another tab.
+      if (requestError.status === 404) removeNotice(noticeId)
+      else setDismissError({ noticeId, requestError })
+    } finally {
+      setDismissingNoticeId(null)
+    }
+  }
+
+  function removeNotice(noticeId) {
+    setNotices((current) => current.filter((notice) => notice.id !== noticeId))
+  }
+
   if (error) {
     const message = error.status === 401
       ? t('myBikes.errors.sessionExpired')
@@ -97,6 +128,16 @@ function MyBikesPage({ onOpenBikeDetail }) {
   return (
     <section className={styles.page} aria-labelledby="my-bikes-title">
       <PageHeading t={t} />
+      {notices.length > 0 && (
+        <RemovalNotices
+          notices={notices}
+          t={t}
+          language={i18n.language}
+          dismissingNoticeId={dismissingNoticeId}
+          dismissError={dismissError}
+          onDismiss={handleDismissNotice}
+        />
+      )}
       {bikes.length === 0 ? (
         <div className={styles.message}>
           <p>{t('myBikes.empty')}</p>
@@ -136,6 +177,46 @@ function PageHeading({ t }) {
       <h1 id="my-bikes-title">{t('myBikes.title')}</h1>
       <p className={styles.description}>{t('myBikes.description')}</p>
     </header>
+  )
+}
+
+function RemovalNotices({ notices, t, language, dismissingNoticeId, dismissError, onDismiss }) {
+  const dateFormat = new Intl.DateTimeFormat(language, { dateStyle: 'medium' })
+
+  return (
+    <section className={styles.notices} aria-labelledby="removal-notices-title">
+      <h2 id="removal-notices-title">{t('myBikes.notices.title')}</h2>
+      <p className={styles.muted}>{t('myBikes.notices.description')}</p>
+      <ul className={styles.noticeList}>
+        {notices.map((notice) => {
+          const name = [notice.brand, notice.model].filter(Boolean).join(' ')
+          const dismissing = dismissingNoticeId === notice.id
+          const noticeError = dismissError?.noticeId === notice.id ? dismissError.requestError : null
+
+          return (
+            <li key={notice.id} className={styles.notice}>
+              <div className={styles.noticeText}>
+                <h3>{t('myBikes.notices.bikeRemoved', { name })}</h3>
+                <p>{t('myBikes.notices.reason', { reason: notice.reason })}</p>
+                <p className={styles.muted}>
+                  {t('myBikes.notices.removedAt', { date: dateFormat.format(new Date(notice.removedAt)) })}
+                </p>
+              </div>
+              <button type="button" className={styles.secondaryButton} onClick={() => onDismiss(notice.id)} disabled={dismissing}>
+                {dismissing ? t('myBikes.notices.dismissing') : t('myBikes.notices.dismiss')}
+              </button>
+              {noticeError && (
+                <p className={styles.actionError} role="alert">
+                  {noticeError.status === 401
+                    ? t('myBikes.notices.errors.sessionExpired')
+                    : t('myBikes.notices.errors.unavailable')}
+                </p>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+    </section>
   )
 }
 

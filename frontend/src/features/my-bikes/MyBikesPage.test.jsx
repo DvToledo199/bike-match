@@ -6,9 +6,11 @@ vi.mock('../../services/myBikes.js', () => ({
   listMyBikes: vi.fn(),
   publishBike: vi.fn(),
   deleteBike: vi.fn(),
+  listMyNotices: vi.fn(() => Promise.resolve([])),
+  dismissNotice: vi.fn(),
 }))
 
-import { deleteBike, listMyBikes, publishBike } from '../../services/myBikes.js'
+import { deleteBike, dismissNotice, listMyBikes, listMyNotices, publishBike } from '../../services/myBikes.js'
 
 it('shows the saved bikes and their statuses', async () => {
   listMyBikes.mockResolvedValue([
@@ -190,3 +192,74 @@ it('removes a bike that was already deleted elsewhere', async () => {
   await waitFor(() => expect(screen.getByText('You have not saved a bike yet. Start an analysis to create one.')).toBeTruthy())
   expect(screen.queryByRole('alert')).toBeNull()
 })
+
+it('shows the notices about bikes removed by moderation', async () => {
+  listMyBikes.mockResolvedValue([])
+  listMyNotices.mockResolvedValueOnce([removalNotice()])
+
+  render(<MyBikesPage />)
+
+  await waitFor(() => expect(screen.getByRole('heading', { name: 'Removed by moderation' })).toBeTruthy())
+  expect(screen.getByRole('heading', { name: 'Orange Stage 6 was removed' })).toBeTruthy()
+  expect(screen.getByText('Reason: Photo taken from another website')).toBeTruthy()
+  expect(screen.getByText('Removed on Sep 15, 2026')).toBeTruthy()
+  expect(screen.getByText('You have not saved a bike yet. Start an analysis to create one.')).toBeTruthy()
+})
+
+it('dismisses a notice', async () => {
+  listMyBikes.mockResolvedValue([])
+  listMyNotices.mockResolvedValueOnce([removalNotice()])
+  dismissNotice.mockResolvedValueOnce(null)
+
+  render(<MyBikesPage />)
+
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Dismiss' })).toBeTruthy())
+  screen.getByRole('button', { name: 'Dismiss' }).click()
+
+  await waitFor(() => expect(screen.queryByRole('heading', { name: 'Removed by moderation' })).toBeNull())
+  expect(dismissNotice).toHaveBeenCalledWith(3)
+})
+
+it('keeps the notice and explains when dismissing fails', async () => {
+  listMyBikes.mockResolvedValue([])
+  listMyNotices.mockResolvedValueOnce([removalNotice()])
+  dismissNotice.mockRejectedValueOnce({ status: 500 })
+
+  render(<MyBikesPage />)
+
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Dismiss' })).toBeTruthy())
+  screen.getByRole('button', { name: 'Dismiss' }).click()
+
+  await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('We could not dismiss this notice right now. Try again.'))
+  expect(screen.getByRole('heading', { name: 'Orange Stage 6 was removed' })).toBeTruthy()
+})
+
+it('shows the bikes when the notices cannot be loaded', async () => {
+  listMyBikes.mockResolvedValue([{
+    id: 7,
+    brand: 'Orange',
+    model: 'Stage 6',
+    modelYear: 2020,
+    category: 'ENDURO',
+    photoUrl: null,
+    status: 'PRIVATE',
+    analyzed: true,
+  }])
+  listMyNotices.mockRejectedValueOnce({ status: 500 })
+
+  render(<MyBikesPage />)
+
+  await waitFor(() => expect(screen.getByRole('heading', { name: 'Orange Stage 6' })).toBeTruthy())
+  expect(screen.queryByRole('heading', { name: 'Removed by moderation' })).toBeNull()
+  expect(screen.queryByRole('alert')).toBeNull()
+})
+
+function removalNotice() {
+  return {
+    id: 3,
+    brand: 'Orange',
+    model: 'Stage 6',
+    reason: 'Photo taken from another website',
+    removedAt: '2026-09-15T12:00:00Z',
+  }
+}

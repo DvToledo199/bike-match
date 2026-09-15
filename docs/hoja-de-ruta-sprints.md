@@ -4,8 +4,8 @@
 > demo real contra referencia (#54) están completados. Despliegue y aprobación del
 > mentor no se dan por hechos. La visión comunitaria está en
 > [`vision-producto-v2.md`](vision-producto-v2.md). Identidad, seguridad y persistencia
-> del análisis ya están en backend; la siguiente parte convierte esos datos en vistas
-> de producto: Mis bicis y la ficha de detalle.
+> del análisis ya están en backend y en las vistas de Mis bicis y detalle. El guardado
+> desde el asistente (#161) conecta esas vistas; quedan pruebas reales y despliegue.
 
 **Regla de oro contra la saturación:** solo existe el sprint actual. No mires los demás. Haz la primera tarea sin marcar, márcala, pasa a la siguiente. Si una tarea te lleva más de un día, pártela en dos.
 
@@ -94,7 +94,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [x] Crear una bici privada y guardar sus metadatos (#122)
 - [x] Subir su foto a Cloudinary y guardar la URL con control de propietario (#124)
 - [x] Guardar los puntos naturales de la foto y persistir atómicamente el resultado del motor
-- [ ] "Mis bicis" (privadas) y detalle de bici con gráficas y números
+- [x] "Mis bicis" (privadas) y detalle de bici con gráficas y números
   - [x] API `GET /api/my-bikes` con resúmenes privados del propietario (#130)
   - [x] Cliente frontend preparado para adjuntar el JWT y consultar esa API (#142)
   - [x] API `GET /api/bikes/{id}` con reglas de visibilidad y resultado persistido (#148)
@@ -110,7 +110,11 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
   - [x] Proveedor determinista por reglas como modo local y fallback
   - [x] Adaptador opcional de Gemini sin dependencia nueva, con clave solo en servidor
   - [x] Caché versionada, permisos de lectura/generación y límite de peticiones MVP
-- [ ] Texto sencillo junto a las gráficas del resultado guardado/detalle y prueba de comprensión (#105)
+- [x] Texto sencillo junto a las gráficas del detalle (#105)
+- [x] Guardado desde el asistente sin perder el análisis al iniciar sesión (#161)
+- [ ] Prueba real: subida a Cloudinary, explicación por reglas/Gemini y comprensión con David
+- [x] Navegación de inicio, controles de marcado y formulario compacto (#158–#160)
+  Ver [`diseno-y-prueba-frontend.md`](diseno-y-prueba-frontend.md) para límites y mejoras pendientes.
 
 **Hecho cuando:** en la URL pública alguien se registra, crea una bici y la ve en
 "mis bicis" con una explicación comprensible. La indisponibilidad del proveedor de

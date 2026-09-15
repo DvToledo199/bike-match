@@ -13,8 +13,8 @@ foto lateral → **marcar puntos** → parámetros → **curvas y descriptores**
 La prueba real de #54 está completada. El arranque de Spring sí necesita PostgreSQL.
 El proyecto debe quedar **EXPLICABLE**. Esta guía describe el preview de V1; en Sprint 2
 el backend ya añadió cuentas y el guardado de bicicletas, fotos, puntos y resultados.
-El servicio de interpretación del backend (#104) ya existe; esta issue (#105) conecta
-la explicación guardada con el detalle frontend. El preview anónimo sigue calculando
+El servicio de interpretación (#104) y su presentación en el detalle (#105) ya existen.
+#161 conecta el asistente con cuenta, guardado privado y explicación. El preview anónimo sigue calculando
 y mostrando gráficas sin generar explicaciones de IA.
 
 ## 1. Perfil de David y forma de trabajar (IMPORTANTE)
@@ -41,7 +41,8 @@ y mostrando gráficas sin generar explicaciones de IA.
 | Componentes accesibles | **HTML nativo** | *Headless* (Base UI/Radix/Headless UI) **solo** si aparece un widget complejo |
 
 React 19 y Recharts están verificados con las versiones del lockfile, sin override
-de `react-is`. Zoom SVG hasta 800%; desplazamiento por botones para el MVP.
+de `react-is`. Zoom SVG hasta 1200%, rueda alrededor del cursor y arrastre derecho;
+botones y teclado como alternativa (#159).
 
 **Vías de "subir de nivel" sin rehacer** (por si algo se queda corto): gráficas → Chart.js;
 marcado → react-konva; estilo → Tailwind v4. No hacen falta ahora.
@@ -50,7 +51,7 @@ marcado → react-konva; estilo → Tailwind v4. No hacen falta ahora.
 Un **asistente por pasos**: foto y suspensión → marcado → parámetros y calibración → resultados.
 - **Foto del usuario:** aceptar **JPG / PNG / WebP** (formatos de foto normales). **Nunca SVG**
   (el SVG es solo la capa de dibujo de encima, no el formato de la foto).
-- **Marcado:** 6 puntos (`MAIN_PIVOT`, `SHOCK_FRAME`, `SHOCK_SWINGARM`, `BOTTOM_BRACKET`,
+- **Marcado:** 6 puntos (`MAIN_PIVOT`, `BOTTOM_BRACKET`, `SHOCK_FRAME`, `SHOCK_SWINGARM`,
   `REAR_AXLE`, `FRONT_AXLE`) sobre una capa **SVG** encima de la foto. Requisitos de precisión
   (críticos — ver [`sensibilidad-marcado-pivote-INFORME.md`](investigaciones/sensibilidad-marcado-pivote-INFORME.md)):
   **zoom**, **ajuste fino con flechas**, creación con Enter y aviso de baja resolución.
@@ -154,13 +155,13 @@ llamada al proveedor. La respuesta contiene un resumen breve, su procedencia (`R
 `AI`) y entre 2 y 4 evidencias numéricas. El frontend valida esa forma antes de mostrarla.
 El preview anónimo no llama a este servicio.
 
-## 5. Mirando al futuro (NO construir ahora, pero no cerrarnos puertas)
-- **Login, cuentas de usuario y guardar bicis SÍ son parte del MVP**, pero van en un **sprint
-  posterior** (autenticación / JWT en la hoja de ruta). **No se construyen ahora.**
-- Aun así, **estructura el frontend para que encajen después sin rehacer**: rutas preparadas
-  para una pantalla de login y zonas protegidas, y una **capa de llamadas a la API** aislada (un
-  *hook* tipo `usePreview`) donde luego sea fácil añadir un token de autenticación.
-- El endpoint de preview es **público a propósito** en esta fase (no toca base de datos).
+## 5. Evolución de Sprint 2
+- Login, registro, Mis bicis, catálogo y detalle ya existen. El cliente API adjunta el JWT.
+- #161 permite guardar desde resultados: crear metadatos, subir foto, finalizar análisis
+  y solicitar explicación. Reintentos por etapa en memoria; recargar pierde el borrador.
+- El endpoint de preview sigue siendo público a propósito y no persiste el análisis.
+- Configuración externa y pruebas reales pendientes, diseño y mejoras futuras en
+  [`diseno-y-prueba-frontend.md`](diseno-y-prueba-frontend.md).
 
 ## 6. Cómo se hará el diseño (con David)
 David no sabe diseño; **dirige reaccionando**. Flujo recomendado:

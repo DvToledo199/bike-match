@@ -31,8 +31,9 @@ Stage 6 29'' 2020 quedó validada contra Linkage Design en la issue #54.
 La V1 no incluía cuentas, persistencia de bicicletas, catálogo ni publicación. El
 Sprint 2 ya ha añadido registro/login y el backend para crear una bicicleta privada,
 asociarle una foto alojada en Cloudinary y finalizar su análisis guardando puntos y
-resultado en una transacción. La interfaz todavía no usa ese flujo; el endpoint público
-de preview continúa siendo una prueba sin persistencia.
+resultado en una transacción. #161 conecta ese flujo desde la interfaz con cuenta,
+guardado y explicación; la prueba real con los servicios configurados sigue pendiente.
+El endpoint público de preview continúa siendo una prueba sin persistencia.
 
 ## Experiencia de producto V2
 
@@ -46,7 +47,7 @@ ficha de detalle (#3), con este orden:
 3. Ficha técnica: datos de la bici y condiciones del análisis.
 4. Gráficas disponibles para su versión de motor (incluidas anti-squat y anti-rise
    de referencia cuando estén calculadas), con inicio/final legibles, no tablas masivas.
-5. Explicación humana general y, cuando se implemente #104/#105, texto de IA.
+5. Explicación humana general (#104/#105): reglas por defecto, Gemini opcional.
 
 Se presenta todo en esa pantalla: no pedir otra acción para mostrar resultados ya
 calculados. Las curvas no esperan a la IA; su carga, error o indisponibilidad afectan
@@ -54,8 +55,8 @@ solo al bloque de texto. El usuario debe poder distinguir una explicación fija 
 una generada por IA. La foto y el texto respetan los mismos permisos que la bici.
 
 La eliminación del botón inerte `View results` se entregó en #113. El guardado de la
-foto se incorpora en #124; la ficha, Mis bicis y la IA continúan como trabajo de
-#3/#6/#103–#105, no como funciones que ya existan por documentarlas. La foto temporal
+foto se implementó en #124, las vistas en #144/#150 y la explicación en #104/#105.
+#161 enlaza el guardado desde el asistente con esas vistas. La foto temporal
 del preview no basta para recuperarla al abrir una bicicleta guardada.
 
 Una bicicleta guardada con resultado conserva como fuente inmutable la foto y sus puntos.
@@ -147,8 +148,10 @@ diseñarán planes y permisos sin acoplar el dominio de bicicletas a un proveedo
 ## Orden de construcción del backend
 
 David implementará el backend con acompañamiento, una tarea pequeña cada vez. Los
-pasos 1–7 ya están completados en backend; el frontend persistente y las vistas de
-consulta aún no:
+pasos 1–10 ya están implementados, con vistas de consulta y guardado frontend.
+La integración real con servicios externos y la comprensión del texto no se dan por
+validadas solo con tests. Del paso 11 existe moderación en backend; las funciones
+sociales siguientes siguen pendientes:
 
 1. Cerrar el modelo de cuenta y consolidar #1 dentro de #5.
 2. Migración versionada de `users`, entidad y repositorio.

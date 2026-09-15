@@ -2,7 +2,9 @@
 
 > Plan acordado el 9 de septiembre de 2026 y revisado el 14 de septiembre. Épica #10.
 > El contrato de datos (#103), la persistencia numérica y el servicio de interpretación
-> (#104) están cerrados; la integración visual queda en #105. Este documento concreta
+> (#104) y la integración visual (#105) están implementados. #161 conecta el guardado
+> desde el asistente con la ficha. La prueba real de comprensión sigue pendiente.
+> Este documento concreta
 > el alcance y prevalece sobre el antiguo
 > plan que dejaba toda la IA como extra posterior al sistema de cuatro barras.
 
@@ -23,7 +25,8 @@ como relación de palanca o sag al usarlos. Las gráficas siguen disponibles y s
 |---|---|---|
 | Contrato de datos, límites y ejemplos de explicación | Completado antes de cerrar la persistencia de #6 | #103 |
 | Servicio que genera y reutiliza el resumen básico | Completado: reglas + proveedor Gemini opcional, caché y fallback | #104 |
-| Texto sencillo en resultados guardados y detalle | Con #3 y tras #104; cierre de Sprint 2 | #105 |
+| Texto sencillo en resultados guardados y detalle | Implementado; revisión humana del texto pendiente | #105 |
+| Guardado desde el asistente y acceso a la explicación | Implementado; prueba real con servicios configurados pendiente | #161 |
 | Cuestionario opcional para personalizar la lectura | Después del resumen básico; Sprint 4 | #10, segundo bloque pendiente |
 | Chat y evaluación de una posible modalidad de pago | Futuro, sin decisión comercial cerrada | #106 |
 
@@ -64,8 +67,9 @@ pueda reconstruirse un contexto coherente desde los resultados guardados.
 El contrato de interpretación está en
 [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
 El adaptador desde esos resultados, el servicio narrativo y su almacenamiento ya están
-implementados en #104. Falta la presentación en el detalle de la bici y la prueba de
-comprensión de #105. Esta separación permite cambiar el proveedor sin rehacer el solver
+implementados en #104. La presentación en el detalle está en #105 y el guardado
+desde el asistente en #161. Falta la prueba real de comprensión. Esta separación
+permite cambiar el proveedor sin rehacer el solver
 ni las gráficas.
 
 ## Separación de responsabilidades prevista
@@ -79,8 +83,8 @@ El servicio y el adaptador del proveedor vivirán fuera del dominio del motor. E
 contrato de #103 ya fija sus datos, capacidades, privacidad y límites antes de
 programarlo. El resumen general se consultará
 por bicicleta/resultado. `POST /api/bikes/{id}/analysis` finaliza y guarda el análisis
-numérico; la futura personalización con cuestionario reservará una ruta distinta, como
-`POST /api/bikes/{id}/interpretation`.
+numérico; la futura personalización con cuestionario tendrá un contrato separado,
+todavía por definir, sin reutilizar la caché del resumen general.
 Las rutas de #104 son `POST /api/bikes/{id}/interpretation?language=en` para que el
 propietario genere o reutilice la explicación y `GET /api/bikes/{id}/interpretation?language=en`
 para leer la caché si tiene permiso. No se modifica el contrato público de
@@ -145,7 +149,8 @@ explicación generada sea correcta.
 
 El preview anónimo seguirá permitiendo calcular y ver gráficas. La primera generación
 con IA se integra con resultados guardados, donde ya existen identidad, permisos y
-una versión reutilizable. #105 documentará ese paso sin perder los datos del asistente.
+una versión reutilizable. #161 conecta ese paso sin perder los datos del asistente
+al navegar dentro de la app (una recarga completa sí los descarta).
 Ampliar la generación al preview anónimo requiere decidir límites; no se presupone
 un endpoint de IA público sin control.
 

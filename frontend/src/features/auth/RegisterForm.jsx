@@ -47,6 +47,7 @@ function RegisterForm({ onContinueAsGuest }) {
       {status === 'success' ? (
         <div className={`${styles.message} ${styles.success}`} role="status">
           <p>{t('auth.register.success')}</p>
+          <a className={styles.primaryButton} href="#/login">{t('auth.openLogin')}</a>
           <button type="button" className={styles.primaryButton} onClick={onContinueAsGuest}>
             {t('auth.continueAsGuest')}
           </button>

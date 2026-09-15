@@ -470,5 +470,52 @@
     "communityEyebrow": "Made to be shared",
     "communityTitle": "More bikes. More perspectives.",
     "communityDescription": "Explore public analyses from the community, or keep your own bike private until you’re ready to share it."
+  },
+  "saveAnalysis": {
+    "eyebrow": "Keep your analysis",
+    "title": "Your bike, explained.",
+    "description": "Save privately to get a plain-language summary alongside your curves. You can choose to share it later.",
+    "guest": "Sign in to save this analysis and get a plain-language summary. Your photo, marks and measurements will stay here while you log in.",
+    "details": "About your bike",
+    "fields": {
+      "brand": "Brand",
+      "model": "Model",
+      "modelYear": "Model year (optional)",
+      "category": "Category",
+      "cassetteType": "Cassette"
+    },
+    "categories": {
+      "ENDURO": "Enduro",
+      "E_ENDURO": "E-Enduro",
+      "DOWNHILL": "Downhill"
+    },
+    "cassettes": {
+      "twelve": "12-speed",
+      "dh": "Downhill · 7 or 8-speed"
+    },
+    "choose": "Select an option",
+    "photoNotice": "Saving uploads your photo to Cloudinary. Your bike stays private in BikeMatch. Photo and marks are fixed after saving; a new marking creates another analysis.",
+    "save": "Save bike & read summary",
+    "retry": "Resume saving",
+    "working": "Saving…",
+    "saved": "Your bike is saved",
+    "ready": "Your analysis and summary are ready in your bike’s profile.",
+    "explanationPending": "Your curves are saved. You can try generating the summary again from your bike’s profile.",
+    "open": "Open saved bike",
+    "startNew": "Analyze another bike",
+    "stages": {
+      "creating": "Creating your private bike…",
+      "uploading": "Uploading your photo…",
+      "saving": "Saving the analysis…",
+      "explaining": "Preparing your summary…"
+    },
+    "errors": {
+      "uncertainCreate": "We could not confirm whether the bike was created. Check My bikes before starting again to avoid a duplicate.",
+      "sessionExpired": "Please log in again with the same account, then resume saving. Your analysis is still here.",
+      "differentOwner": "This save belongs to a different account. Log in with the account that started it.",
+      "invalid": "Check the bike details and measurements before trying again.",
+      "resume": "Saving stopped before it finished. Your private bike has been kept; resume saving to continue from the confirmed step.",
+      "unavailable": "We could not save your bike. Please try again."
+    }
   }
 }

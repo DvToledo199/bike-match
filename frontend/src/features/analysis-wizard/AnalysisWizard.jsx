@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useWizardState from './useWizardState.js'
 import usePreview from './usePreview.js'
@@ -6,10 +6,11 @@ import ParameterStep from './ParameterStep.jsx'
 import PointMarker from './PointMarker.jsx'
 import PhotoStep from './PhotoStep.jsx'
 import PreviewStatus from './PreviewStatus.jsx'
+import SaveAnalysisPanel from './SaveAnalysisPanel.jsx'
 import { isStepComplete, wizardSteps } from './wizardSteps.js'
 import styles from './AnalysisWizard.module.css'
 
-function AnalysisWizard({ active = true }) {
+function AnalysisWizard({ active = true, session = null, onSaved = () => {} }) {
   const { t } = useTranslation()
   const {
     activeStepIndex,
@@ -17,10 +18,20 @@ function AnalysisWizard({ active = true }) {
     updateWizardData,
     goToNextStep,
     goToPreviousStep,
+    resetWizard,
   } = useWizardState(wizardSteps.length)
   const { data, error, isLoading, requestPreview, cancelPreview } = usePreview()
   const panelRef = useRef(null)
   const previousStep = useRef(activeStepIndex)
+  const [saveLocked, setSaveLocked] = useState(false)
+  const [saveKey, setSaveKey] = useState(0)
+
+  function startNewAnalysis() {
+    cancelPreview()
+    resetWizard()
+    setSaveLocked(false)
+    setSaveKey((key) => key + 1)
+  }
 
   useEffect(() => {
     if (active && previousStep.current !== activeStepIndex) {
@@ -77,6 +88,10 @@ function AnalysisWizard({ active = true }) {
       </nav>
 
       <div className={styles.panel} ref={panelRef} tabIndex={-1} aria-labelledby="wizard-title">
+        <div hidden={!isLastStep || !data || isLoading || Boolean(error)}>
+          <SaveAnalysisPanel key={saveKey} session={session} wizardData={wizardData}
+            onLockedChange={setSaveLocked} onSaved={onSaved} onStartNew={startNewAnalysis} />
+        </div>
         {activeStep.id === 'photo' ? (
           <PhotoStep
             photo={wizardData.photo}
@@ -124,7 +139,7 @@ function AnalysisWizard({ active = true }) {
           type="button"
           className={styles.secondaryButton}
           onClick={() => { cancelPreview(); goToPreviousStep() }}
-          disabled={isFirstStep}
+          disabled={isFirstStep || saveLocked}
         >
           {t('wizard.back')}
         </button>

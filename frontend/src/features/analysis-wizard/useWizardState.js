@@ -40,6 +40,7 @@ function useWizardState(totalSteps) {
     updateWizardData,
     goToPreviousStep,
     goToNextStep,
+    resetWizard: () => { setWizardData(initialWizardData); setActiveStepIndex(0) },
   }
 }
 

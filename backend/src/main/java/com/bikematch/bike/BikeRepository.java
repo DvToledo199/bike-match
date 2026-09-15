@@ -72,11 +72,11 @@ public interface BikeRepository extends JpaRepository<Bike, Long> {
                 bike.category,
                 bike.photoUrl,
                 bike.owner.username,
-                bike.createdAt
+                bike.publicationRequestedAt
             )
             from Bike bike
             where bike.status = com.bikematch.bike.BikeStatus.PENDING
-            order by bike.createdAt asc, bike.id asc
+            order by bike.publicationRequestedAt asc, bike.id asc
             """)
     List<PendingBikeSummary> findPendingSummaries();
 }

@@ -328,7 +328,7 @@ class BikeControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
                 .andExpect(status().isBadGateway())
                 .andExpect(jsonPath("$.detail")
-                        .value("Photo storage is temporarily unavailable"));
+                        .value("The photo could not be stored"));
     }
 
     @Test

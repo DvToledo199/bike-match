@@ -62,10 +62,12 @@ class BikeTest {
     @Test
     void privateBikeCanRequestPublication() {
         Bike bike = bike();
+        assertThat(bike.getPublicationRequestedAt()).isNull();
 
         bike.requestPublication();
 
         assertThat(bike.getStatus()).isEqualTo(BikeStatus.PENDING);
+        assertThat(bike.getPublicationRequestedAt()).isNotNull();
     }
 
     @Test

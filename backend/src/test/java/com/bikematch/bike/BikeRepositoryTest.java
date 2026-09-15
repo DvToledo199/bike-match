@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.net.URI;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.junit.jupiter.api.Test;
@@ -119,25 +120,30 @@ class BikeRepositoryTest {
                 "first@example.com", "firstowner", "password-hash", Role.USER));
         User secondOwner = userRepository.saveAndFlush(new User(
                 "second@example.com", "secondowner", "password-hash", Role.USER));
-        Bike firstPending = bikeRepository.saveAndFlush(
-                Bike.createPrivate(firstOwner, details("First pending")));
+        Bike createdFirst = bikeRepository.saveAndFlush(
+                Bike.createPrivate(firstOwner, details("Requested second")));
         Bike privateBike = bikeRepository.saveAndFlush(
                 Bike.createPrivate(firstOwner, details("Private")));
-        Bike secondPending = bikeRepository.saveAndFlush(
-                Bike.createPrivate(secondOwner, details("Second pending")));
-        firstPending.requestPublication();
-        secondPending.requestPublication();
-        bikeRepository.saveAllAndFlush(List.of(firstPending, privateBike, secondPending));
+        Bike createdLast = bikeRepository.saveAndFlush(
+                Bike.createPrivate(secondOwner, details("Requested first")));
+        Instant earlierRequest = Instant.parse("2026-09-15T18:00:00Z");
+        Instant laterRequest = Instant.parse("2026-09-15T18:05:00Z");
+        createdLast.requestPublication(earlierRequest);
+        createdFirst.requestPublication(laterRequest);
+        bikeRepository.saveAllAndFlush(List.of(createdFirst, privateBike, createdLast));
         entityManager.clear();
 
         var summaries = bikeRepository.findPendingSummaries();
 
         assertThat(summaries)
                 .extracting(summary -> summary.model())
-                .containsExactly("First pending", "Second pending");
+                .containsExactly("Requested first", "Requested second");
         assertThat(summaries)
                 .extracting(summary -> summary.ownerUsername())
-                .containsExactly("firstowner", "secondowner");
+                .containsExactly("secondowner", "firstowner");
+        assertThat(summaries)
+                .extracting(summary -> summary.requestedAt())
+                .containsExactly(earlierRequest, laterRequest);
     }
 
     @Test

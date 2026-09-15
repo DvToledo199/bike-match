@@ -101,7 +101,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [x] Catálogo público (solo aprobadas) con filtro por categoría y paginación
   - [x] API pública paginada y filtrable por categoría (#152)
   - [x] Pantalla frontend con tarjetas, filtro, paginación y acceso al detalle (#154)
-- [ ] Swagger al día, con la autenticación documentada
+- [x] Swagger al día, con la autenticación documentada (#176)
 - [x] Front (IA): pantallas de registro/login, mis bicis, catálogo y detalle
   - [x] Registro/login y sesión frontend (#138, #140, #142)
   - [x] Mis bicis y solicitud de publicación (#144, #146)

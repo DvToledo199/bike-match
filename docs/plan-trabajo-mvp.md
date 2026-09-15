@@ -230,7 +230,7 @@ mostrar números por sí solo no cumple el objetivo de ayudar a principiantes.
 - [ ] Paginación en catálogo y rankings.
 - [ ] Índices en BD para las consultas de ranking (category, status, votos).
 - [ ] Timestamps en UTC.
-- [ ] Instrucción en el README de cómo autenticarse desde Swagger UI (botón Authorize + token) — lo pide el enunciado.
+- [x] Instrucción en el README de cómo autenticarse desde Swagger UI (botón Authorize + token) — lo pide el enunciado.
 - [ ] Actuator health check para el despliegue.
 - [ ] El enunciado del proyecto guardado en `/docs` del repo, para consultarlo (tú o la IA) durante todo el desarrollo.
 

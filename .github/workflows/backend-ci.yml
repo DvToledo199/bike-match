@@ -10,18 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     # The Spring context (and its tests) needs a real PostgreSQL to start,
-    # so the job spins one up as a service container, mirroring docker-compose.
+    # so the job spins one up as a service container. Tests use their own
+    # database (bikematch_test), the same one they use locally.
     services:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: bikematch
+          POSTGRES_DB: bikematch_test
           POSTGRES_USER: bikematch
           POSTGRES_PASSWORD: bikematch
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U bikematch -d bikematch"
+          --health-cmd "pg_isready -U bikematch -d bikematch_test"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 5

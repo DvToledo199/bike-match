@@ -121,6 +121,17 @@ npm run build
 npm audit
 ```
 
+Los tests del backend usan su propia base de datos, `bikematch_test`, para no modificar
+nunca los datos de desarrollo. En un volumen de Docker nuevo se crea automáticamente; si tu
+volumen ya existía, créala una sola vez:
+
+```bash
+docker exec bikematch-postgres sh -c 'createdb -U "$POSTGRES_USER" bikematch_test'
+```
+
+Para usar otro nombre, define `POSTGRES_TEST_DB`. El siguiente `docker compose up -d`
+recrea el contenedor para montar el script de inicio, sin tocar el volumen de datos.
+
 GitHub Actions ejecuta Java y, por separado, tests/lint/build del frontend. JaCoCo y la
 cobertura ≥60% siguen previstos para Sprint 3: el número de tests no acredita por sí solo
 ese porcentaje.

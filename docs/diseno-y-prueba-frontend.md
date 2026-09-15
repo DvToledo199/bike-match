@@ -1,4 +1,4 @@
-# Diseño y prueba del frontend — 14/09/2026
+# Diseño y prueba del frontend — revisado el 15/09/2026
 
 Dirección acordada: moderno, minimalista, verde contenido y contraste legible.
 Referencia de producto: MakerWorld, por su acceso al catálogo y a la contribución,
@@ -14,21 +14,41 @@ sin copiar su identidad ni presentar funciones sociales que todavía no existen.
 | #161 | Conectar preview → cuenta → guardado privado → ficha → explicación |
 | #162 | Futuro: pinza y gestos móviles, pantalla completa y prueba en dispositivos |
 | #163 | Futuro: sugerencias de transmisión, catálogo/ficha y evolución visual |
+| #169 | Revisión de portada: galería comunitaria con fotos reales, sin ilustración |
+| #170 | Prueba manual con foto, guardado, explicación y publicaciones reales |
 
 Cada entrega tiene su propia rama, commit y PR.
 
 ## Inicio y navegación (#158)
 
-La portada presenta qué hace BikeMatch, una ilustración identificada como tal,
-tres pasos y acceso al catálogo. El CTA «Analyze your bike» es visible en la
-portada y en la cabecera. Login y registro siguen accesibles.
+La primera portada de #158 incluía una ilustración y tres pasos. David rechazó esa
+dirección visual: #169 retira ilustración, textos promocionales largos y estilos
+asociados. La portada pasa a ser una galería de fotos de bicis públicas, con una
+introducción breve y CTA «Analyze your bike». Login y registro siguen accesibles.
+
+Inicio y catálogo reutilizan `PublicBikeGallery`, que consulta únicamente el listado
+público existente. Las fotos abren la ficha; se muestran marca/modelo, categoría y
+año. Filtros por categoría, paginación y estados de carga/error/vacío funcionan sin
+añadir dependencias. La foto mantiene su proporción completa para no cortar ruedas.
+No se inventan autores, bicis, likes, votos ni contadores; el listado público actual
+no devuelve username (la ficha sí). Mostrar autores en las tarjetas se reserva para
+el contrato de perfiles #87 y la evolución de #163. Las privadas y pendientes no
+entran en este endpoint público.
+
+La comprobación local del 15/09 devolvió cero bicicletas públicas: la portada muestra
+un estado vacío honesto. No se han publicado bicis privadas para rellenarlo. Se ha
+inspeccionado ese estado en el navegador; los tests cubren tarjetas con fotos simuladas,
+filtros, paginación, errores, imagen fallida, respuestas obsoletas y regreso desde ficha.
+Queda pendiente revisar visualmente una galería poblada con publicaciones reales (#170).
 
 Se usan enlaces con fragmentos (#/, #/analyze, #/catalog, #/login, #/register,
 #/my-bikes, #/bikes/:id). Atrás/Adelante funciona mediante historial del navegador,
 sin añadir una dependencia. El logo vuelve al inicio desde todas las vistas.
 El asistente permanece montado y oculto al navegar, conservando foto, puntos,
 parámetros y resultados en memoria. Una recarga completa todavía descarta el
-borrador: persistencia recuperable se reserva para trabajo futuro.
+borrador: persistencia recuperable se reserva para trabajo futuro. La ficha muestra
+un botón de regreso coherente con Inicio, Catálogo o Mis bicis. Un enlace directo
+sin origen previo regresa a la comunidad.
 
 ## Criterios de marcado
 
@@ -93,7 +113,7 @@ un flujo de borradores e idempotencia en servidor; el checkpoint actual no es du
 No puede reutilizarse desde otra cuenta. Las pruebas automáticas cubren estos
 reintentos, errores de autenticación, subida y explicación, usando servicios simulados.
 
-Prueba manual pendiente con servicios externos configurados: `CLOUDINARY_URL` solo
+Prueba manual pendiente (#170) con servicios externos configurados: `CLOUDINARY_URL` solo
 en el entorno del backend para subir fotos; `INTERPRETATION_PROVIDER=rules` permite
 probar el texto sin proveedor externo. Para probar Gemini hacen falta además
 `INTERPRETATION_PROVIDER=gemini`, `GEMINI_API_KEY` y `GEMINI_MODEL`. No copiar claves

@@ -16,6 +16,12 @@ El resultado buscado es un catálogo vivo de bicicletas ya analizadas. Una perso
 puede consultar una bici sin repetir el marcado, y la comunidad puede valorar,
 comentar y mejorar el conocimiento disponible.
 
+Dirección visual revisada el 15/09/2026 (#169): inicio tipo galería comunitaria,
+con fotos reales de las bicis públicas como protagonistas (referencias: Instagram
+y MakerWorld). Sin ilustración de bienvenida ni contenido social ficticio. El CTA
+de análisis y el acceso a la cuenta siguen visibles; detalles y límites en
+[`diseno-y-prueba-frontend.md`](diseno-y-prueba-frontend.md).
+
 La explicación comprensible de la cinemática es parte central del producto: también
 debe servir a quien empieza y no sabe interpretar las gráficas. La decisión del
 9 de septiembre separa un resumen básico sin cuestionario, una personalización

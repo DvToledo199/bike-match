@@ -37,7 +37,7 @@ it('shows public bikes and opens their detail', async () => {
   expect(screen.getAllByText('Enduro')).toHaveLength(2)
   expect(screen.getByRole('img', { name: 'Photo of Orange Stage 6' })).toBeTruthy()
 
-  screen.getByRole('button', { name: 'Open bike detail' }).click()
+  screen.getByRole('link', { name: 'View analysis of Orange Stage 6' }).click()
 
   expect(onOpenBikeDetail).toHaveBeenCalledWith(7)
 })
@@ -48,7 +48,7 @@ it('reloads the first page when the category changes', async () => {
   render(<CatalogPage onOpenBikeDetail={vi.fn()} />)
   await waitFor(() => expect(listPublicBikes).toHaveBeenCalledWith({ category: '', page: 0 }))
 
-  fireEvent.change(screen.getByLabelText('Wheel and bike category'), { target: { value: 'DOWNHILL' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Downhill' }))
 
   await waitFor(() => expect(listPublicBikes).toHaveBeenCalledWith({ category: 'DOWNHILL', page: 0 }))
 })

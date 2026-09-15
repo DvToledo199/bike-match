@@ -7,7 +7,7 @@ import { getBikeDetail, toKinematicsData } from '../../services/myBikes.js'
 import { getSession } from '../../services/session.js'
 import styles from './BikeDetailPage.module.css'
 
-function BikeDetailPage({ bikeId, onBack }) {
+function BikeDetailPage({ bikeId, onBack, backLabelKey = 'bikeDetail.back' }) {
   const { t } = useTranslation()
   const [bike, setBike] = useState(null)
   const [error, setError] = useState(null)
@@ -76,7 +76,7 @@ function BikeDetailPage({ bikeId, onBack }) {
     return (
       <section className={styles.page} aria-labelledby="bike-detail-title">
         <button type="button" className={styles.backButton} onClick={onBack}>
-          {t('bikeDetail.back')}
+          {t(backLabelKey)}
         </button>
         <div className={styles.message} role="alert">
           <h1 id="bike-detail-title">{t('bikeDetail.errors.title')}</h1>
@@ -93,7 +93,7 @@ function BikeDetailPage({ bikeId, onBack }) {
     return (
       <section className={styles.page} aria-labelledby="bike-detail-title" aria-busy="true">
         <button type="button" className={styles.backButton} onClick={onBack}>
-          {t('bikeDetail.back')}
+          {t(backLabelKey)}
         </button>
         <p className={styles.muted}>{t('bikeDetail.loading')}</p>
       </section>
@@ -109,7 +109,7 @@ function BikeDetailPage({ bikeId, onBack }) {
   return (
     <section className={styles.page} aria-labelledby="bike-detail-title">
       <button type="button" className={styles.backButton} onClick={onBack}>
-        {t('bikeDetail.back')}
+        {t(backLabelKey)}
       </button>
       <header className={styles.heading}>
         <p className={styles.eyebrow}>{t('bikeDetail.eyebrow')}</p>

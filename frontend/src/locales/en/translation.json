@@ -482,7 +482,8 @@
       "dh": "Downhill · 7 or 8-speed"
     },
     "choose": "Select an option",
-    "photoNotice": "Saving uploads your photo to Cloudinary. Your bike stays private in BikeMatch. Photo and marks are fixed after saving; a new marking creates another analysis.",
+    "photoAlt": "Photo of the bike you are saving",
+    "photoNotice": "Your bike stays private until you request publication. Photo and marks are fixed after saving; a new marking creates another analysis.",
     "save": "Save bike",
     "retry": "Resume saving",
     "working": "Saving…",

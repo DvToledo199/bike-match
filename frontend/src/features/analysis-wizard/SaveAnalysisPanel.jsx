@@ -57,6 +57,9 @@ export default function SaveAnalysisPanel({ session, wizardData, onLockedChange,
       <p className={styles.eyebrow}>{t('saveAnalysis.eyebrow')}</p>
       <h2 id="save-analysis-title" tabIndex={-1}>{t('saveAnalysis.title')}</h2>
       <p>{t(session ? 'saveAnalysis.description' : 'saveAnalysis.guest')}</p>
+      {wizardData?.photo?.previewUrl && (
+        <img className={styles.photo} src={wizardData.photo.previewUrl} alt={t('saveAnalysis.photoAlt')} />
+      )}
       {!session ? (
         <div className={styles.actions}>
           <a className={styles.primary} href="#/register">{t('saveAnalysis.registerToSave')}</a>

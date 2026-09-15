@@ -16,6 +16,13 @@ it('offers account links to a guest without sending the photo or generating an e
   expect(save).not.toHaveBeenCalled()
 })
 
+it('shows the photo being saved and keeps storage details out of the notice', () => {
+  render(<SaveAnalysisPanel session={{ username: 'rider' }} wizardData={{ photo: { previewUrl: 'blob:bike-photo' } }} />)
+  expect(screen.getByRole('img', { name: 'Photo of the bike you are saving' }).getAttribute('src')).toBe('blob:bike-photo')
+  expect(screen.getByText(/stays private until you request publication/)).toBeTruthy()
+  expect(screen.queryByText(/Cloudinary/)).toBeNull()
+})
+
 it('passes metadata to the workflow and opens the saved bike', async () => {
   save.mockResolvedValue({ bikeId: 42, explanationReady: true })
   const onSaved = vi.fn(), onLockedChange = vi.fn()

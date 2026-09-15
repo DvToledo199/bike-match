@@ -217,9 +217,21 @@ La moderación requiere un JWT de una cuenta con rol `MODERATOR`:
   resultados completos.
 - `POST /api/moderation/{id}/approve` cambia una bici `PENDING` a `PUBLIC`.
 - `POST /api/moderation/{id}/reject` cambia una bici `PENDING` a `REJECTED`.
+- `POST /api/moderation/{id}/remove` retira una bici `PENDING`, `PUBLIC` o `REJECTED`:
+  la borra por completo, igual que el borrado del propietario, y deja a su dueño un
+  aviso con el motivo. El motivo va en el cuerpo (`{"reason": "..."}`), es obligatorio
+  y admite 500 caracteres como máximo. Las bicis privadas no llegan a moderación y
+  reciben `404`.
 
 Una cuenta `USER` recibe `403` en estas rutas. Una bicicleta inexistente devuelve
-`404`; si ya no estaba pendiente, devuelve `409` y no se modifica.
+`404`; al aprobar o rechazar una que ya no estaba pendiente, devuelve `409` y no se
+modifica.
+
+`GET /api/my-notices` requiere JWT y devuelve los avisos que el usuario aún no ha
+descartado: sus bicis retiradas por moderación, con marca, modelo, motivo y fecha, de
+la más reciente a la más antigua. `POST /api/my-notices/{id}/dismiss` descarta un
+aviso; uno de otro usuario o inexistente recibe `404`. El aviso por correo queda para
+más adelante.
 
 Son **estimaciones bajo condiciones de referencia**, no medidas individuales ni
 validación de campo. Los clientes sin ruedas conservan el cálculo V1 (sin curvas

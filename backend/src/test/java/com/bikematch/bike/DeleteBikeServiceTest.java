@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import com.bikematch.media.ImageStorage;
 import com.bikematch.media.ImageStorageException;
 import java.util.Optional;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -29,8 +30,8 @@ class DeleteBikeServiceTest {
 
     @Test
     void ownerDeletesTheBikeRowsBeforeItsPhoto() {
-        Bike bike = bikeWithPhoto();
-        given(bikeRepository.findOwnedByIdForUpdate(7L, 42L)).willReturn(Optional.of(bike));
+        Bike bike = bikeOwnedBy42WithPhoto();
+        given(bikeRepository.findByIdForUpdate(7L)).willReturn(Optional.of(bike));
 
         service.deleteOwnedBike(42L, 7L);
 
@@ -42,7 +43,9 @@ class DeleteBikeServiceTest {
 
     @Test
     void bikeWithoutPhotoDoesNotCallImageStorage() {
-        given(bikeRepository.findOwnedByIdForUpdate(7L, 42L)).willReturn(Optional.of(mock(Bike.class)));
+        Bike bike = mock(Bike.class);
+        given(bike.isOwnedBy(42L)).willReturn(true);
+        given(bikeRepository.findByIdForUpdate(7L)).willReturn(Optional.of(bike));
 
         service.deleteOwnedBike(42L, 7L);
 
@@ -51,8 +54,8 @@ class DeleteBikeServiceTest {
     }
 
     @Test
-    void missingOrForeignBikeReturnsNotFoundWithoutDeletingAnything() {
-        given(bikeRepository.findOwnedByIdForUpdate(7L, 42L)).willReturn(Optional.empty());
+    void missingBikeReturnsNotFoundWithoutDeletingAnything() {
+        given(bikeRepository.findByIdForUpdate(7L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.deleteOwnedBike(42L, 7L))
                 .isInstanceOf(BikeNotFoundException.class);
@@ -62,9 +65,22 @@ class DeleteBikeServiceTest {
     }
 
     @Test
+    void anotherUsersBikeIsReportedAsNotFoundAndRolledBack() {
+        Bike bike = bikeOwnedBy42WithPhoto();
+        given(bikeRepository.findByIdForUpdate(7L)).willReturn(Optional.of(bike));
+
+        assertThatThrownBy(() -> service.deleteOwnedBike(99L, 7L))
+                .isInstanceOf(BikeNotFoundException.class);
+
+        verify(transactionManager).rollback(any());
+        verify(bikeRepository, never()).deleteBikeById(anyLong());
+        verify(imageStorage, never()).delete(anyString());
+    }
+
+    @Test
     void storageFailureDoesNotUndoTheDeletedBike() {
-        Bike bike = bikeWithPhoto();
-        given(bikeRepository.findOwnedByIdForUpdate(7L, 42L)).willReturn(Optional.of(bike));
+        Bike bike = bikeOwnedBy42WithPhoto();
+        given(bikeRepository.findByIdForUpdate(7L)).willReturn(Optional.of(bike));
         willThrow(new ImageStorageException(new RuntimeException("provider down")))
                 .given(imageStorage).delete("bikematch/bikes/7");
 
@@ -73,8 +89,24 @@ class DeleteBikeServiceTest {
         verify(bikeRepository).deleteBikeById(7L);
     }
 
-    private Bike bikeWithPhoto() {
+    @Test
+    void beforeDeleteRunsInsideTheTransactionBeforeTheRowsAreDeleted() {
         Bike bike = mock(Bike.class);
+        given(bikeRepository.findByIdForUpdate(7L)).willReturn(Optional.of(bike));
+        @SuppressWarnings("unchecked")
+        Consumer<Bike> beforeDelete = mock(Consumer.class);
+
+        service.deleteBike(7L, beforeDelete);
+
+        InOrder order = inOrder(beforeDelete, bikeRepository, transactionManager);
+        order.verify(beforeDelete).accept(bike);
+        order.verify(bikeRepository).deleteBikeById(7L);
+        order.verify(transactionManager).commit(any());
+    }
+
+    private Bike bikeOwnedBy42WithPhoto() {
+        Bike bike = mock(Bike.class);
+        given(bike.isOwnedBy(42L)).willReturn(true);
         given(bike.getPhotoUrl()).willReturn(
                 "https://res.cloudinary.com/demo/image/upload/bikematch/bikes/7.webp");
         return bike;

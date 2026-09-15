@@ -1,6 +1,10 @@
 package com.bikematch.moderation.api;
 
+import static org.hamcrest.Matchers.startsWith;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -23,6 +27,7 @@ import com.bikematch.config.SecurityConfig;
 import com.bikematch.moderation.ListPendingBikesService;
 import com.bikematch.moderation.ModerateBikePublicationService;
 import com.bikematch.moderation.PendingBikeSummary;
+import com.bikematch.moderation.RemoveBikeService;
 import io.jsonwebtoken.Claims;
 import java.time.Instant;
 import java.util.List;
@@ -31,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -44,6 +50,10 @@ import org.springframework.test.web.servlet.MockMvc;
 })
 class ModerationControllerTest {
 
+    private static final String REMOVAL_REQUEST = """
+            {"reason": "Photo taken from another website"}
+            """;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -52,6 +62,9 @@ class ModerationControllerTest {
 
     @MockitoBean
     private ModerateBikePublicationService moderateBikePublicationService;
+
+    @MockitoBean
+    private RemoveBikeService removeBikeService;
 
     @MockitoBean
     private JwtService jwtService;
@@ -163,6 +176,60 @@ class ModerationControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail")
                         .value("Only pending bikes can be approved or rejected"));
+    }
+
+    @Test
+    void moderatorRemovesABikeWithAReason() throws Exception {
+        authenticate("moderator-token", "7", "MODERATOR");
+
+        mockMvc.perform(post("/api/moderation/{bikeId}/remove", 12L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer moderator-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(REMOVAL_REQUEST))
+                .andExpect(status().isNoContent());
+
+        verify(removeBikeService).remove(12L, "Photo taken from another website");
+    }
+
+    @Test
+    void removingABikeRequiresAReason() throws Exception {
+        authenticate("moderator-token", "7", "MODERATOR");
+
+        mockMvc.perform(post("/api/moderation/{bikeId}/remove", 12L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer moderator-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"reason\": \"   \"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value(startsWith("reason ")));
+
+        verify(removeBikeService, never()).remove(anyLong(), anyString());
+    }
+
+    @Test
+    void userCannotRemoveABike() throws Exception {
+        authenticate("user-token", "42", "USER");
+
+        mockMvc.perform(post("/api/moderation/{bikeId}/remove", 12L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(REMOVAL_REQUEST))
+                .andExpect(status().isForbidden());
+
+        verify(removeBikeService, never()).remove(anyLong(), anyString());
+    }
+
+    @Test
+    void privateOrMissingBikeReturnsNotFoundWhenRemoving() throws Exception {
+        authenticate("moderator-token", "7", "MODERATOR");
+        willThrow(new BikeNotFoundException())
+                .given(removeBikeService).remove(12L, "Photo taken from another website");
+
+        mockMvc.perform(post("/api/moderation/{bikeId}/remove", 12L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer moderator-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(REMOVAL_REQUEST))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.detail").value("Bike not found"));
     }
 
     private void authenticate(String token, String userId, String role) {

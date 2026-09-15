@@ -88,6 +88,26 @@ detienen el arranque para no crear una cuenta insegura ni promocionar a alguien 
 accidente. El esquema sigue perteneciendo a Flyway: esto es un dato inicial local, no
 una contraseña dentro de una migración versionada.
 
+## Documentación de la API (Swagger)
+
+Con el backend arrancado, la documentación está en:
+
+- Swagger UI: http://localhost:8080/swagger-ui.html
+- Especificación OpenAPI (JSON): http://localhost:8080/v3/api-docs
+
+Las dos son públicas. Las operaciones marcadas con un candado piden un JWT. Health,
+preview, registro, login y catálogo no lo necesitan. La ficha y la explicación de una
+bici pública tampoco, pero sí las de una bici privada, que solo ve su propietario.
+
+Para probar una operación protegida:
+
+1. Crea una cuenta con `POST /api/auth/register`, o usa una que ya exista.
+2. Ejecuta `POST /api/auth/login` y copia el valor de `accessToken` de la respuesta.
+3. Pulsa **Authorize**, pega el token (sin escribir `Bearer`) y confirma.
+4. Desde ese momento, Swagger UI envía `Authorization: Bearer <token>` en cada petición.
+
+La moderación exige además una cuenta con rol `MODERATOR` (ver el apartado anterior).
+
 ## Pruebas
 
 ```bash

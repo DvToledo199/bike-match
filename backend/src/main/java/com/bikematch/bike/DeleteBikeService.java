@@ -2,6 +2,7 @@ package com.bikematch.bike;
 
 import com.bikematch.media.ImageStorage;
 import com.bikematch.media.ImageStorageException;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,10 +33,25 @@ public class DeleteBikeService {
         this.transaction = new TransactionTemplate(transactionManager);
     }
 
+    /** The owner deletes their bike; another user's bike is reported as not found. */
     public void deleteOwnedBike(long ownerId, long bikeId) {
+        deleteBike(bikeId, bike -> {
+            if (!bike.isOwnedBy(ownerId)) {
+                throw new BikeNotFoundException();
+            }
+        });
+    }
+
+    /**
+     * Deletes any bike. {@code beforeDelete} receives the locked bike inside the same
+     * transaction: it can stop the deletion by throwing, or save data that must exist only
+     * if the bike is really deleted, such as a notice for its owner.
+     */
+    public void deleteBike(long bikeId, Consumer<Bike> beforeDelete) {
         Boolean photoStored = transaction.execute(status -> {
-            Bike bike = bikeRepository.findOwnedByIdForUpdate(bikeId, ownerId)
+            Bike bike = bikeRepository.findByIdForUpdate(bikeId)
                     .orElseThrow(BikeNotFoundException::new);
+            beforeDelete.accept(bike);
             boolean hasPhoto = bike.getPhotoUrl() != null;
             bikeRepository.deleteBikeById(bikeId);
             return hasPhoto;

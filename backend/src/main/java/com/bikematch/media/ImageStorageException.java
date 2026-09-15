@@ -3,7 +3,7 @@ package com.bikematch.media;
 public class ImageStorageException extends RuntimeException {
 
     public ImageStorageException(Throwable cause) {
-        super("Photo storage is temporarily unavailable", cause);
+        super("The photo could not be stored", cause);
     }
 
     public ImageStorageException() {

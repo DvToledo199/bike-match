@@ -18,8 +18,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, OutputCaptureExtension.class})
 class CloudinaryImageStorageTest {
 
     @Mock
@@ -59,7 +61,20 @@ class CloudinaryImageStorageTest {
 
         assertThatThrownBy(() -> storage.upload(new byte[]{1}, "bikematch/bikes/7"))
                 .isInstanceOf(ImageStorageException.class)
-                .hasMessage("Photo storage is temporarily unavailable");
+                .hasMessage("The photo could not be stored");
+    }
+
+    @Test
+    void logsWhyTheProviderRejectedTheUpload(CapturedOutput output) throws IOException {
+        given(uploader.upload(any(), anyMap())).willThrow(
+                new RuntimeException("Request forbidden due to missing permissions"));
+
+        assertThatThrownBy(() -> storage.upload(new byte[]{1}, "bikematch/bikes/7"))
+                .isInstanceOf(ImageStorageException.class);
+
+        assertThat(output)
+                .contains("bikematch/bikes/7")
+                .contains("Request forbidden due to missing permissions");
     }
 
     @Test

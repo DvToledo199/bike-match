@@ -88,6 +88,9 @@ public class Bike {
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
+    @Column(name = "publication_requested_at")
+    private Instant publicationRequestedAt;
+
     protected Bike() {
     }
 
@@ -238,9 +241,19 @@ public class Bike {
     }
 
     public void requestPublication() {
+        requestPublication(Instant.now());
+    }
+
+    void requestPublication(Instant requestedAt) {
         if (status == BikeStatus.PRIVATE) {
             status = BikeStatus.PENDING;
+            publicationRequestedAt = Objects.requireNonNull(
+                    requestedAt, "Publication request time is required");
         }
+    }
+
+    public Instant getPublicationRequestedAt() {
+        return publicationRequestedAt;
     }
 
     public void approvePublication() {

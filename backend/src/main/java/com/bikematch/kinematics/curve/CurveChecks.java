@@ -1,11 +1,15 @@
 package com.bikematch.kinematics.curve;
 
 import com.bikematch.kinematics.geometry.Point2D;
+
 import java.util.List;
 
-/** Shared guards at the boundary between the geometric sweep and derived curves. */
+/**
+ * Shared guards at the boundary between the geometric sweep and derived curves.
+ */
 public final class CurveChecks {
-    private CurveChecks() { }
+    private CurveChecks() {
+    }
 
     public static void positiveFinite(double value, String name) {
         if (!Double.isFinite(value) || value <= 0) {

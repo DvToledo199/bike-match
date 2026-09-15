@@ -88,6 +88,19 @@
         "unavailable": "We could not delete this bike right now. Try again."
       }
     },
+    "notices": {
+      "title": "Removed by moderation",
+      "description": "A moderator deleted these bikes together with their photos and analyses.",
+      "bikeRemoved": "{{name}} was removed",
+      "reason": "Reason: {{reason}}",
+      "removedAt": "Removed on {{date}}",
+      "dismiss": "Dismiss",
+      "dismissing": "Dismissing…",
+      "errors": {
+        "sessionExpired": "Your session has expired. Log in again before dismissing this notice.",
+        "unavailable": "We could not dismiss this notice right now. Try again."
+      }
+    },
     "fields": {
       "year": "Year",
       "category": "Category",

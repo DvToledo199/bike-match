@@ -30,3 +30,11 @@ export function publishBike(bikeId) {
 export function deleteBike(bikeId) {
   return requestApi(`/api/bikes/${bikeId}`, { method: 'DELETE' })
 }
+
+export function listMyNotices() {
+  return requestApi('/api/my-notices')
+}
+
+export function dismissNotice(noticeId) {
+  return requestApi(`/api/my-notices/${noticeId}/dismiss`, { method: 'POST' })
+}

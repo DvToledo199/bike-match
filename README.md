@@ -199,7 +199,10 @@ permite filtrar por categoría y abre la ficha pública reutilizando `getBikeDet
 Después del login, el cliente HTTP del frontend añade automáticamente el JWT guardado
 en la sesión del navegador a las peticiones privadas. La pantalla de "Mis bicis" usa
 `listMyBikes()` para los resúmenes; al abrir una tarjeta, la ficha usa
-`getBikeDetail(id)` y reutiliza las gráficas con el resultado guardado.
+`getBikeDetail(id)` y reutiliza las gráficas con el resultado guardado. Cada tarjeta
+permite borrar la bici tras confirmarlo (`deleteBike(id)`). Encima de las tarjetas
+aparecen los avisos de bicis retiradas por moderación (`listMyNotices()`), que el
+usuario puede descartar (`dismissNotice(id)`).
 
 `POST /api/bikes/{id}/publish` requiere JWT y permite al propietario pedir la
 publicación de una bici privada. La bici pasa a `PENDING`, pendiente de moderación;

@@ -42,7 +42,7 @@ function App() {
     <Layout session={session} screen={route.screen} onLogout={logout}>
       {/* Keep the draft mounted so visiting the catalog or login preserves it. */}
       <div hidden={route.screen !== 'analysis'}>
-        <AnalysisWizard active={route.screen === 'analysis'} />
+        <AnalysisWizard active={route.screen === 'analysis'} session={session} onSaved={(id) => openBike(id, '/my-bikes')} />
       </div>
       {route.screen === 'home' && <HomePage />}
       {route.screen === 'register' && <RegisterForm onContinueAsGuest={() => navigate('/analyze')} />}

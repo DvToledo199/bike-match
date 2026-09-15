@@ -63,7 +63,7 @@ Fuentes de vocabulario consultadas:
 
 El preview anónimo calcula curvas; no llama a Gemini. La explicación de #105
 estaba conectada únicamente a fichas guardadas. Faltaba el puente de guardado en
-el frontend, que se implementa en #161. La afirmación anterior de que aparecería
+el frontend, implementado en #161. La afirmación anterior de que aparecería
 tras calcular el preview era incorrecta.
 
 El proveedor por defecto es rules. Una respuesta identificada como RULES no es
@@ -71,6 +71,34 @@ una llamada a IA externa; Gemini requiere configuración privada en el backend.
 La prueba con datos reales debe distinguir: cálculo, guardado con Cloudinary,
 texto por reglas, llamada externa a Gemini y comprensión del texto con David.
 No dar por probadas las dos últimas solo porque pasen los tests automáticos.
+
+### Guardado desde las gráficas (#161)
+
+El invitado puede iniciar sesión o registrarse sin perder el asistente mientras
+no recargue la página. Después completa marca, modelo, año opcional, categoría y
+tipo de cassette. Guardar crea una bici PRIVATE, sube la foto original a Cloudinary,
+finaliza el análisis con sus coordenadas naturales y solicita la explicación.
+La ficha se abre al terminar; publicar sigue siendo una acción independiente.
+Un fallo de explicación no deshace el guardado ni oculta las gráficas.
+
+Los pasos confirmados se conservan en memoria para reintentar sobre la misma bici.
+Antes de repetir la finalización se consulta si ya existe resultado. Si se pierde
+la respuesta de creación no se repite automáticamente: podría duplicar una bici
+ya creada. Se ofrece ir a Mis bicis o empezar otro análisis. Un borrador parcial
+no se elimina al empezar otro. Tras crear la bici se bloquean cambios del asistente
+para no mezclar metadatos guardados con otros puntos o parámetros.
+
+Limitación pendiente: recuperar un guardado incompleto después de recargar requiere
+un flujo de borradores e idempotencia en servidor; el checkpoint actual no es durable.
+No puede reutilizarse desde otra cuenta. Las pruebas automáticas cubren estos
+reintentos, errores de autenticación, subida y explicación, usando servicios simulados.
+
+Prueba manual pendiente con servicios externos configurados: `CLOUDINARY_URL` solo
+en el entorno del backend para subir fotos; `INTERPRETATION_PROVIDER=rules` permite
+probar el texto sin proveedor externo. Para probar Gemini hacen falta además
+`INTERPRETATION_PROVIDER=gemini`, `GEMINI_API_KEY` y `GEMINI_MODEL`. No copiar claves
+al frontend ni al repositorio. Verificar por separado guardado real, fuente del
+texto (`RULES`/`AI`) y comprensión con David; no afirmar llamadas reales por pasar CI.
 
 Para desarrollo, abrir http://localhost:5173: el backend permite ese origen.
 Abrir 127.0.0.1:5173 con la configuración actual provoca rechazo CORS. No se

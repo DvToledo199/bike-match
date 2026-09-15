@@ -12,7 +12,7 @@ import { clearSession, getSession } from './services/session.js'
 
 function App() {
   const route = useAppRoute()
-  const [detailOrigin, setDetailOrigin] = useState('/my-bikes')
+  const [detailOrigin, setDetailOrigin] = useState('/')
   const [session, setSession] = useState(getSession)
   const previousScreen = useRef(route.screen)
   const navigate = (path) => { window.location.hash = path }
@@ -44,7 +44,7 @@ function App() {
       <div hidden={route.screen !== 'analysis'}>
         <AnalysisWizard active={route.screen === 'analysis'} session={session} onSaved={(id) => openBike(id, '/my-bikes')} />
       </div>
-      {route.screen === 'home' && <HomePage />}
+      {route.screen === 'home' && <HomePage onOpenBikeDetail={(id) => openBike(id, '/')} />}
       {route.screen === 'register' && <RegisterForm onContinueAsGuest={() => navigate('/analyze')} />}
       {(route.screen === 'login' || needsLogin) && (
         <LoginForm onLoggedIn={(nextSession) => { setSession(nextSession); navigate('/analyze') }}
@@ -52,7 +52,9 @@ function App() {
       )}
       {route.screen === 'myBikes' && session && <MyBikesPage onOpenBikeDetail={(id) => openBike(id, '/my-bikes')} />}
       {route.screen === 'catalog' && <CatalogPage onOpenBikeDetail={(id) => openBike(id, '/catalog')} />}
-      {route.screen === 'bikeDetail' && <BikeDetailPage key={route.bikeId} bikeId={route.bikeId} onBack={() => navigate(detailOrigin)} />}
+      {route.screen === 'bikeDetail' && <BikeDetailPage key={route.bikeId} bikeId={route.bikeId}
+        backLabelKey={detailOrigin === '/my-bikes' ? 'bikeDetail.back' : detailOrigin === '/catalog' ? 'bikeDetail.backCatalog' : 'bikeDetail.backHome'}
+        onBack={() => navigate(detailOrigin)} />}
     </Layout>
   )
 }

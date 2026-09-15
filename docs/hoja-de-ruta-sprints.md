@@ -112,8 +112,9 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
   - [x] Caché versionada, permisos de lectura/generación y límite de peticiones MVP
 - [x] Texto sencillo junto a las gráficas del detalle (#105)
 - [x] Guardado desde el asistente sin perder el análisis al iniciar sesión (#161)
-- [ ] Prueba real: subida a Cloudinary, explicación por reglas/Gemini y comprensión con David
+- [ ] Prueba real: subida a Cloudinary, explicación por reglas/Gemini y comprensión con David (#170)
 - [x] Navegación de inicio, controles de marcado y formulario compacto (#158–#160)
+- [x] Portada comunitaria centrada en fotos reales del catálogo público (#169)
   Ver [`diseno-y-prueba-frontend.md`](diseno-y-prueba-frontend.md) para límites y mejoras pendientes.
 
 **Hecho cuando:** en la URL pública alguien se registra, crea una bici y la ve en

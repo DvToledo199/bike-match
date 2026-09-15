@@ -134,18 +134,20 @@
       "notFound": "This bike is private, no longer available, or does not exist.",
       "sessionExpired": "Your session has expired. Log in again to open this bike.",
       "unavailable": "We could not load this bike right now. Check that the BikeMatch backend is running."
-    }
+    },
+    "backHome": "Back to the community",
+    "backCatalog": "Back to the catalog"
   },
   "catalog": {
     "navLabel": "Catalog",
     "eyebrow": "Community bikes",
     "title": "Explore analysed bikes",
     "description": "Browse public suspension analyses shared by the BikeMatch community.",
-    "filterLabel": "Wheel and bike category",
+    "filterLabel": "Bike category",
     "loading": "Loading the public catalog…",
     "retry": "Try again",
-    "empty": "No public bikes match this category yet.",
-    "openDetail": "Open bike detail",
+    "empty": "No bikes have been published yet. Analyze yours, save it and request publication to share it here.",
+    "openDetail": "View analysis",
     "photoAlt": "Photo of {{name}}",
     "noPhoto": "No photo",
     "unnamed": "Unnamed bike",
@@ -162,8 +164,15 @@
       "page": "Page {{page}} of {{total}}"
     },
     "errors": {
-      "unavailable": "We could not load the public catalog right now. Check that the BikeMatch backend is running."
-    }
+      "unavailable": "We could not load the public catalog right now. Check that the BikeMatch backend is running.",
+      "title": "The bikes could not be loaded."
+    },
+    "openBike": "View analysis of {{name}}",
+    "emptyTitle": "The community starts here.",
+    "emptyCategoryTitle": "No bikes in this category yet.",
+    "emptyCategory": "Try another category or explore all shared bikes.",
+    "showAll": "Show all bikes",
+    "addFirst": "Analyze your bike"
   },
   "wizard": {
     "progressLabel": "Analysis progress",
@@ -443,33 +452,10 @@
     "placeholder": "This step is ready for its next implementation task."
   },
   "home": {
-    "eyebrow": "Suspension, made clear",
-    "title": "Know your bike.",
-    "titleAccent": "Find your flow.",
-    "description": "Turn a side photo into a closer look at your rear suspension. Mark a few points, explore the curves, and understand how your bike moves.",
-    "explore": "Explore the catalog",
-    "guest": "Try the analysis without an account. Sign in to save your bike.",
-    "visualTitle": "A closer look at your suspension",
-    "visualCaption": "Illustration · simple single pivot",
-    "howEyebrow": "From photo to understanding",
-    "howTitle": "Start with the bike you ride.",
-    "steps": {
-      "photo": {
-        "title": "Choose a side photo",
-        "description": "A clear, level photo of your bike at full extension. Simple single-pivot bikes are supported today."
-      },
-      "mark": {
-        "title": "Mark. Measure. Calculate.",
-        "description": "Follow six points on the photo and add your bike’s measurements."
-      },
-      "understand": {
-        "title": "Get to know your suspension",
-        "description": "Explore the curves. Save your analysis to read a plain-language summary in your bike’s profile."
-      }
-    },
-    "communityEyebrow": "Made to be shared",
-    "communityTitle": "More bikes. More perspectives.",
-    "communityDescription": "Explore public analyses from the community, or keep your own bike private until you’re ready to share it."
+    "eyebrow": "The BikeMatch community",
+    "title": "Bikes worth a closer look.",
+    "description": "Explore shared bikes and discover how their suspension works.",
+    "guest": "Try the analysis. No account needed."
   },
   "saveAnalysis": {
     "eyebrow": "Keep your analysis",

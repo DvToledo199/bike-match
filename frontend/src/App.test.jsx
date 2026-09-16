@@ -1,15 +1,24 @@
 import { useState } from 'react'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import App from './App.jsx'
 import { listPublicBikes } from './services/myBikes.js'
+import { loginUser } from './services/authLogin.js'
 
 vi.mock('./features/analysis-wizard/AnalysisWizard.jsx', () => ({ default: function Draft() {
   const [value, setValue] = useState('')
   return <input aria-label="Draft measurement" value={value} onChange={(event) => setValue(event.target.value)} />
 } }))
 vi.mock('./features/catalog/CatalogPage.jsx', () => ({ default: () => <h1>Public bikes</h1> }))
-vi.mock('./services/myBikes.js', () => ({ listPublicBikes: vi.fn().mockResolvedValue({ items: [], page: 0, totalPages: 0, hasNext: false }) }))
+vi.mock('./services/myBikes.js', () => ({
+  listPublicBikes: vi.fn().mockResolvedValue({ items: [], page: 0, totalPages: 0, hasNext: false }),
+  listMyBikes: vi.fn().mockResolvedValue([]),
+  listMyNotices: vi.fn().mockResolvedValue([]),
+  publishBike: vi.fn(),
+  deleteBike: vi.fn(),
+  dismissNotice: vi.fn(),
+}))
+vi.mock('./services/authLogin.js', () => ({ loginUser: vi.fn() }))
 vi.mock('./features/my-bikes/BikeDetailPage.jsx', () => ({ default: ({ onBack, backLabelKey }) => (
   <section><h1>Saved bike detail</h1><button onClick={onBack}>{backLabelKey}</button></section>
 ) }))
@@ -18,6 +27,16 @@ afterEach(() => { window.history.replaceState(null, '', '/'); sessionStorage.cle
 
 async function visit(hash) {
   await act(async () => { window.location.hash = hash; window.dispatchEvent(new HashChangeEvent('hashchange')) })
+}
+
+function signIn() {
+  loginUser.mockResolvedValue({
+    accessToken: `header.${btoa(JSON.stringify({ username: 'david', role: 'USER' }))}.signature`,
+    tokenType: 'Bearer',
+  })
+  fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'david@example.com' } })
+  fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'BikeMatch8!' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Log in' }))
 }
 
 it('opens home, preserves the analysis across catalog and login, and returns home through the brand', async () => {
@@ -50,4 +69,27 @@ it('returns to the community after opening a photo from the home feed', async ()
   fireEvent.click(screen.getByRole('button', { name: 'bikeDetail.backHome' }))
   expect(await screen.findByRole('heading', { name: 'Bikes worth a closer look.' })).toBeTruthy()
   expect(window.location.hash).toBe('#/')
+})
+
+it('returns to the screen you came from after logging in', async () => {
+  vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+  render(<App />)
+  await visit('/catalog')
+  await visit('/login')
+
+  signIn()
+
+  await waitFor(() => expect(window.location.hash).toBe('#/catalog'))
+})
+
+it('opens my bikes after logging in from the my bikes screen', async () => {
+  vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+  render(<App />)
+  await visit('/my-bikes')
+  expect(screen.getByRole('heading', { name: 'Log in' })).toBeTruthy()
+
+  signIn()
+
+  expect(await screen.findByRole('heading', { name: 'My bikes' })).toBeTruthy()
+  expect(window.location.hash).toBe('#/my-bikes')
 })

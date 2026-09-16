@@ -10,11 +10,17 @@ import CatalogPage from './features/catalog/CatalogPage.jsx'
 import useAppRoute from './hooks/useAppRoute.js'
 import { clearSession, getSession } from './services/session.js'
 
+function currentPath() {
+  return window.location.hash.slice(1) || '/'
+}
+
 function App() {
   const route = useAppRoute()
   const [detailOrigin, setDetailOrigin] = useState('/')
   const [session, setSession] = useState(getSession)
   const previousScreen = useRef(route.screen)
+  // Last screen that was neither the login nor the registration, to return there after signing in.
+  const returnPath = useRef('/')
   const navigate = (path) => { window.location.hash = path }
 
   useEffect(() => {
@@ -25,9 +31,15 @@ function App() {
     }
   }, [route.screen])
 
+  useEffect(() => {
+    if (route.screen !== 'login' && route.screen !== 'register') {
+      returnPath.current = currentPath()
+    }
+  }, [route])
+
   function startSession(nextSession) {
     setSession(nextSession)
-    navigate('/analyze')
+    navigate(returnPath.current)
   }
 
   function logout() {

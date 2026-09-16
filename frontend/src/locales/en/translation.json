@@ -97,6 +97,7 @@
       "dismiss": "Dismiss",
       "dismissing": "Dismissing…",
       "errors": {
+        "load": "We could not load your notices right now.",
         "sessionExpired": "Your session has expired. Log in again before dismissing this notice.",
         "unavailable": "We could not dismiss this notice right now. Try again."
       }

@@ -234,7 +234,7 @@ it('keeps the notice and explains when dismissing fails', async () => {
   expect(screen.getByRole('heading', { name: 'Orange Stage 6 was removed' })).toBeTruthy()
 })
 
-it('shows the bikes when the notices cannot be loaded', async () => {
+it('explains that the notices could not be loaded and still shows the bikes', async () => {
   listMyBikes.mockResolvedValue([{
     id: 7,
     brand: 'Orange',
@@ -249,9 +249,24 @@ it('shows the bikes when the notices cannot be loaded', async () => {
 
   render(<MyBikesPage />)
 
-  await waitFor(() => expect(screen.getByRole('heading', { name: 'Orange Stage 6' })).toBeTruthy())
+  await waitFor(() => expect(screen.getByText('We could not load your notices right now.')).toBeTruthy())
+  expect(screen.getByRole('heading', { name: 'Orange Stage 6' })).toBeTruthy()
   expect(screen.queryByRole('heading', { name: 'Removed by moderation' })).toBeNull()
   expect(screen.queryByRole('alert')).toBeNull()
+})
+
+it('loads the notices again when the failure is retried', async () => {
+  listMyBikes.mockResolvedValue([])
+  listMyNotices.mockRejectedValueOnce({ status: 500 })
+  listMyNotices.mockResolvedValueOnce([removalNotice()])
+
+  render(<MyBikesPage />)
+
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy())
+  screen.getByRole('button', { name: 'Try again' }).click()
+
+  await waitFor(() => expect(screen.getByRole('heading', { name: 'Removed by moderation' })).toBeTruthy())
+  expect(screen.queryByText('We could not load your notices right now.')).toBeNull()
 })
 
 function removalNotice() {

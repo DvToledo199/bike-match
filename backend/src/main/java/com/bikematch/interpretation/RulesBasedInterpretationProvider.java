@@ -24,6 +24,9 @@ public class RulesBasedInterpretationProvider implements InterpretationProvider 
         return PROMPT_VERSION;
     }
 
+    /** The context offers a menu of figures; a stored explanation may cite at most four. */
+    private static final int MAX_CITED_EVIDENCE = 4;
+
     @Override
     public Interpretation generate(InterpretationContext context) {
         if (!context.dataQuality().travelCheckPassed()) {
@@ -31,7 +34,7 @@ public class RulesBasedInterpretationProvider implements InterpretationProvider 
                     "The calculated travel does not match the declared travel. Review the photo marks and calibration before drawing conclusions; the curves remain available as a reference.",
                     Interpretation.Source.RULES,
                     PROVIDER_VERSION,
-                    context.evidence()
+                    citedEvidence(context)
             );
         }
 
@@ -46,8 +49,13 @@ public class RulesBasedInterpretationProvider implements InterpretationProvider 
                 summary.toString(),
                 Interpretation.Source.RULES,
                 PROVIDER_VERSION,
-                context.evidence()
+                citedEvidence(context)
         );
+    }
+
+    private List<InterpretationContext.Evidence> citedEvidence(InterpretationContext context) {
+        List<InterpretationContext.Evidence> evidence = context.evidence();
+        return evidence.subList(0, Math.min(MAX_CITED_EVIDENCE, evidence.size()));
     }
 
     private void appendLeverage(StringBuilder summary, InterpretationContext context) {

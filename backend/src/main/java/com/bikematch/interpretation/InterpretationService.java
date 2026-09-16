@@ -72,8 +72,13 @@ public class InterpretationService {
         try {
             interpretation = provider.generate(context);
         } catch (InterpretationProviderException exception) {
+            // The wrapper message says little on its own: the cause carries the provider's own
+            // answer, such as a rejected model or a busy service.
             log.warn("Provider {} did not explain bike {}: {}",
-                    provider.providerVersion(), bikeId, exception.getMessage());
+                    provider.providerVersion(), bikeId,
+                    exception.getCause() == null
+                            ? exception.getMessage()
+                            : exception.getMessage() + " (" + exception.getCause() + ")");
             usedProvider = providerSelector.fallback();
             // The fallback may already have an explanation for this context: reuse it instead of
             // storing a second one, which the unique key would reject.

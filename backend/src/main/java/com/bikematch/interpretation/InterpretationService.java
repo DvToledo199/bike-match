@@ -10,11 +10,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class InterpretationService {
+
+    private static final Logger log = LoggerFactory.getLogger(InterpretationService.class);
 
     private final BikeRepository bikeRepository;
     private final KinematicsResultRepository resultRepository;
@@ -68,7 +72,16 @@ public class InterpretationService {
         try {
             interpretation = provider.generate(context);
         } catch (InterpretationProviderException exception) {
+            log.warn("Provider {} did not explain bike {}: {}",
+                    provider.providerVersion(), bikeId, exception.getMessage());
             usedProvider = providerSelector.fallback();
+            // The fallback may already have an explanation for this context: reuse it instead of
+            // storing a second one, which the unique key would reject.
+            var storedFallback = findCachedForProvider(
+                    result, context, usedProvider.providerVersion(), usedProvider.promptVersion());
+            if (storedFallback.isPresent()) {
+                return toView(storedFallback.get());
+            }
             interpretation = usedProvider.generate(context);
         }
 

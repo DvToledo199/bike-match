@@ -142,8 +142,11 @@
       "limit": "This is a reference explanation of the geometry. It is not a personal setup recommendation or a laboratory measurement.",
       "evidence": {
         "usefulProgression": "Useful progression",
+        "totalProgression": "Total progression",
         "maxRearward": "Maximum rearward movement",
         "maxKickback": "Maximum kickback",
+        "antiSquatAtSag": "Anti-squat at sag",
+        "antiRiseAtSag": "Anti-rise at sag",
         "calculatedTravel": "Calculated travel",
         "leverageAtSag": "Leverage at sag",
         "unknown": "Supporting value"

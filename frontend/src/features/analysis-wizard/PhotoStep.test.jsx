@@ -44,3 +44,14 @@ it('explains that only own or permitted photos can be published', () => {
   render(<PhotoStep updateWizardData={vi.fn()} />)
   expect(screen.getByText(/use a photo you took or have permission to share/)).toBeTruthy()
 })
+
+it('offers Horst link as an available suspension layout', () => {
+  const onSuspensionLayoutChange = vi.fn()
+  render(<PhotoStep suspensionLayout="SINGLE_PIVOT" updateWizardData={vi.fn()}
+    onSuspensionLayoutChange={onSuspensionLayoutChange} />)
+
+  const horstLink = screen.getByRole('radio', { name: 'Four-bar (Horst link)' })
+  expect(horstLink.disabled).toBe(false)
+  fireEvent.click(horstLink)
+  expect(onSuspensionLayoutChange).toHaveBeenCalledWith('HORST_LINK')
+})

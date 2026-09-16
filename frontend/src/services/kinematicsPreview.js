@@ -16,6 +16,7 @@ export async function requestKinematicsPreview(wizardData, signal) {
     },
     body: JSON.stringify({
       points: Object.values(points).map(({ type, x, y }) => ({ type, x, y })),
+      suspensionLayout: wizardData.suspensionLayout,
       eyeToEyeMm: toNumber(parameters.eyeToEyeMm),
       parameters: {
         shockStrokeMm: toNumber(parameters.shockStrokeMm),

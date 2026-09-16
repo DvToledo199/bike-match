@@ -48,11 +48,11 @@ function ParameterField({ field, error, onBlur, onChange, value }) {
   )
 }
 
-function ParameterStep({ parameters, points, updateWizardData }) {
+function ParameterStep({ parameters, points, suspensionLayout, updateWizardData }) {
   const { t } = useTranslation()
   const [touchedFields, setTouchedFields] = useState({})
   const errors = getParameterErrors(parameters)
-  const calibration = getCalibration(points, parameters.eyeToEyeMm)
+  const calibration = getCalibration(points, parameters.eyeToEyeMm, suspensionLayout)
 
   function handleChange(event) {
     const { name, value } = event.target

@@ -63,6 +63,11 @@ function AnalysisWizard({ active = true, session = null, onSaved = () => {} }) {
     goToNextStep()
   }
 
+  function handleSuspensionLayoutChange(suspensionLayout) {
+    cancelPreview()
+    updateWizardData({ suspensionLayout, points: {} })
+  }
+
   return (
     <section className={styles.wizard} aria-labelledby="wizard-title">
       <nav aria-label={t('wizard.progressLabel')}>
@@ -97,17 +102,20 @@ function AnalysisWizard({ active = true, session = null, onSaved = () => {} }) {
             photo={wizardData.photo}
             suspensionLayout={wizardData.suspensionLayout}
             updateWizardData={updateWizardData}
+            onSuspensionLayoutChange={handleSuspensionLayoutChange}
           />
         ) : activeStep.id === 'marking' ? (
           <PointMarker
             photo={wizardData.photo}
             points={wizardData.points}
+            suspensionLayout={wizardData.suspensionLayout}
             updateWizardData={updateWizardData}
           />
         ) : activeStep.id === 'parameters' ? (
           <ParameterStep
             parameters={wizardData.parameters}
             points={wizardData.points}
+            suspensionLayout={wizardData.suspensionLayout}
             updateWizardData={updateWizardData}
           />
         ) : activeStep.id === 'results' ? (

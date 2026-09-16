@@ -58,6 +58,25 @@ it('still calculates from valid parameters without a second confirmation', () =>
   expect(state.preview.requestPreview).toHaveBeenCalledWith(state.wizard.wizardData)
 })
 
+it('clears incompatible marks and the stale preview when the layout changes', () => {
+  state.wizard.activeStepIndex = 0
+  state.wizard.wizardData = {
+    ...state.wizard.wizardData,
+    suspensionLayout: 'SINGLE_PIVOT',
+    points: { MAIN_PIVOT: { type: 'MAIN_PIVOT', x: 10, y: 10 } },
+  }
+  state.preview.data = {}
+  render(<AnalysisWizard />)
+
+  fireEvent.click(screen.getByRole('radio', { name: 'Four-bar (Horst link)' }))
+
+  expect(state.preview.cancelPreview).toHaveBeenCalledOnce()
+  expect(state.wizard.updateWizardData).toHaveBeenCalledWith({
+    suspensionLayout: 'HORST_LINK',
+    points: {},
+  })
+})
+
 it('shows explicit registration actions above and below completed curves for a guest', () => {
   state.preview.data = {}
   render(<AnalysisWizard />)

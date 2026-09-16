@@ -26,12 +26,13 @@ export function isStepComplete(stepId, wizardData) {
   }
 
   if (stepId === 'marking') {
-    return hasAllPoints(wizardData.points)
+    return hasAllPoints(wizardData.points, wizardData.suspensionLayout)
   }
 
   if (stepId === 'parameters') {
     return hasValidParameters(wizardData.parameters)
-      && getCalibration(wizardData.points, wizardData.parameters.eyeToEyeMm)?.isValid
+      && getCalibration(wizardData.points, wizardData.parameters.eyeToEyeMm,
+        wizardData.suspensionLayout)?.isValid
   }
 
   // Results are displayed directly; there is no next step to unlock.

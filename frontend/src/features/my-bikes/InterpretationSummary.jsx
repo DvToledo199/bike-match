@@ -3,8 +3,11 @@ import styles from './InterpretationSummary.module.css'
 
 const evidenceLabels = {
   usefulProgressionPercent: 'usefulProgression',
+  totalProgressionPercent: 'totalProgression',
   maxRearwardMm: 'maxRearward',
   maxKickbackDegrees: 'maxKickback',
+  antiSquatAtSagPercent: 'antiSquatAtSag',
+  antiRiseAtSagPercent: 'antiRiseAtSag',
   calculatedTravelMm: 'calculatedTravel',
   leverageRatioAtSag: 'leverageAtSag',
 }

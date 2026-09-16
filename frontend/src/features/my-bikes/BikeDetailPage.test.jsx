@@ -71,6 +71,26 @@ it('shows the saved bike photo, specifications and charts', async () => {
   expect(getBikeInterpretation).toHaveBeenCalledWith(7)
 })
 
+it('names every figure the explanation cites', async () => {
+  getBikeDetail.mockResolvedValue(bike)
+  getBikeInterpretation.mockResolvedValue({
+    ...explanation,
+    evidence: [
+      { key: 'usefulProgressionPercent', value: 2.5, unit: '%' },
+      { key: 'antiSquatAtSagPercent', value: 99.1, unit: '%' },
+      { key: 'antiRiseAtSagPercent', value: 80, unit: '%' },
+      { key: 'totalProgressionPercent', value: 3.3, unit: '%' },
+    ],
+  })
+
+  render(<BikeDetailPage bikeId={7} onBack={vi.fn()} />)
+
+  await waitFor(() => expect(screen.getByText('Anti-squat at sag')).toBeTruthy())
+  expect(screen.getByText('Anti-rise at sag')).toBeTruthy()
+  expect(screen.getByText('Total progression')).toBeTruthy()
+  expect(screen.queryByText('Supporting value')).toBeNull()
+})
+
 it('lets the owner generate the explanation when it is missing', async () => {
   sessionStorage.setItem('bikematch.session', JSON.stringify({
     accessToken: 'token',

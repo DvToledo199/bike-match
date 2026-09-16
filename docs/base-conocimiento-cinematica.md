@@ -91,11 +91,11 @@ El motor lee la forma en **tres fases** —tercio inicial, medio y final del rec
 
 **Qué es:** el dibujo que traza el eje de la rueda al comprimirse la suspensión, visto de lado. Se resume en el **retroceso máximo (mm)** y en qué tramo ocurre.
 
-**Bandas orientativas de retroceso máximo:** <2 mm despreciable · 2–5 mm leve · 5–10 mm apreciable · >10 mm marcado (territorio de pivote alto con polea, donde puede superar los 20–25 mm).
+**Bandas orientativas de retroceso máximo:** <3 mm convencional · 3–5 mm leve · 5–10 mm apreciable · >10 mm marcado (territorio de pivote alto con polea, donde puede superar los 20–25 mm).
 
 **Lectura:** una trayectoria con retroceso inicial ayuda a tragar impactos frontales (escalones, pedreras) y a que la bici no se "atranque"; a cambio alarga las vainas al comprimir (más estable, menos juguetona) y aumenta el pedal kickback. Una trayectoria vertical o que avanza pronto hace la bici más ágil y de recuperación más rápida, a costa de encajar peor el golpe cuadrado.
 
-**Regla de honestidad específica:** entre bicis convencionales (sin polea elevada), la inmensa mayoría de trayectorias son casi calcadas; las diferencias reales solo aparecen en los extremos del espectro o en diseños de pivote alto. Si el retroceso es <3 mm, lo experto es decir "trayectoria convencional, sin efecto perceptible", no construir un relato sobre décimas de milímetro.
+**Regla de honestidad específica:** entre bicis convencionales (sin polea elevada), la inmensa mayoría de trayectorias son casi calcadas; las diferencias reales solo aparecen en los extremos del espectro o en diseños de pivote alto. En la banda convencional (<3 mm) lo experto es no hablar del retroceso, o despacharlo como "trayectoria convencional, sin efecto perceptible", en vez de construir un relato sobre décimas de milímetro. El mismo umbral vale para el texto generado: por debajo de 3 mm no se comenta la trayectoria.
 
 ---
 

@@ -15,6 +15,8 @@ function MyBikesPage({ onOpenBikeDetail }) {
   const [deletingBikeId, setDeletingBikeId] = useState(null)
   const [deleteError, setDeleteError] = useState(null)
   const [notices, setNotices] = useState([])
+  const [noticesError, setNoticesError] = useState(null)
+  const [noticesReloadKey, setNoticesReloadKey] = useState(0)
   const [dismissingNoticeId, setDismissingNoticeId] = useState(null)
   const [dismissError, setDismissError] = useState(null)
 
@@ -31,17 +33,29 @@ function MyBikesPage({ onOpenBikeDetail }) {
         if (active) setError(requestError)
       })
 
-    // Notices are secondary: if they cannot be loaded, My bikes still works without them.
+    return () => { active = false }
+  }, [reloadKey])
+
+  // Notices are secondary: if they cannot be loaded, the bikes still show and the page says so.
+  useEffect(() => {
+    let active = true
+
     listMyNotices()
       .then((result) => {
-        if (active) setNotices(result)
+        if (active) {
+          setNotices(result)
+          setNoticesError(null)
+        }
       })
-      .catch(() => {
-        if (active) setNotices([])
+      .catch((requestError) => {
+        if (active) {
+          setNotices([])
+          setNoticesError(requestError)
+        }
       })
 
     return () => { active = false }
-  }, [reloadKey])
+  }, [reloadKey, noticesReloadKey])
 
   async function handlePublish(bikeId) {
     setPublishingBikeId(bikeId)
@@ -128,6 +142,14 @@ function MyBikesPage({ onOpenBikeDetail }) {
   return (
     <section className={styles.page} aria-labelledby="my-bikes-title">
       <PageHeading t={t} />
+      {noticesError && (
+        <p className={styles.noticesError} role="status">
+          <span>{t('myBikes.notices.errors.load')}</span>
+          <button type="button" className={styles.linkButton} onClick={() => setNoticesReloadKey((key) => key + 1)}>
+            {t('myBikes.retry')}
+          </button>
+        </p>
+      )}
       {notices.length > 0 && (
         <RemovalNotices
           notices={notices}

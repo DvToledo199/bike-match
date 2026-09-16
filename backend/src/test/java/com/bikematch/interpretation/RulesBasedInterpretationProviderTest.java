@@ -34,6 +34,16 @@ class RulesBasedInterpretationProviderTest {
     }
 
     @Test
+    void citesOnlyFourFiguresWhenTheContextOffersMore() {
+        Interpretation result = provider.generate(contextWithEightFigures());
+
+        assertThat(result.evidence()).hasSize(4);
+        assertThat(result.evidence()).extracting(InterpretationContext.Evidence::key)
+                .containsExactly("usefulProgressionPercent", "leverageRatioAtSag",
+                        "maxRearwardMm", "maxKickbackDegrees");
+    }
+
+    @Test
     void warnsBeforeInterpretingWhenTravelCheckFails() {
         Interpretation result = provider.generate(referenceContext(false, true));
 
@@ -41,6 +51,35 @@ class RulesBasedInterpretationProviderTest {
                 .startsWith("The calculated travel does not match the declared travel")
                 .contains("Review the photo marks and calibration")
                 .doesNotContain("progressive leverage response");
+    }
+
+    /** The context offers the whole menu of figures; a stored explanation may cite four. */
+    private InterpretationContext contextWithEightFigures() {
+        return new InterpretationContext(
+                2,
+                1,
+                "monopivot-reference-v2",
+                "kinematics-rules-1",
+                "en",
+                new InterpretationContext.DataQuality(true, null),
+                new InterpretationContext.Capabilities(true, true, true, true),
+                new InterpretationContext.Conditions("ENDURO", 30.0, 32, 52),
+                new InterpretationContext.LeverageShape(
+                        "LINEAR", "LINEAR", "LINEAR", "LINEAR", 2.77, 2.75, 2.68),
+                List.of(
+                        new InterpretationContext.Evidence("usefulProgressionPercent", 2.5, "%"),
+                        new InterpretationContext.Evidence("leverageRatioAtSag", 2.75, "ratio"),
+                        new InterpretationContext.Evidence("maxRearwardMm", 1.4, "mm"),
+                        new InterpretationContext.Evidence("maxKickbackDegrees", 29.4, "°"),
+                        new InterpretationContext.Evidence("antiSquatAtSagPercent", 104, "%"),
+                        new InterpretationContext.Evidence("antiRiseAtSagPercent", 80, "%"),
+                        new InterpretationContext.Evidence("calculatedTravelMm", 149.9, "mm"),
+                        new InterpretationContext.Evidence("totalProgressionPercent", 3.3, "%")
+                ),
+                List.of("Marked-photo geometry; not a laboratory measurement."),
+                List.of("leverage", "axlePath", "kickback", "springType", "riderFit"),
+                List.of("pressure", "clicks", "productModels", "brands", "guarantees")
+        );
     }
 
     private InterpretationContext referenceContext(boolean travelCheckPassed, boolean referenceMetrics) {

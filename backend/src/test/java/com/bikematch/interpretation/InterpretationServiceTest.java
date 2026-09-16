@@ -126,8 +126,9 @@ class InterpretationServiceTest {
     void reusesTheStoredRulesExplanationAndLogsWhyTheProviderFailed(CapturedOutput output) {
         allowGeneration();
         storedFor("gemini-test", Optional.empty());
-        given(provider.generate(context))
-                .willThrow(new InterpretationProviderException("quota exhausted"));
+        given(provider.generate(context)).willThrow(new InterpretationProviderException(
+                "Gemini did not return a valid explanation",
+                new IllegalStateException("503 model is busy")));
         given(providerSelector.fallback()).willReturn(fallback);
         given(fallback.providerVersion()).willReturn("rules-1");
         given(fallback.promptVersion()).willReturn(PROMPT_VERSION);
@@ -139,7 +140,10 @@ class InterpretationServiceTest {
         // Storing a second rules explanation for the same context would break the unique key.
         verify(fallback, never()).generate(any());
         verify(interpretationRepository, never()).saveAndFlush(any(KinematicsInterpretation.class));
-        assertThat(output.getAll()).contains("quota exhausted");
+        // The wrapper message alone does not say what happened: the cause has to reach the log.
+        assertThat(output.getAll())
+                .contains("Gemini did not return a valid explanation")
+                .contains("503 model is busy");
     }
 
     private void allowGeneration() {

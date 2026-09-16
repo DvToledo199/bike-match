@@ -7,6 +7,14 @@ it('accepts valid measurements but not fractional teeth', () => {
   expect(getParameterErrors({ ...valid, chainringTeeth: '34.9', sprocketTeeth: '10.5' }))
     .toEqual({ chainringTeeth: 'integer', sprocketTeeth: 'integer' })
 })
+it('accepts only mountain-bike chainrings', () => {
+  for (const chainringTeeth of ['20', '27', '39', '60']) {
+    expect(getParameterErrors({ ...valid, chainringTeeth }).chainringTeeth).toBe('range')
+  }
+  for (const chainringTeeth of ['28', '32', '38']) {
+    expect(hasValidParameters({ ...valid, chainringTeeth })).toBe(true)
+  }
+})
 it('requires an explicit supported wheel choice', () => {
   for (const wheelConfiguration of ['', undefined, 'FULL_26', 0]) {
     expect(getParameterErrors({ ...valid, wheelConfiguration }).wheelConfiguration).toBe('wheelConfiguration')

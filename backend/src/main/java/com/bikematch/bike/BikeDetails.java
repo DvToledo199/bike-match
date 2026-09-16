@@ -29,7 +29,7 @@ public record BikeDetails(
         requireRange(declaredTravelMm, 50, 250, "Declared travel");
         requireRange(shockEyeToEyeMm, 100, 300, "Shock eye-to-eye");
         requireRange(shockStrokeMm, 20, 120, "Shock stroke");
-        requireRange(chainringTeeth, 20, 60, "Chainring teeth");
+        requireRange(chainringTeeth, 28, 38, "Chainring teeth");
         requireRange(sprocketTeeth, 10, 60, "Sprocket teeth");
         requireRange(sagPercent, 10, 50, "Sag");
     }

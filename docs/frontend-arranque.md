@@ -129,7 +129,7 @@ es lo natural — el backend calibra px→mm internamente con el eye-to-eye):
   (incluido mullet); se rechazan correcciones mayores de 15° y orientación ambigua.
   Se asume suelo plano; no corrige perspectiva ni distingue foto girada de bici en pendiente.
   El JSON anterior es ilustrativo, no una respuesta completa reutilizable.
-- **Límites:** eye-to-eye 100–300 mm, carrera 20–120 mm, plato 20–60 dientes enteros,
+- **Límites:** eye-to-eye 100–300 mm, carrera 20–120 mm, plato 28–38 dientes enteros,
   piñón 10–60 enteros, recorrido 50–250 mm y sag 10–50%. Los seis tipos de punto
   aparecen una sola vez; coordenadas finitas entre 0 y 100000 px.
 - **Ruedas:** selector explícito `FULL_29`, `MULLET` o `FULL_27_5`, sin peso.

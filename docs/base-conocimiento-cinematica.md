@@ -39,7 +39,8 @@ Material de referencia para la capa de IA de BikeMatch. El motor de la aplicaci�
 
 - Las curvas se expresan respecto al **recorrido de la rueda trasera (0–100%)**.
 - El **punto de sag** (hundimiento estático con el piloto encima) es la referencia central de análisis. Valores orientativos por disciplina: XC/Downcountry 20–25%, Trail 25–30%, Enduro ~30%, DH ~30%. En BikeMatch, todas las categorías soportadas (Enduro, e-Enduro, DH) se analizan con un **30% por defecto**.
-- **La curva se lee partida en dos por el sag.** El tramo inicial (0% → sag) gobierna la sensibilidad, la tracción y la absorción de impactos pequeños. El tramo útil (sag → 100%) gobierna el apoyo, la capacidad de tragar impactos grandes y la resistencia a hacer tope. Este método evita el error clásico de juzgar una curva solo por sus extremos: dos bicis con la misma cifra global pueden comportarse de forma opuesta según a qué altura de la curva les caiga el sag.
+- **La cifra útil se mide desde el sag.** El tramo sag → 100% es el que gobierna el apoyo, la capacidad de tragar impactos grandes y la resistencia a hacer tope. Este método evita el error clásico de juzgar una curva solo por sus extremos: dos bicis con la misma cifra global pueden comportarse de forma opuesta según a qué altura de la curva les caiga el sag.
+- **La forma se lee en tres tramos de recorrido:** **0–40%** (tacto inicial: sensibilidad, tracción y absorción de impactos pequeños), **40–70%** (apoyo medio: la zona donde de verdad se rueda) y **70–100%** (reserva y resistencia a hacer tope). El tacto inicial no se agota en el sag: para juzgarlo hay que mirar algo más allá del 30%, y por eso el primer tramo llega al 40%.
 
 ---
 
@@ -59,8 +60,8 @@ Material de referencia para la capa de IA de BikeMatch. El motor de la aplicaci�
 | 0% a < 5% | Lineal | Predecible y constante; apoyo uniforme; hará topes con facilidad si no lo compensa el amortiguador |
 | 5–12% | Ligeramente progresiva | Versátil con aire; con muelle irá justa de reserva final |
 | 12–20% | Progresión media | El punto dulce de polivalencia: admite aire y, en la parte alta de la banda, muelle |
-| 20–30% | Alta | Mucha reserva final, tacto con "pop"; territorio natural del muelle |
-| > 30% | Muy alta | Difícil aprovechar todo el recorrido; solo tiene sentido para saltos grandes o pilotos muy agresivos |
+| 20–30% | Alta | Mucha reserva final y apoyo creciente; territorio natural del muelle. El "pop" no se deduce de esta cifra: depende de la forma de la rampa y de que el piloto sepa cargarla |
+| > 30% | Muy alta | Buen margen de progresión dura frente a impactos que consumirían todo el recorrido de golpe; a cambio, un piloto ligero puede no llegar a usar el último tramo |
 
 **Taxonomía de formas** (la forma importa tanto como la cifra):
 
@@ -74,7 +75,9 @@ El motor lee la forma en **tres fases** —tercio inicial, medio y final del rec
 - **Regresiva de principio a fin (el LR sube durante casi todo el recorrido):** es el extremo del caso anterior; combina lo más difícil para la gravedad —cuesta lograr a la vez sensibilidad al pequeño impacto y reserva contra el tope— y solo resulta razonable en bicis muy ligeras de XC de competición. En las categorías que analiza BikeMatch (Enduro/DH) es una señal de alarma clara.
 - **Regresiva→progresiva (curva en lomo):** si el sag coincide con la cima del lomo, el tramo útil es más progresivo de lo que sugiere la cifra global. Es el ejemplo de manual de por qué se analiza desde el sag.
 
-**Emparejamiento con el amortiguador** (regla de composición: comportamiento total ≈ curva del cuadro × curva del resorte):
+**Emparejamiento con el amortiguador** (regla de composición: comportamiento total ≈ curva del cuadro × curva del resorte).
+
+> **No se usa para generar texto.** Esta sección queda como referencia de estudio. El texto generado **no recomienda amortiguador**: no modelamos el peso del piloto, ni el tarado hidráulico, ni el volumen de la cámara, que son las tres cosas que deciden si un resorte encaja. Hay bicis bastante lineales que montan muelle de serie sin queja alguna, así que la curva sola no basta para opinar.
 
 - **Muelle** = resorte lineal. Pide cuadros con progresión útil ≳15–20% y **sin** tramo regresivo final. En cuadros muy progresivos funciona de maravilla (sensibilidad de muelle + reserva del cuadro).
 - **Aire de cámara reducida** = resorte muy progresivo. Rescata cuadros lineales o regresivos.
@@ -95,7 +98,7 @@ El motor lee la forma en **tres fases** —tercio inicial, medio y final del rec
 
 **Lectura:** una trayectoria con retroceso inicial ayuda a tragar impactos frontales (escalones, pedreras) y a que la bici no se "atranque"; a cambio alarga las vainas al comprimir (más estable, menos juguetona) y aumenta el pedal kickback. Una trayectoria vertical o que avanza pronto hace la bici más ágil y de recuperación más rápida, a costa de encajar peor el golpe cuadrado.
 
-**Regla de honestidad específica:** entre bicis convencionales (sin polea elevada), la inmensa mayoría de trayectorias son casi calcadas; las diferencias reales solo aparecen en los extremos del espectro o en diseños de pivote alto. En la banda convencional (<3 mm) lo experto es no hablar del retroceso, o despacharlo como "trayectoria convencional, sin efecto perceptible", en vez de construir un relato sobre décimas de milímetro. El mismo umbral vale para el texto generado: por debajo de 3 mm no se comenta la trayectoria.
+**Regla de honestidad específica:** entre bicis convencionales (sin polea elevada), la inmensa mayoría de trayectorias son casi calcadas; las diferencias reales solo aparecen en los extremos del espectro o en diseños de pivote alto. En la banda convencional (<3 mm) lo experto es no hablar del retroceso, o despacharlo como "trayectoria convencional, sin efecto perceptible", en vez de construir un relato sobre décimas de milímetro. El mismo umbral vale para el texto generado: por debajo de 3 mm no se comenta la trayectoria. **Por encima de 10 mm tampoco se da cifra**, por el motivo contrario: esas bicis llevan pivote alto con polea para contrarrestar el kickback que genera ese retroceso, y el motor modela una cadena directa **sin polea**. Ahí el número calculado no sería válido, así que lo honesto es declarar el límite en vez de interpretarlo.
 
 ---
 
@@ -107,8 +110,10 @@ El motor lee la forma en **tres fases** —tercio inicial, medio y final del rec
 
 **Está acoplado a la eficacia de pedaleo:** en monopivotes es casi proporcional al anti-squat: cuadro que pedalea firme = cuadro con kickback. Algunos diseños de pivote virtual, y sobre todo los de pivote alto con polea, rompen esa proporción y logran pedaleo firme con kickback bajo; cuando los números muestren ese desacople, destacarlo como virtud de diseño.
 
+**Qué describe en realidad:** cuánto **pelea la cadena con la suspensión**. No mide la eficiencia de pedaleo —eso es el anti-squat— y confundirlos deja dos métricas contando lo mismo. Una cifra baja significa que la suspensión sigue libre mientras pedaleas, y la rueda copia el suelo en una subida rota. Una cifra alta significa que la cadena tira y mantiene la bici más estirada: se pedalea firme, pero la rueda trasera trabaja peor justo cuando pedaleas por encima de raíces. Es un compromiso, no un defecto, y el texto generado no lo describe como un castigo.
+
 **Cuándo se siente de verdad:**
-- Pedaleando por terreno roto (subidas técnicas): tirones en los pedales.
+- Pedaleando por terreno roto (subidas técnicas), que es la marcha con la que se calcula.
 - En bajada, la visión clásica dice que apenas afecta porque no se pedalea y el núcleo libre lo absorbe; la experiencia moderna matiza: con bielas en horizontal, frenando en pedrera, con bujes de poco engagement o transmisiones siempre engranadas, parte de ese tirón llega a los pies como castigo e inestabilidad. En valores altos (>35–40° en subida), mencionar este efecto en bajadas rotas es pertinente, especialmente si el usuario reporta pies castigados o pérdida de apoyo.
 - **E-bikes:** doble matiz. El motor y la transmisión hacen que el retroceso se note más, y además en e-bike se pedalea en tramos donde con una bici convencional no se pedalearía; un kickback alto penaliza más en una e-bike de enduro que en una DH pura (donde casi no se pedalea y suele venir acompañado de una trayectoria de eje favorable: allí es más peaje que defecto).
 - Existen paliativos genéricos que se pueden mencionar sin marcas: desacopladores de núcleo/araña, bujes de bajo engagement (con sus contras), y elegir desarrollos menos extremos.
@@ -136,7 +141,7 @@ transferencia de carga. 100% representa compensación en el modelo de referencia
 no una promesa de mantener toda la geometría de la bici. Solo se calcula con la
 pinza fija al basculante; frenos flotantes y otros sistemas necesitan otro modelo.
 
-**Lectura por bandas:** <50% suspensión muy activa frenando, más cabeceo de la bici · 50–80% el equilibrio más común en bicis modernas · 80–110% geometría muy estable al frenar, a costa de una suspensión que trabaja peor y pierde finura de tracción justo cuando frenas · >110% alto, carácter de "se sienta al frenar".
+**Lectura por bandas:** **<50%** al frenar la trasera tiende a **estirarse**, el amortiguador se extiende y la suspensión queda suelta: la rueda va más viva y resigue mejor el terreno, a costa de más cabeceo · **50–80%** el equilibrio más común en bicis modernas · **80–110%** al frenar la bici **se agacha de detrás**: da más aplomo y seguridad en pendientes fuertes, pero copia peor el suelo · **>110%** se sienta claramente al frenar.
 
 **Matices de experto:** el cabeceo lo domina la horquilla (el freno delantero es responsable de la gran mayoría del hundimiento frontal), así que el anti-rise trasero afina el comportamiento pero no lo decide; hay bicis rápidas con enfoques opuestos y los pilotos se adaptan. Presentarlo siempre como compromiso con dos caras, nunca como nota buena/mala.
 
@@ -171,16 +176,18 @@ Arquetipos rápidos si el usuario no concreta: *saltador/agresivo* → progresi�
 1. **Carácter en una frase.** "Enduro de carácter progresivo y pedaleo firme, pensada para ir rápido en roto."
 2. **Los datos que lo sostienen.** 2–4 métricas con su cifra y su lectura, de mayor a menor relevancia.
 3. **Compromisos y avisos.** Qué se paga a cambio; alertas de forma (tramos regresivos, sag en zona engañosa) y la advertencia de datos si el motor la marcó.
-4. **Amortiguador y reglaje.** Tipo de resorte que casa (muelle / aire y volumen), y uno o dos consejos de ajuste genéricos.
-5. **Para quién es.** Perfil de piloto/uso al que le encaja y a quién no, personalizado si hay cuestionario.
-6. **Cierre honesto.** Recordatorio breve de que el análisis parte de puntos marcados sobre foto y de que el reglaje final se afina rodando.
+4. **Para quién es.** Perfil de piloto/uso al que le encaja y a quién no, personalizado si hay cuestionario.
+5. **Cierre honesto.** Recordatorio breve de que el análisis parte de puntos marcados sobre foto y de que el reglaje final se afina rodando.
+
+> El antiguo punto de **amortiguador y reglaje** se ha retirado de la estructura generada por lo explicado en la sección 3: con la curva sola no se puede recomendar resorte.
 
 ### Ejemplo completo (números ficticios)
 
 > **Una enduro progresiva y con nervio, más de bajar fuerte que de contemplar el paisaje.**
-> Su curva de palanca va de 2.9 a 2.35 con una progresión útil del 21%, de pendiente continua: apoyo creciente, reserva de sobra para recepciones y libertad total para elegir entre aire y muelle. El pedal kickback, calculado en 32×51, ronda los 38°: en el tramo alto, y como su trayectoria de eje es convencional (retroceso máximo de 2 mm), aquí es peaje sin contrapartida: en subidas rotas notarás tirones en los pedales y en pedreras frenadas puede castigar los pies.
-> Si montas muelle, esta curva lo admite sin dramas. Con aire, empieza sin spacers y añade solo si buscas más tope de seguridad.
-> Le encajará a quien pese sus buenos 80 kg y baje con intención; un piloto muy ligero puede quedarse sin usar el último tramo de recorrido.
+> Su curva de palanca va de 2.9 a 2.35 con una progresión útil del 21%, y la pendiente es continua en los tres tramos: arranca sensible, mantiene el apoyo en la zona media donde de verdad se rueda y guarda reserva para las recepciones. Es lo contrario de una bici que se hunde a media carrera.
+> El retroceso de pedal, calculado en 32×52, ronda los 38°: es de los valores altos, así que en subidas rotas la cadena pelea con la suspensión y la rueda copia el suelo peor de lo que su curva sugiere. Su trayectoria de eje es convencional y no añade nada a ese balance.
+> Frenando se agacha de detrás (anti-rise del 95%): ganas aplomo en las pendientes serias, pero la trasera resigue el terreno con menos finura justo cuando vas frenando.
+> Le encajará a quien baje con intención y acepte ese peaje pedaleando; un piloto muy ligero puede quedarse sin usar el último tramo de recorrido.
 > Recuerda que estos números salen de los puntos marcados sobre la foto: tómalos como una radiografía fiable de tendencias, y remata el ajuste fino sobre el terreno.
 
 ---

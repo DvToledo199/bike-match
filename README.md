@@ -208,7 +208,12 @@ coste externo. Gemini se activa únicamente con `INTERPRETATION_PROVIDER=gemini`
 explicación por reglas identificada como `source=RULES`. No se envían foto, puntos,
 correo, contraseña ni perfil personal al proveedor.
 
-La caché se versiona por resultado, contexto, reglas, idioma, proveedor y prompt. Las
+La caché se versiona por resultado, contexto, reglas, idioma, proveedor y prompt.
+Generar solo reutiliza la explicación del proveedor configurado: con Gemini activo, una
+bici que solo tiene texto por reglas vuelve a pedírsela a Gemini. Leer devuelve la que
+haya guardada, sea del proveedor elegido o del respaldo. Al generar, el navegador espera
+hasta 45 segundos, por encima del máximo del proveedor (`GEMINI_TIMEOUT`: 15 segundos
+para conectar y otros 15 para leer). Las
 peticiones que tendrían que llamar al proveedor tienen además un enfriamiento local
 configurable (`INTERPRETATION_GENERATION_COOLDOWN`, 30 segundos por defecto); el
 resumen y el contexto tienen límites de tamaño y la respuesta externa se valida como

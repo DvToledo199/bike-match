@@ -206,7 +206,18 @@ genera una llamada al proveedor. El modo predeterminado es `rules`, determinista
 coste externo. Gemini se activa únicamente con `INTERPRETATION_PROVIDER=gemini`,
 `GEMINI_API_KEY` y `GEMINI_MODEL` en el entorno del backend; si falla, se guarda una
 explicación por reglas identificada como `source=RULES`. No se envían foto, puntos,
-correo, contraseña ni perfil personal al proveedor.
+correo, contraseña ni perfil personal al proveedor. Los modelos `gemini-2.5-*` ya no
+están disponibles para cuentas nuevas: usa el identificador que devuelva la lista de
+modelos de tu clave, por ejemplo `gemini-3.6-flash`.
+
+El contexto que recibe el proveedor lleva, además de las cifras, la forma de la curva de
+palanca (banda de progresión, tendencia de cada tercio y LR inicial, en sag y final) y
+las condiciones del cálculo (categoría, sag y desarrollo). Con eso, el texto sigue la
+estructura de la [base de conocimiento](docs/base-conocimiento-cinematica.md): carácter
+de la bici, cifras que lo sostienen, compromisos, qué tipo de resorte le casa, para quién
+encaja y un cierre honesto. Puede hablar de muelle o aire y de espaciadores en términos
+generales; siguen prohibidas las marcas, las presiones, los clics, las garantías y
+cualquier suposición sobre el peso o el reglaje de quien consulta.
 
 La caché se versiona por resultado, contexto, reglas, idioma, proveedor y prompt.
 Generar solo reutiliza la explicación del proveedor configurado: con Gemini activo, una

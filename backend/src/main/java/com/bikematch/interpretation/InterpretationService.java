@@ -52,7 +52,7 @@ public class InterpretationService {
                 .filter(foundBike -> foundBike.isOwnedBy(ownerId))
                 .orElseThrow(BikeNotFoundException::new);
         KinematicsResult result = resultFor(bikeId);
-        InterpretationContext context = contextFactory.create(result, language);
+        InterpretationContext context = contextFactory.create(result, language, bike.getCategory());
         InterpretationProvider provider = providerSelector.current();
 
         // Only an explanation from the selected provider counts as already generated. Reusing the
@@ -98,7 +98,7 @@ public class InterpretationService {
                 .filter(foundBike -> foundBike.canBeViewedBy(viewerId))
                 .orElseThrow(BikeNotFoundException::new);
         KinematicsResult result = resultFor(bike.getId());
-        InterpretationContext context = contextFactory.create(result, language);
+        InterpretationContext context = contextFactory.create(result, language, bike.getCategory());
 
         return findCached(result, context, providerSelector.current())
                 .map(this::toView)

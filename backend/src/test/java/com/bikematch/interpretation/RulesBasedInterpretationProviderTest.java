@@ -55,6 +55,9 @@ class RulesBasedInterpretationProviderTest {
                         travelCheckPassed ? null : "Calculated travel differs from declared travel by 14%"
                 ),
                 new InterpretationContext.Capabilities(referenceMetrics, referenceMetrics, true, true),
+                new InterpretationContext.Conditions("ENDURO", 30.0, 32, 52),
+                new InterpretationContext.LeverageShape(
+                        "MEDIUM", "PROGRESSIVE", "PROGRESSIVE", "LINEAR", 2.9, 2.8, 2.35),
                 List.of(
                         new InterpretationContext.Evidence("usefulProgressionPercent", 18, "%"),
                         new InterpretationContext.Evidence("maxRearwardMm", 12, "mm"),
@@ -62,7 +65,7 @@ class RulesBasedInterpretationProviderTest {
                 ),
                 List.of("Analytical reference; not a personal setup recommendation."),
                 List.of("leverage", "axlePath", "kickback", "antiSquat", "antiRise"),
-                List.of("pressure", "clicks", "productModels", "riderSuitability")
+                List.of("pressure", "clicks", "productModels", "brands", "guarantees")
         );
     }
 }

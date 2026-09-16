@@ -71,6 +71,10 @@ class KinematicsControllerTest {
                 VALID_REQUEST.replace("\"sagPercent\": 30", "\"sagPercent\": 0"),
                 VALID_REQUEST.replace("\"chainringTeeth\": 34", "\"chainringTeeth\": 34.9"),
                 VALID_REQUEST.replace("\"chainringTeeth\": 34", "\"chainringTeeth\": 0"),
+                // A mountain bike chainring is between 28 and 38 teeth: the old 20-60 range
+                // let through sizes that distort the kickback and anti-squat radii.
+                VALID_REQUEST.replace("\"chainringTeeth\": 34", "\"chainringTeeth\": 20"),
+                VALID_REQUEST.replace("\"chainringTeeth\": 34", "\"chainringTeeth\": 60"),
                 VALID_REQUEST.replace("\"shockStrokeMm\": 65", "\"shockStrokeMm\": -1"),
                 VALID_REQUEST.replace("\"eyeToEyeMm\": 230.0", "\"eyeToEyeMm\": 1e200"),
                 VALID_REQUEST.replace("\"x\": 208.3", "\"x\": 1e200"),

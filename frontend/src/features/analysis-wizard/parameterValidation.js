@@ -18,8 +18,8 @@ export const parameterFields = [
   {
     name: 'chainringTeeth',
     integer: true,
-    minimum: 20,
-    maximum: 60,
+    minimum: 28,
+    maximum: 38,
     step: '1',
     translationKey: 'wizard.parameters.fields.chainring',
   },

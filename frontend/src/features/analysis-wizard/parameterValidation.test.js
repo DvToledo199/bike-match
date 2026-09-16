@@ -27,3 +27,13 @@ it('rejects degenerate and non-finite calibration', () => {
   expect(getCalibration({ SHOCK_FRAME: { x: 2, y: 2 }, SHOCK_SWINGARM: { x: 2, y: 2 } }, 230).isValid).toBe(false)
   expect(getCalibration({ SHOCK_FRAME: { x: NaN, y: 2 }, SHOCK_SWINGARM: { x: 3, y: 2 } }, 230).isValid).toBe(false)
 })
+
+it('uses the rocker-side shock eye to calibrate a Horst link', () => {
+  const points = {
+    SHOCK_FRAME: { x: 10, y: 10 },
+    SHOCK_ROCKER: { x: 110, y: 10 },
+    SHOCK_SWINGARM: { x: 10, y: 10 },
+  }
+
+  expect(getCalibration(points, 200, 'HORST_LINK')).toMatchObject({ isValid: true, mmPerPixel: 2 })
+})

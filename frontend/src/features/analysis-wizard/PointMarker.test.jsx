@@ -8,10 +8,11 @@ beforeEach(() => {
   vi.stubGlobal('PointerEvent', MouseEvent)
 })
 
-function MarkerTest() {
+function MarkerTest({ suspensionLayout = 'SINGLE_PIVOT' }) {
   const [points, setPoints] = useState({})
   return <><PointMarker photo={{ width: 1800, height: 1200, previewUrl: 'blob:photo' }} points={points}
-    updateWizardData={(update) => setPoints(update.points)} /><output aria-label="Stored marks">{JSON.stringify(points)}</output></>
+    suspensionLayout={suspensionLayout} updateWizardData={(update) => setPoints(update.points)} />
+    <output aria-label="Stored marks">{JSON.stringify(points)}</output></>
 }
 
 it('zooms with the wheel, pans with the right button without marking, and marks the pedalier second', () => {
@@ -50,4 +51,19 @@ it('creates all six points with the keyboard, and undo removes both cross and da
   for (let i = 0; i < 5; i++) fireEvent.click(screen.getByRole('button', { name: /Undo point/ }))
   expect(JSON.parse(screen.getByLabelText('Stored marks').textContent)).toEqual({})
   expect(container.querySelectorAll('g[data-selected]').length).toBe(0)
+})
+
+it('switches to the nine-point Horst link guide', () => {
+  const { container } = render(<MarkerTest suspensionLayout="HORST_LINK" />)
+  const marker = screen.getByRole('application', { name: 'Bike photo used to mark suspension points' })
+  expect(screen.getByRole('heading', { name: 'Main pivot' })).toBeTruthy()
+
+  for (let index = 0; index < 9; index++) {
+    fireEvent.keyDown(marker, { key: 'ArrowRight', shiftKey: true })
+    fireEvent.keyDown(marker, { key: 'Enter' })
+  }
+
+  expect(screen.getByText('9 of 9 points marked')).toBeTruthy()
+  expect(container.querySelectorAll('g[data-selected]').length).toBe(9)
+  expect(JSON.parse(screen.getByLabelText('Stored marks').textContent).SHOCK_ROCKER).toBeTruthy()
 })

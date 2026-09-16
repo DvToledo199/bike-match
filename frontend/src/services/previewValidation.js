@@ -11,6 +11,10 @@ export function validatePreview(data) {
   const trends = ['PROGRESSIVE', 'LINEAR', 'REGRESSIVE']
   const bands = ['REGRESSIVE', 'LINEAR', 'SLIGHTLY_PROGRESSIVE', 'MEDIUM', 'HIGH', 'VERY_HIGH']
   const reference = data?.conditions?.reference
+  const modelVersion = data?.conditions?.modelVersion
+  const expectedBrakeModel = modelVersion === 'horst-link-reference-v1'
+    ? 'SEATSTAY_FIXED'
+    : modelVersion === 'monopivot-reference-v2' ? 'SWINGARM_FIXED' : null
   if (!validCurve(data?.leverageCurve, ['wheelTravelMm', 'ratio'])
     || !data.leverageCurve.every((sample) => sample.ratio > 0)
     || !validCurve(data?.kickbackCurve, ['wheelTravelMm', 'kickbackDegrees'])
@@ -23,14 +27,14 @@ export function validatePreview(data) {
     || !finiteFields(data?.travelCheck, ['calculatedTravelMm', 'declaredTravelMm', 'deviationPercent'])
     || typeof data.travelCheck.withinTolerance !== 'boolean'
     || !finiteFields(data?.conditions, ['sagPercent', 'chainringTeeth', 'sprocketTeeth'])
-    || data.conditions.modelVersion !== 'monopivot-reference-v2'
+    || !expectedBrakeModel
     || !validCurve(data.antiSquatCurve, ['wheelTravelMm', 'percent'])
     || !validCurve(data.antiRiseCurve, ['wheelTravelMm', 'percent'])
     || !finiteFields(reference, ['frontWheelRadiusMm', 'rearWheelRadiusMm', 'centerOfGravityHeightMm', 'photoRotationDegrees'])
     || !['frontWheelRadiusMm', 'rearWheelRadiusMm', 'centerOfGravityHeightMm'].every((key) => reference[key] > 0)
     || !wheelConfigurations.includes(reference.wheelConfiguration)
     || reference.motionModel !== 'FIXED_FRAME_LOCAL_GROUND'
-    || reference.brakeModel !== 'SWINGARM_FIXED'
+    || reference.brakeModel !== expectedBrakeModel
     || reference.validationLevel !== 'ANALYTICAL_REFERENCE') {
     throw new ApiError('invalidResponse')
   }

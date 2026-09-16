@@ -222,10 +222,10 @@
       "dimensions": "{{width}} × {{height}} px",
       "lowResolutionWarning": "This image is smaller than {{minimumPixels}} px on its longest side. Use a larger photo if possible: small images make the marking less reliable.",
       "suspensionLegend": "Suspension layout",
-      "suspensionHelp": "For simple single pivots with a direct chain and a brake fixed to the swingarm. Idlers, floating brakes and other linkages are not supported.",
+      "suspensionHelp": "Choose the linkage shown in your side photo. Idlers, floating brakes and other layouts are not supported yet.",
       "suspensionLayouts": {
         "singlePivot": "Single pivot",
-        "fourBar": "Four-bar / Horst link",
+        "horstLink": "Four-bar (Horst link)",
         "dualLink": "Dual link / virtual pivot"
       },
       "comingSoon": "Coming soon",
@@ -239,13 +239,13 @@
       "mouseHint": "Left-click to mark · Scroll to zoom · Right-drag to move",
       "keyboardLabel": "Keyboard controls",
       "label": "Mark points",
-      "title": "Mark the six key points",
+      "title": "Mark the key points",
       "description": "Follow the guide and click the exact centre of each part on the photo.",
       "eyebrow": "Step 2 of 4",
       "progress": "{{marked}} of {{total}} points marked",
       "nowMarking": "Now marking: {{point}}",
       "instructions": "Click the exact centre of this point on the photo. You can select any point below to move it again.",
-      "allPointsMarked": "All six points are set. Select any point below, then click the photo to move it.",
+      "allPointsMarked": "All points are set. Select any point below, then click the photo to move it.",
       "keyboardHint": "Focus the photo with Tab. Use arrows to position a new point (half a pixel; Shift moves faster), then Enter to mark it. Select an existing point below to adjust it with arrows. Undo point removes its cross and coordinates immediately.",
       "canvasLabel": "Bike photo used to mark suspension points",
       "pointListLabel": "Points to mark",
@@ -276,6 +276,22 @@
         "shockSwingarm": {
           "label": "Swingarm-side shock mount",
           "description": "The centre of the shock mounting bolt attached to the swingarm."
+        },
+        "horstPivot": {
+          "label": "Horst pivot",
+          "description": "The pivot between the chainstay and seatstay, usually close to the rear axle."
+        },
+        "rockerFramePivot": {
+          "label": "Rocker-frame pivot",
+          "description": "The fixed pivot where the rocker link turns on the frame."
+        },
+        "rockerSeatstayPivot": {
+          "label": "Rocker-seatstay pivot",
+          "description": "The centre where the rocker link connects to the seatstay."
+        },
+        "shockRocker": {
+          "label": "Rocker-side shock mount",
+          "description": "The centre of the shock mounting bolt attached to the rocker link."
         },
         "bottomBracket": {
           "label": "Bottom bracket",

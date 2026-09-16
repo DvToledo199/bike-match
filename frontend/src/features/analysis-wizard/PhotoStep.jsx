@@ -31,7 +31,7 @@ function readImageDimensions(imageUrl) {
   })
 }
 
-function PhotoStep({ photo, suspensionLayout, updateWizardData }) {
+function PhotoStep({ photo, suspensionLayout, updateWizardData, onSuspensionLayoutChange }) {
   const { t } = useTranslation()
   const [error, setError] = useState('')
   const inputRef = useRef(null)
@@ -78,7 +78,13 @@ function PhotoStep({ photo, suspensionLayout, updateWizardData }) {
   }
 
   function handleSuspensionLayoutChange(event) {
-    updateWizardData({ suspensionLayout: event.target.value })
+    const nextLayout = event.target.value
+    if (nextLayout === suspensionLayout) return
+    if (onSuspensionLayoutChange) {
+      onSuspensionLayoutChange(nextLayout)
+      return
+    }
+    updateWizardData({ suspensionLayout: nextLayout, points: {} })
   }
 
   const longestSidePixels = photo ? Math.max(photo.width, photo.height) : 0
@@ -145,10 +151,15 @@ function PhotoStep({ photo, suspensionLayout, updateWizardData }) {
           />
           <span>{t('wizard.photo.suspensionLayouts.singlePivot')}</span>
         </label>
-        <label className={`${styles.suspensionOption} ${styles.unavailable}`}>
-          <input type="radio" name="suspension-layout" disabled />
-          <span>{t('wizard.photo.suspensionLayouts.fourBar')}</span>
-          <span className={styles.comingSoon}>{t('wizard.photo.comingSoon')}</span>
+        <label className={styles.suspensionOption}>
+          <input
+            type="radio"
+            name="suspension-layout"
+            value="HORST_LINK"
+            checked={suspensionLayout === 'HORST_LINK'}
+            onChange={handleSuspensionLayoutChange}
+          />
+          <span>{t('wizard.photo.suspensionLayouts.horstLink')}</span>
         </label>
         <label className={`${styles.suspensionOption} ${styles.unavailable}`}>
           <input type="radio" name="suspension-layout" disabled />

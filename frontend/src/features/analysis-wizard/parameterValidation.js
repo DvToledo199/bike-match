@@ -70,18 +70,20 @@ export function hasValidParameters(parameters) {
   return Object.keys(getParameterErrors(parameters)).length === 0
 }
 
-export function getCalibration(points, eyeToEyeMm) {
+export function getCalibration(points, eyeToEyeMm, suspensionLayout = 'SINGLE_PIVOT') {
   const eyeToEye = Number(eyeToEyeMm)
   const shockFrame = points.SHOCK_FRAME
-  const shockSwingarm = points.SHOCK_SWINGARM
+  const movingShockEye = suspensionLayout === 'HORST_LINK'
+    ? points.SHOCK_ROCKER
+    : points.SHOCK_SWINGARM
 
-  if (!Number.isFinite(eyeToEye) || eyeToEye <= 0 || !shockFrame || !shockSwingarm) {
+  if (!Number.isFinite(eyeToEye) || eyeToEye <= 0 || !shockFrame || !movingShockEye) {
     return null
   }
 
   const referenceDistancePixels = Math.hypot(
-    shockFrame.x - shockSwingarm.x,
-    shockFrame.y - shockSwingarm.y,
+    shockFrame.x - movingShockEye.x,
+    shockFrame.y - movingShockEye.y,
   )
 
   if (!Number.isFinite(referenceDistancePixels) || referenceDistancePixels < 0.01) {

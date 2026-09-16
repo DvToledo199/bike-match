@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { hasAllPoints, pointDefinitions } from './pointDefinitions.js'
+import { getPointDefinitions, hasAllPoints } from './pointDefinitions.js'
 import styles from './PointMarker.module.css'
 
 import { clamp, constrainView, getViewBox, imagePoint, maximumZoom, minimumZoom, zoomAt } from './markerViewport.js'
 const regularNudgePixels = 0.5
 const fastNudgePixels = 2
 
-function PointMarker({ photo, points, updateWizardData }) {
+function PointMarker({ photo, points, suspensionLayout, updateWizardData }) {
   const { t } = useTranslation()
+  const pointDefinitions = getPointDefinitions(suspensionLayout)
   const [selectedPointType, setSelectedPointType] = useState(pointDefinitions[0].type)
   const [view, setView] = useState(() => ({ zoom: 1, center: { x: photo.width / 2, y: photo.height / 2 } }))
   const [aspect, setAspect] = useState(photo.width / photo.height)
@@ -20,7 +21,7 @@ function PointMarker({ photo, points, updateWizardData }) {
   const selectedPoint = pointDefinitions.find((point) => point.type === selectedPointType)
   const viewBox = getViewBox(photo, zoom, viewCenter, aspect)
   const markedPointCount = pointDefinitions.filter((point) => points[point.type]).length
-  const allPointsMarked = hasAllPoints(points)
+  const allPointsMarked = hasAllPoints(points, suspensionLayout)
   const selectedPointIndex = pointDefinitions.findIndex((point) => point.type === selectedPointType)
   const previousPoint = pointDefinitions[Math.max(0, selectedPointIndex - 1)]
   const pointToUndo = points[selectedPointType] ? selectedPoint : previousPoint
@@ -39,6 +40,12 @@ function PointMarker({ photo, points, updateWizardData }) {
     observer.observe(marker)
     return () => observer.disconnect()
   }, [])
+
+  useEffect(() => {
+    setKeyboardCursor(null)
+    setSelectedPointType((currentType) => pointDefinitions.some((point) => point.type === currentType)
+      ? currentType : pointDefinitions[0].type)
+  }, [pointDefinitions])
 
   useEffect(() => {
     const marker = markerRef.current

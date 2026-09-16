@@ -7,9 +7,9 @@ import java.util.Objects;
  * Versioned, privacy-safe input prepared for an interpretation provider.
  * It contains selected evidence, not the photo, marked points or account data.
  *
- * <p>The evidence list is the menu of figures a provider may cite; the shape and the
- * conditions are what turn those figures into a reading of the bike. Both may be absent
- * for results calculated by an engine that did not report them.
+ * <p>The evidence list is the menu of figures a provider may cite; the shape, the readings
+ * and the conditions are what turn those figures into a reading of the bike. Each may be
+ * absent for results calculated by an engine that did not report them.
  */
 public record InterpretationContext(
         int interpretationContextVersion,
@@ -21,6 +21,7 @@ public record InterpretationContext(
         Capabilities capabilities,
         Conditions conditions,
         LeverageShape leverageShape,
+        Readings readings,
         List<Evidence> evidence,
         List<String> limits,
         List<String> allowedTopics,
@@ -79,18 +80,37 @@ public record InterpretationContext(
     }
 
     /**
-     * Shape of the leverage curve, read as a whole and by thirds. A figure alone does not
-     * describe a bike: the same useful progression feels different depending on where the
-     * curve falls and whether any third rises.
+     * Shape of the leverage curve, read as a whole and in three sections of travel:
+     * 0-40% is the initial feel, 40-70% the support where the bike is actually ridden and
+     * 70-100% the bottom-out reserve. A figure alone does not describe a bike: the same
+     * useful progression feels different depending on which section carries it.
      */
     public record LeverageShape(
             String progressionBand,
-            String initialTrend,
-            String middleTrend,
-            String finalTrend,
+            String initialFeelTrend,
+            String midSupportTrend,
+            String bottomOutTrend,
             Double leverageRatioInitial,
             Double leverageRatioAtSag,
+            Double leverageRatioAt40,
+            Double leverageRatioAt70,
             Double leverageRatioFinal
+    ) {
+    }
+
+    /**
+     * The band each figure falls into, named. This is the vocabulary the provider writes
+     * with: the band is data, like saying water boils at 100 degrees, while the sentence
+     * that explains it is the provider's own work. A band is null when the engine did not
+     * report that metric. See {@code docs/base-conocimiento-cinematica.md}.
+     */
+    public record Readings(
+            String progression,
+            String antiSquat,
+            String antiRise,
+            String kickback,
+            String meanLeverage,
+            String axlePath
     ) {
     }
 

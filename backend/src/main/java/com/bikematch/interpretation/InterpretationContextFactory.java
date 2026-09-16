@@ -13,8 +13,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class InterpretationContextFactory {
 
-    public static final int CONTEXT_VERSION = 2;
+    public static final int CONTEXT_VERSION = 3;
     public static final String RULES_VERSION = "kinematics-rules-1";
+
+    /** Section boundaries of the travel, as fractions: initial feel, mid support, reserve. */
+    private static final double INITIAL_FEEL_END = 0.40;
+    private static final double MID_SUPPORT_END = 0.70;
+
+    /** A leverage change within this over a section is flat, as the engine reads it. */
+    private static final double FLAT_BAND = 0.1;
+
+    /** Below this the axle path is not worth a sentence (base-conocimiento section 4). */
+    private static final double AXLE_PATH_CONVENTIONAL_MM = 3;
+
+    /** Above this the chain model, which has no idler, cannot be trusted on these bikes. */
+    private static final double AXLE_PATH_BEYOND_MODEL_MM = 10;
 
     private final ObjectMapper objectMapper;
 
@@ -51,36 +64,37 @@ public class InterpretationContextFactory {
                 integer(conditionsNode.path("chainringTeeth")),
                 integer(conditionsNode.path("sprocketTeeth")));
 
-        InterpretationContext.LeverageShape leverageShape = new InterpretationContext.LeverageShape(
-                text(leverage.path("progressionBand")),
-                text(leverage.path("initialTrend")),
-                text(leverage.path("middleTrend")),
-                text(leverage.path("finalTrend")),
-                number(leverage.path("lrInitial")),
-                number(leverage.path("lrAtSag")),
-                number(leverage.path("lrFinal")));
+        InterpretationContext.LeverageShape leverageShape =
+                leverageShape(leverage, curves.path("leverageCurve"));
 
         List<InterpretationContext.Evidence> evidence =
                 evidenceFrom(descriptors, curves, capabilities, sagTravelMm(descriptors));
+        InterpretationContext.Readings readings = readings(leverage, evidence, capabilities);
 
-        List<String> allowedTopics = new ArrayList<>(List.of(
-                "leverage", "axlePath", "kickback", "springType", "volumeSpacers", "riderFit"));
+        // Generic rider-fit guidance is wanted; anything that pretends to know the rider's own
+        // setup is not, and the curve alone cannot choose a spring (base-conocimiento section 3).
+        List<String> allowedTopics = new ArrayList<>(List.of("leverage", "kickback", "riderFit"));
         if (antiSquat) allowedTopics.add("antiSquat");
         if (antiRise) allowedTopics.add("antiRise");
+        if (worthMentioning(readings.axlePath())) allowedTopics.add("axlePath");
 
-        // Generic spring and rider-fit guidance is wanted; anything that pretends to know the
-        // rider's own setup is not.
-        List<String> forbiddenTopics = new ArrayList<>(
-                List.of("pressure", "clicks", "productModels", "brands", "guarantees"));
+        List<String> forbiddenTopics = new ArrayList<>(List.of(
+                "pressure", "clicks", "productModels", "brands", "guarantees",
+                "springType", "volumeSpacers", "shockRecommendation"));
         if (!antiSquat) forbiddenTopics.add("antiSquat");
         if (!antiRise) forbiddenTopics.add("antiRise");
         if (!cogAwareKickback) forbiddenTopics.add("sprocketInfluence");
+        if (!worthMentioning(readings.axlePath())) forbiddenTopics.add("axlePath");
 
         List<String> limits = new ArrayList<>(List.of(
                 "Marked-photo geometry; not a laboratory measurement.",
                 "The complete behaviour also depends on the shock, setup and rider."));
         if (referenceOnly) {
             limits.add("Reference wheel radii and centre of gravity; not user measurements.");
+        }
+        if ("BEYOND_MODEL".equals(readings.axlePath())) {
+            limits.add("This much rearward travel belongs to a high pivot with an idler, "
+                    + "which the direct-chain model does not represent.");
         }
 
         return new InterpretationContext(
@@ -93,10 +107,127 @@ public class InterpretationContextFactory {
                 capabilities,
                 conditions,
                 leverageShape,
+                readings,
                 evidence,
                 limits,
                 allowedTopics,
                 forbiddenTopics);
+    }
+
+    /**
+     * The curve read in the three sections agreed with the project author: 0-40% initial
+     * feel, 40-70% mid support, 70-100% reserve. The engine stores its own thirds, but the
+     * initial feel does not end at sag, so the sections are recomputed from the raw curve.
+     */
+    private InterpretationContext.LeverageShape leverageShape(JsonNode leverage, JsonNode curve) {
+        Double lrAt40 = ratioAtFraction(curve, INITIAL_FEEL_END);
+        Double lrAt70 = ratioAtFraction(curve, MID_SUPPORT_END);
+        Double lrStart = ratioAtFraction(curve, 0);
+        Double lrEnd = ratioAtFraction(curve, 1);
+        return new InterpretationContext.LeverageShape(
+                text(leverage.path("progressionBand")),
+                trendBetween(lrStart, lrAt40),
+                trendBetween(lrAt40, lrAt70),
+                trendBetween(lrAt70, lrEnd),
+                number(leverage.path("lrInitial")),
+                number(leverage.path("lrAtSag")),
+                lrAt40,
+                lrAt70,
+                number(leverage.path("lrFinal")));
+    }
+
+    /** A rising leverage ratio means the bike softens; a falling one means it firms up. */
+    private String trendBetween(Double from, Double to) {
+        if (from == null || to == null) {
+            return null;
+        }
+        double change = to - from;
+        if (change > FLAT_BAND) return "REGRESSIVE";
+        if (change < -FLAT_BAND) return "PROGRESSIVE";
+        return "LINEAR";
+    }
+
+    private Double ratioAtFraction(JsonNode curve, double fraction) {
+        if (!curve.isArray() || curve.isEmpty()) {
+            return null;
+        }
+        double totalTravelMm = 0;
+        for (JsonNode sample : curve) {
+            totalTravelMm = Math.max(totalTravelMm, sample.path("wheelTravelMm").asDouble(0));
+        }
+        return number(nearestTo(curve, totalTravelMm * fraction).path("ratio"));
+    }
+
+    /**
+     * The band each figure falls into. These are the bands of the knowledge base, named and
+     * nothing more: the provider writes the sentence, the backend only says where the number
+     * lands.
+     */
+    private InterpretationContext.Readings readings(
+            JsonNode leverage,
+            List<InterpretationContext.Evidence> evidence,
+            InterpretationContext.Capabilities capabilities) {
+        return new InterpretationContext.Readings(
+                text(leverage.path("progressionBand")),
+                capabilities.antiSquat() ? antiSquatBand(valueOf(evidence, "antiSquatAtSagPercent")) : null,
+                capabilities.antiRise() ? antiRiseBand(valueOf(evidence, "antiRiseAtSagPercent")) : null,
+                capabilities.cogAwareKickback() ? kickbackBand(valueOf(evidence, "maxKickbackDegrees")) : null,
+                meanLeverageBand(number(leverage.path("lrMean"))),
+                axlePathBand(valueOf(evidence, "maxRearwardMm")));
+    }
+
+    private String antiSquatBand(Double percent) {
+        if (percent == null) return null;
+        if (percent < 80) return "SOFT";
+        if (percent < 100) return "BALANCED";
+        if (percent < 120) return "FIRM";
+        if (percent <= 140) return "VERY_FIRM";
+        return "EXTREME";
+    }
+
+    /** Low extends the shock under braking and follows the ground; high squats at the rear. */
+    private String antiRiseBand(Double percent) {
+        if (percent == null) return null;
+        if (percent < 50) return "EXTENDS_UNDER_BRAKING";
+        if (percent < 80) return "BALANCED";
+        if (percent <= 110) return "SQUATS_UNDER_BRAKING";
+        return "SITS_HARD_UNDER_BRAKING";
+    }
+
+    /** Measured in the climbing gear, which is the cog the wizard asks the rider for. */
+    private String kickbackBand(Double degrees) {
+        if (degrees == null) return null;
+        if (degrees < 20) return "LOW";
+        if (degrees < 35) return "MEDIUM";
+        if (degrees <= 45) return "HIGH";
+        return "VERY_HIGH";
+    }
+
+    private String meanLeverageBand(Double ratio) {
+        if (ratio == null) return null;
+        if (ratio <= 2.3) return "LOW";
+        if (ratio < 2.9) return "TYPICAL";
+        return "HIGH";
+    }
+
+    private String axlePathBand(Double rearwardMm) {
+        if (rearwardMm == null) return null;
+        if (rearwardMm < AXLE_PATH_CONVENTIONAL_MM) return "NOT_WORTH_MENTIONING";
+        if (rearwardMm < 5) return "SLIGHT";
+        if (rearwardMm <= AXLE_PATH_BEYOND_MODEL_MM) return "NOTICEABLE";
+        return "BEYOND_MODEL";
+    }
+
+    private boolean worthMentioning(String axlePathBand) {
+        return "SLIGHT".equals(axlePathBand) || "NOTICEABLE".equals(axlePathBand);
+    }
+
+    private Double valueOf(List<InterpretationContext.Evidence> evidence, String key) {
+        return evidence.stream()
+                .filter(item -> item.key().equals(key))
+                .findFirst()
+                .map(InterpretationContext.Evidence::value)
+                .orElse(null);
     }
 
     /**
@@ -147,18 +278,21 @@ public class InterpretationContextFactory {
         if (!curve.isArray() || curve.isEmpty() || sagTravelMm == null) {
             return;
         }
-        JsonNode closest = null;
+        addNumber(evidence, key, unit, nearestTo(curve, sagTravelMm).path("percent"));
+    }
+
+    /** The sample whose wheel travel is closest to the target height of the curve. */
+    private JsonNode nearestTo(JsonNode curve, double targetTravelMm) {
+        JsonNode closest = curve.get(0);
         double smallestDistance = Double.MAX_VALUE;
         for (JsonNode sample : curve) {
-            double distance = Math.abs(sample.path("wheelTravelMm").asDouble(Double.MAX_VALUE) - sagTravelMm);
+            double distance = Math.abs(sample.path("wheelTravelMm").asDouble(Double.MAX_VALUE) - targetTravelMm);
             if (distance < smallestDistance) {
                 smallestDistance = distance;
                 closest = sample;
             }
         }
-        if (closest != null) {
-            addNumber(evidence, key, unit, closest.path("percent"));
-        }
+        return closest;
     }
 
     private void addMaximum(List<InterpretationContext.Evidence> evidence, String key, String unit,

@@ -55,7 +55,10 @@ class InterpretationServiceTest {
                 new InterpretationContext.Capabilities(true, true, true, true),
                 new InterpretationContext.Conditions("ENDURO", 30.0, 32, 52),
                 new InterpretationContext.LeverageShape(
-                        "MEDIUM", "PROGRESSIVE", "PROGRESSIVE", "LINEAR", 2.9, 2.8, 2.35),
+                        "MEDIUM", "PROGRESSIVE", "PROGRESSIVE", "LINEAR", 2.9, 2.8, 2.7, 2.5, 2.35),
+                new InterpretationContext.Readings(
+                        "MEDIUM", "FIRM", "SQUATS_UNDER_BRAKING", "MEDIUM", "TYPICAL",
+                        "NOT_WORTH_MENTIONING"),
                 java.util.List.of(
                         new InterpretationContext.Evidence("usefulProgressionPercent", 18, "%"),
                         new InterpretationContext.Evidence("maxRearwardMm", 12, "mm")),

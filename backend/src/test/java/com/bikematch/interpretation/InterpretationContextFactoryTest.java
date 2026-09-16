@@ -19,7 +19,7 @@ class InterpretationContextFactoryTest {
                 "{\"conditions\":{\"sagPercent\":30,\"chainringTeeth\":32,\"sprocketTeeth\":52},"
                         + "\"leverageDescriptors\":{\"usefulProgressionPercent\":18,"
                         + "\"totalProgressionPercent\":22,\"lrInitial\":2.9,\"lrAtSag\":2.8,\"lrFinal\":2.35,"
-                        + "\"progressionBand\":\"MEDIUM\",\"initialTrend\":\"PROGRESSIVE\","
+                        + "\"lrMean\":2.7,\"progressionBand\":\"MEDIUM\",\"initialTrend\":\"PROGRESSIVE\","
                         + "\"middleTrend\":\"PROGRESSIVE\",\"finalTrend\":\"LINEAR\"},"
                         + "\"axlePathDescriptors\":{\"maxRearwardMm\":12,\"atTravelPercent\":25},"
                         + "\"travelCheck\":{\"calculatedTravelMm\":150,\"deviationPercent\":3.1,"
@@ -34,6 +34,7 @@ class InterpretationContextFactoryTest {
 
         InterpretationContext context = factory.create(result, "EN", BikeCategory.ENDURO);
 
+        assertThat(context.interpretationContextVersion()).isEqualTo(3);
         assertThat(context.language()).isEqualTo("en");
         assertThat(context.capabilities().antiSquat()).isTrue();
         assertThat(context.conditions().bikeCategory()).isEqualTo("ENDURO");
@@ -41,18 +42,108 @@ class InterpretationContextFactoryTest {
         assertThat(context.conditions().chainringTeeth()).isEqualTo(32);
         assertThat(context.conditions().sprocketTeeth()).isEqualTo(52);
         assertThat(context.leverageShape().progressionBand()).isEqualTo("MEDIUM");
-        assertThat(context.leverageShape().finalTrend()).isEqualTo("LINEAR");
         assertThat(context.leverageShape().leverageRatioInitial()).isEqualTo(2.9);
         assertThat(context.leverageShape().leverageRatioFinal()).isEqualTo(2.35);
-        assertThat(context.allowedTopics())
-                .contains("antiSquat", "antiRise", "springType", "volumeSpacers", "riderFit");
-        assertThat(context.forbiddenTopics())
-                .contains("pressure", "clicks", "brands", "guarantees")
-                .doesNotContain("riderFit", "springType");
         assertThat(context.evidence()).extracting(InterpretationContext.Evidence::key)
                 .containsExactly("usefulProgressionPercent", "leverageRatioAtSag", "maxRearwardMm",
                         "maxKickbackDegrees", "antiSquatAtSagPercent", "antiRiseAtSagPercent",
                         "calculatedTravelMm", "totalProgressionPercent");
+    }
+
+    /** The bands are the vocabulary the provider writes with, so the factory has to name them. */
+    @Test
+    void namesTheBandEveryFigureFallsInto() {
+        KinematicsResult result = result(
+                "monopivot-reference-v2",
+                "{\"conditions\":{\"sagPercent\":30,\"chainringTeeth\":32,\"sprocketTeeth\":52},"
+                        + "\"leverageDescriptors\":{\"usefulProgressionPercent\":2.5,\"lrAtSag\":2.75,"
+                        + "\"lrMean\":2.73,\"progressionBand\":\"LINEAR\"},"
+                        + "\"axlePathDescriptors\":{\"maxRearwardMm\":1.4},"
+                        + "\"travelCheck\":{\"calculatedTravelMm\":150,\"withinTolerance\":true}}",
+                "{\"cogAwareKickback\":true,\"antiSquat\":true,\"antiRise\":true,\"referenceOnly\":true}",
+                "{\"kickbackCurve\":[{\"wheelTravelMm\":0,\"kickbackDegrees\":0},"
+                        + "{\"wheelTravelMm\":45,\"kickbackDegrees\":29.4}],"
+                        + "\"antiSquatCurve\":[{\"wheelTravelMm\":45,\"percent\":99.1}],"
+                        + "\"antiRiseCurve\":[{\"wheelTravelMm\":45,\"percent\":80}]}");
+
+        InterpretationContext context = factory.create(result, "en", BikeCategory.ENDURO);
+
+        assertThat(context.readings().progression()).isEqualTo("LINEAR");
+        assertThat(context.readings().antiSquat()).isEqualTo("BALANCED");
+        assertThat(context.readings().antiRise()).isEqualTo("SQUATS_UNDER_BRAKING");
+        assertThat(context.readings().kickback()).isEqualTo("MEDIUM");
+        assertThat(context.readings().meanLeverage()).isEqualTo("TYPICAL");
+        // Under 3 mm the axle path is not worth a sentence, so the topic is closed off.
+        assertThat(context.readings().axlePath()).isEqualTo("NOT_WORTH_MENTIONING");
+        assertThat(context.forbiddenTopics()).contains("axlePath");
+        assertThat(context.allowedTopics()).doesNotContain("axlePath");
+    }
+
+    /** The initial feel does not end at sag: the sections are 0-40, 40-70 and 70-100. */
+    @Test
+    void readsTheCurveInThreeSectionsOfTravel() {
+        KinematicsResult result = result(
+                "monopivot-reference-v2",
+                "{\"conditions\":{\"sagPercent\":30},"
+                        + "\"leverageDescriptors\":{\"usefulProgressionPercent\":18,\"lrAtSag\":2.8,"
+                        + "\"progressionBand\":\"MEDIUM\"},"
+                        + "\"axlePathDescriptors\":{\"maxRearwardMm\":1},"
+                        + "\"travelCheck\":{\"calculatedTravelMm\":100,\"withinTolerance\":true}}",
+                "{\"cogAwareKickback\":false,\"antiSquat\":false,\"antiRise\":false,\"referenceOnly\":false}",
+                "{\"leverageCurve\":[{\"wheelTravelMm\":0,\"ratio\":3.0},"
+                        + "{\"wheelTravelMm\":40,\"ratio\":2.5},"
+                        + "{\"wheelTravelMm\":70,\"ratio\":2.5},"
+                        + "{\"wheelTravelMm\":100,\"ratio\":2.9}]}");
+
+        InterpretationContext context = factory.create(result, "en", BikeCategory.ENDURO);
+
+        assertThat(context.leverageShape().initialFeelTrend()).isEqualTo("PROGRESSIVE");
+        assertThat(context.leverageShape().midSupportTrend()).isEqualTo("LINEAR");
+        // The leverage rises again over the last section: the worst place to lose support.
+        assertThat(context.leverageShape().bottomOutTrend()).isEqualTo("REGRESSIVE");
+        assertThat(context.leverageShape().leverageRatioAt40()).isEqualTo(2.5);
+        assertThat(context.leverageShape().leverageRatioAt70()).isEqualTo(2.5);
+    }
+
+    /** Above 10 mm the direct-chain model does not represent the bike, so we say so. */
+    @Test
+    void declaresTheLimitWhenTheAxlePathIsBeyondTheChainModel() {
+        KinematicsResult result = result(
+                "monopivot-reference-v2",
+                "{\"conditions\":{\"sagPercent\":30},"
+                        + "\"leverageDescriptors\":{\"usefulProgressionPercent\":18,\"lrAtSag\":2.8},"
+                        + "\"axlePathDescriptors\":{\"maxRearwardMm\":18},"
+                        + "\"travelCheck\":{\"calculatedTravelMm\":150,\"withinTolerance\":true}}",
+                "{\"cogAwareKickback\":true,\"antiSquat\":false,\"antiRise\":false,\"referenceOnly\":true}",
+                "{\"kickbackCurve\":[{\"wheelTravelMm\":45,\"kickbackDegrees\":40}]}");
+
+        InterpretationContext context = factory.create(result, "en", BikeCategory.DOWNHILL);
+
+        assertThat(context.readings().axlePath()).isEqualTo("BEYOND_MODEL");
+        assertThat(context.forbiddenTopics()).contains("axlePath");
+        assertThat(context.limits()).anyMatch(limit -> limit.contains("idler"));
+    }
+
+    /** The curve alone cannot choose a spring, so the provider is not allowed to try. */
+    @Test
+    void forbidsShockAdvice() {
+        KinematicsResult result = result(
+                "monopivot-reference-v2",
+                "{\"conditions\":{\"sagPercent\":30},"
+                        + "\"leverageDescriptors\":{\"usefulProgressionPercent\":18,\"lrAtSag\":2.8},"
+                        + "\"axlePathDescriptors\":{\"maxRearwardMm\":2},"
+                        + "\"travelCheck\":{\"calculatedTravelMm\":150,\"withinTolerance\":true}}",
+                "{\"cogAwareKickback\":true,\"antiSquat\":true,\"antiRise\":true,\"referenceOnly\":true}",
+                "{\"antiSquatCurve\":[{\"wheelTravelMm\":45,\"percent\":104}],"
+                        + "\"antiRiseCurve\":[{\"wheelTravelMm\":45,\"percent\":80}]}");
+
+        InterpretationContext context = factory.create(result, "en", BikeCategory.ENDURO);
+
+        assertThat(context.forbiddenTopics())
+                .contains("springType", "volumeSpacers", "shockRecommendation");
+        assertThat(context.allowedTopics())
+                .doesNotContain("springType", "volumeSpacers")
+                .contains("riderFit");
     }
 
     @Test
@@ -78,6 +169,7 @@ class InterpretationContextFactoryTest {
                 .isEqualTo(104.0);
         assertThat(context.evidence()).extracting(InterpretationContext.Evidence::key)
                 .doesNotContain("antiRiseAtSagPercent");
+        assertThat(context.readings().antiRise()).isNull();
     }
 
     @Test
@@ -98,6 +190,7 @@ class InterpretationContextFactoryTest {
         assertThat(context.allowedTopics()).doesNotContain("antiSquat", "antiRise");
         assertThat(context.conditions().sagPercent()).isNull();
         assertThat(context.leverageShape().progressionBand()).isNull();
+        assertThat(context.readings().kickback()).isNull();
     }
 
     private KinematicsResult result(String engineVersion, String descriptors,

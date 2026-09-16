@@ -18,8 +18,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, OutputCaptureExtension.class})
 class InterpretationServiceTest {
 
     private static final String PROMPT_VERSION = "interpretation-prompt-1";
@@ -103,7 +105,9 @@ class InterpretationServiceTest {
         storedFor("gemini-test", Optional.empty());
         given(provider.generate(context)).willThrow(new InterpretationProviderException("offline"));
         given(providerSelector.fallback()).willReturn(fallback);
+        given(fallback.providerVersion()).willReturn("rules-1");
         given(fallback.promptVersion()).willReturn(PROMPT_VERSION);
+        storedFor("rules-1", Optional.empty());
         Interpretation generated = rulesInterpretation();
         given(fallback.generate(context)).willReturn(generated);
         given(interpretationRepository.saveAndFlush(any(KinematicsInterpretation.class)))
@@ -113,6 +117,26 @@ class InterpretationServiceTest {
 
         assertThat(view.source()).isEqualTo("RULES");
         verify(fallback).generate(context);
+    }
+
+    @Test
+    void reusesTheStoredRulesExplanationAndLogsWhyTheProviderFailed(CapturedOutput output) {
+        allowGeneration();
+        storedFor("gemini-test", Optional.empty());
+        given(provider.generate(context))
+                .willThrow(new InterpretationProviderException("quota exhausted"));
+        given(providerSelector.fallback()).willReturn(fallback);
+        given(fallback.providerVersion()).willReturn("rules-1");
+        given(fallback.promptVersion()).willReturn(PROMPT_VERSION);
+        storedFor("rules-1", Optional.of(stored(rulesInterpretation(), RULES_EVIDENCE)));
+
+        InterpretationService.InterpretationView view = service.generate(7L, 42L, "en");
+
+        assertThat(view.source()).isEqualTo("RULES");
+        // Storing a second rules explanation for the same context would break the unique key.
+        verify(fallback, never()).generate(any());
+        verify(interpretationRepository, never()).saveAndFlush(any(KinematicsInterpretation.class));
+        assertThat(output.getAll()).contains("quota exhausted");
     }
 
     private void allowGeneration() {

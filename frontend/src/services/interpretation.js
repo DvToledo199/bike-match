@@ -2,6 +2,10 @@ import { ApiError, requestApi } from './apiClient.js'
 
 const validSources = ['RULES', 'AI']
 
+// Generating with an external provider takes longer than a normal request: the browser waits
+// past the backend's worst case instead of reporting a failure while the server is still working.
+const generateTimeoutMs = 45000
+
 export function getBikeInterpretation(bikeId, language = 'en') {
   return requestApi(`/api/bikes/${bikeId}/interpretation?language=${encodeURIComponent(language)}`)
     .then(validateInterpretation)
@@ -10,6 +14,7 @@ export function getBikeInterpretation(bikeId, language = 'en') {
 export function generateBikeInterpretation(bikeId, language = 'en') {
   return requestApi(`/api/bikes/${bikeId}/interpretation?language=${encodeURIComponent(language)}`, {
     method: 'POST',
+    timeoutMs: generateTimeoutMs,
   }).then(validateInterpretation)
 }
 

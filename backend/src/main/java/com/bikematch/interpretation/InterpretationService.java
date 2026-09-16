@@ -51,7 +51,11 @@ public class InterpretationService {
         InterpretationContext context = contextFactory.create(result, language);
         InterpretationProvider provider = providerSelector.current();
 
-        var cached = findCached(result, context, provider);
+        // Only an explanation from the selected provider counts as already generated. Reusing the
+        // fallback's text here would mean that, with an external provider configured, a bike that
+        // already has a rules explanation never reaches that provider.
+        var cached = findCachedForProvider(
+                result, context, provider.providerVersion(), provider.promptVersion());
         if (cached.isPresent()) {
             return toView(cached.get());
         }
@@ -88,6 +92,7 @@ public class InterpretationService {
                 .orElseThrow(InterpretationNotAvailableException::new);
     }
 
+    /** Reading shows whatever is stored: the selected provider's explanation or the fallback's. */
     private java.util.Optional<KinematicsInterpretation> findCached(
             KinematicsResult result,
             InterpretationContext context,

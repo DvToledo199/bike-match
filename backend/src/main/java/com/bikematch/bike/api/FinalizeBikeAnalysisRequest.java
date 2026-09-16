@@ -14,7 +14,7 @@ import java.util.List;
 public record FinalizeBikeAnalysisRequest(
         @NotNull @Min(1) @Max(100000) Integer imageWidth,
         @NotNull @Min(1) @Max(100000) Integer imageHeight,
-        @NotEmpty @Size(min = 6, max = 6) List<@NotNull @Valid PointDto> points
+        @NotEmpty @Size(min = 6, max = 9) List<@NotNull @Valid PointDto> points
 ) {
 
     MarkedPhotoGeometry toGeometry() {

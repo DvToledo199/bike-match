@@ -24,7 +24,7 @@ public class KinematicsController {
     }
 
     @PostMapping("/preview")
-    @Operation(summary = "Calculate kinematics from six marked points",
+    @Operation(summary = "Calculate kinematics from marked suspension points",
             description = "Public preview used by the analysis wizard before a bike is saved.")
     @ApiResponse(responseCode = "200", description = "Curves, descriptors and reference conditions")
     @ApiResponse(responseCode = "400", content = @Content,

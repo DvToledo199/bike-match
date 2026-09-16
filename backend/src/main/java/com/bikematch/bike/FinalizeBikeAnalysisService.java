@@ -71,6 +71,10 @@ public class FinalizeBikeAnalysisService {
     }
 
     private PreviewRequest toPreviewRequest(Bike bike, MarkedPhotoGeometry geometry) {
+        if (geometry.suspensionLayout() != bike.getSuspensionLayout()) {
+            throw new IllegalArgumentException(
+                    "Marked points do not match this bike's suspension layout");
+        }
         List<PointDto> points = geometry.points().stream()
                 .map(point -> new PointDto(point.type(), point.x(), point.y()))
                 .toList();
@@ -81,7 +85,8 @@ public class FinalizeBikeAnalysisService {
                 bike.getDeclaredTravelMm(),
                 bike.getSagPercent(),
                 bike.getWheelConfiguration());
-        return new PreviewRequest(points, bike.getShockEyeToEyeMm(), parameters);
+        return new PreviewRequest(points, bike.getShockEyeToEyeMm(), parameters,
+                bike.getSuspensionLayout());
     }
 
     private StoredAnalysis serialize(PreviewResponse response) {

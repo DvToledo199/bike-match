@@ -15,9 +15,28 @@ class MarkedPhotoGeometryTest {
         MarkedPhotoGeometry geometry = geometry(validPoints());
 
         assertThat(geometry.schemaVersion()).isEqualTo(1);
+        assertThat(geometry.suspensionLayout()).isEqualTo(SuspensionLayout.SINGLE_PIVOT);
         assertThat(geometry.imageWidth()).isEqualTo(1800);
         assertThat(geometry.imageHeight()).isEqualTo(1200);
         assertThat(geometry.points()).hasSize(6);
+    }
+
+    @Test
+    void acceptsTheNineRequiredHorstLinkPointsUsingSchemaVersionTwo() {
+        MarkedPhotoGeometry geometry = MarkedPhotoGeometry.create(
+                1800, 1200, horstPoints(), SuspensionLayout.HORST_LINK);
+
+        assertThat(geometry.schemaVersion()).isEqualTo(2);
+        assertThat(geometry.suspensionLayout()).isEqualTo(SuspensionLayout.HORST_LINK);
+        assertThat(geometry.points()).hasSize(9);
+    }
+
+    @Test
+    void rejectsSixMonopivotPointsWhenTheGeometryClaimsToBeHorstLink() {
+        assertThatThrownBy(() -> MarkedPhotoGeometry.create(
+                1800, 1200, validPoints(), SuspensionLayout.HORST_LINK))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Mark each of the 9 required points exactly once");
     }
 
     @Test
@@ -64,5 +83,18 @@ class MarkedPhotoGeometryTest {
                 new MarkedPhotoPoint(PointType.BOTTOM_BRACKET, 778, 855),
                 new MarkedPhotoPoint(PointType.REAR_AXLE, 409, 826),
                 new MarkedPhotoPoint(PointType.FRONT_AXLE, 1433, 826));
+    }
+
+    private List<MarkedPhotoPoint> horstPoints() {
+        return List.of(
+                new MarkedPhotoPoint(PointType.MAIN_PIVOT, 805, 796),
+                new MarkedPhotoPoint(PointType.HORST_PIVOT, 620, 796),
+                new MarkedPhotoPoint(PointType.ROCKER_FRAME_PIVOT, 805, 590),
+                new MarkedPhotoPoint(PointType.ROCKER_SEATSTAY_PIVOT, 620, 590),
+                new MarkedPhotoPoint(PointType.SHOCK_FRAME, 900, 500),
+                new MarkedPhotoPoint(PointType.SHOCK_ROCKER, 730, 590),
+                new MarkedPhotoPoint(PointType.BOTTOM_BRACKET, 1000, 850),
+                new MarkedPhotoPoint(PointType.REAR_AXLE, 450, 800),
+                new MarkedPhotoPoint(PointType.FRONT_AXLE, 1500, 800));
     }
 }

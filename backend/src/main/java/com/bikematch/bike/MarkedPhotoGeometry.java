@@ -12,11 +12,13 @@ public record MarkedPhotoGeometry(
         List<MarkedPhotoPoint> points
 ) {
 
-    public static final int CURRENT_SCHEMA_VERSION = 1;
+    public static final int SINGLE_PIVOT_SCHEMA_VERSION = 1;
+    public static final int HORST_LINK_SCHEMA_VERSION = 2;
+    public static final int CURRENT_SCHEMA_VERSION = HORST_LINK_SCHEMA_VERSION;
     private static final int MAXIMUM_IMAGE_SIDE_PIXELS = 100_000;
 
     public MarkedPhotoGeometry {
-        if (schemaVersion != CURRENT_SCHEMA_VERSION) {
+        if (schemaVersion != SINGLE_PIVOT_SCHEMA_VERSION && schemaVersion != HORST_LINK_SCHEMA_VERSION) {
             throw new IllegalArgumentException("Unsupported marked-photo schema version");
         }
         requireImageDimension(imageWidth, "Image width");
@@ -34,8 +36,10 @@ public record MarkedPhotoGeometry(
                         "Point " + point.type() + " must be inside the original image");
             }
         }
-        if (!pointTypes.equals(EnumSet.allOf(PointType.class))) {
-            throw new IllegalArgumentException("Mark each of the six required points exactly once");
+        SuspensionLayout layout = layoutFor(schemaVersion);
+        if (!pointTypes.equals(layout.requiredPointTypes())) {
+            throw new IllegalArgumentException("Mark each of the " + layout.requiredPointTypes().size()
+                    + " required points exactly once");
         }
     }
 
@@ -45,7 +49,45 @@ public record MarkedPhotoGeometry(
             List<MarkedPhotoPoint> points
     ) {
         return new MarkedPhotoGeometry(
-                CURRENT_SCHEMA_VERSION, imageWidth, imageHeight, points);
+                schemaVersionFor(points), imageWidth, imageHeight, points);
+    }
+
+    public static MarkedPhotoGeometry create(
+            int imageWidth,
+            int imageHeight,
+            List<MarkedPhotoPoint> points,
+            SuspensionLayout layout
+    ) {
+        Objects.requireNonNull(layout, "Suspension layout is required");
+        return new MarkedPhotoGeometry(schemaVersionFor(layout), imageWidth, imageHeight, points);
+    }
+
+    public SuspensionLayout suspensionLayout() {
+        return layoutFor(schemaVersion);
+    }
+
+    private static int schemaVersionFor(List<MarkedPhotoPoint> points) {
+        Objects.requireNonNull(points, "Marked points are required");
+        boolean horstPointPresent = points.stream()
+                .filter(Objects::nonNull)
+                .map(MarkedPhotoPoint::type)
+                .anyMatch(type -> type == PointType.HORST_PIVOT
+                        || type == PointType.ROCKER_FRAME_PIVOT
+                        || type == PointType.ROCKER_SEATSTAY_PIVOT
+                        || type == PointType.SHOCK_ROCKER);
+        return horstPointPresent ? HORST_LINK_SCHEMA_VERSION : SINGLE_PIVOT_SCHEMA_VERSION;
+    }
+
+    private static int schemaVersionFor(SuspensionLayout layout) {
+        return layout == SuspensionLayout.SINGLE_PIVOT
+                ? SINGLE_PIVOT_SCHEMA_VERSION
+                : HORST_LINK_SCHEMA_VERSION;
+    }
+
+    private static SuspensionLayout layoutFor(int schemaVersion) {
+        return schemaVersion == SINGLE_PIVOT_SCHEMA_VERSION
+                ? SuspensionLayout.SINGLE_PIVOT
+                : SuspensionLayout.HORST_LINK;
     }
 
     private static void requireImageDimension(int value, String name) {

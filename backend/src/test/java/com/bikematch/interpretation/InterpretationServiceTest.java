@@ -53,6 +53,9 @@ class InterpretationServiceTest {
                 1, 1, "monopivot-reference-v2", "kinematics-rules-1", "en",
                 new InterpretationContext.DataQuality(true, null),
                 new InterpretationContext.Capabilities(true, true, true, true),
+                new InterpretationContext.Conditions("ENDURO", 30.0, 32, 52),
+                new InterpretationContext.LeverageShape(
+                        "MEDIUM", "PROGRESSIVE", "PROGRESSIVE", "LINEAR", 2.9, 2.8, 2.35),
                 java.util.List.of(
                         new InterpretationContext.Evidence("usefulProgressionPercent", 18, "%"),
                         new InterpretationContext.Evidence("maxRearwardMm", 12, "mm")),
@@ -61,7 +64,7 @@ class InterpretationServiceTest {
         given(bike.isOwnedBy(42L)).willReturn(true);
         given(resultRepository.findByBikeId(7L)).willReturn(Optional.of(result));
         given(result.getId()).willReturn(9L);
-        given(contextFactory.create(result, "en")).willReturn(context);
+        given(contextFactory.create(result, "en", null)).willReturn(context);
         given(providerSelector.current()).willReturn(provider);
         given(provider.providerVersion()).willReturn("gemini-test");
         given(provider.promptVersion()).willReturn(PROMPT_VERSION);

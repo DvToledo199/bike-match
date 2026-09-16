@@ -52,12 +52,12 @@ Material de referencia para la capa de IA de BikeMatch. El motor de la aplicaci�
 
 **Métricas que entrega el motor:** LR inicial, LR en sag, LR final, progresión total, **progresión útil** (la del tramo sag→final: `(LR_sag / LR_final − 1) × 100`), pendiente por tramos y puntos de inflexión.
 
-**La cifra estrella es la progresión útil**, no la total. Bandas orientativas (heurísticas, ajustables):
+**La cifra que se le enseña al usuario es la progresión total (0→100%)**, que es el único porcentaje que la gente reconoce. La progresión útil se conserva como métrica de estudio, pero no encabeza el texto generado ni decide su etiqueta. Bandas orientativas (heurísticas, ajustables), aplicadas a la **progresión total**:
 
-| Progresión útil | Etiqueta | Lectura rápida |
+| Progresión total | Etiqueta | Lectura rápida |
 |---|---|---|
-| < 0% | Regresiva | El LR al final supera al del sag; no debe etiquetarse como lineal. Es una tendencia geométrica, no una garantía del comportamiento del amortiguador |
-| 0% a < 5% | Lineal | Predecible y constante; apoyo uniforme; hará topes con facilidad si no lo compensa el amortiguador |
+| < 0% | Regresiva | El LR sube al final del recorrido. Es una tendencia geométrica, no una garantía del comportamiento del amortiguador |
+| 0% a < 5% | Lineal | **Predecible, y nada más.** No añadir coletillas sobre "reserva propia": no significan nada para quien lee |
 | 5–12% | Ligeramente progresiva | Versátil con aire; con muelle irá justa de reserva final |
 | 12–20% | Progresión media | El punto dulce de polivalencia: admite aire y, en la parte alta de la banda, muelle |
 | 20–30% | Alta | Mucha reserva final y apoyo creciente; territorio natural del muelle. El "pop" no se deduce de esta cifra: depende de la forma de la rampa y de que el piloto sepa cargarla |
@@ -106,11 +106,13 @@ El motor lee la forma en **tres fases** —tercio inicial, medio y final del rec
 
 **Qué es:** los grados que giran las bielas hacia atrás cuando la suspensión se comprime bruscamente, por el crecimiento de la distancia entre pedalier y eje (tensión de cadena).
 
-**Depende del desarrollo:** el valor cambia mucho según plato y piñón; el caso más desfavorable es el desarrollo de subida (piñón grande). **Siempre citar el desarrollo con el que se ha calculado.** Bandas orientativas *medidas en el desarrollo de subida*: <20° bajo · 20–35° medio · 35–45° alto · >45° muy alto. (Con desarrollos de bajada los valores caen a menos de la mitad; no mezclar escalas.)
+**Depende del desarrollo:** el valor cambia mucho según plato y piñón; el caso más desfavorable es el desarrollo de subida (piñón grande), que es el que pide el formulario. Bandas orientativas *medidas en el desarrollo de subida*: <20° bajo · 20–35° medio · 35–45° alto · >45° muy alto. (Con desarrollos de bajada los valores caen a menos de la mitad; no mezclar escalas.)
+
+> **El texto generado no imprime el desarrollo.** "32×52" no le dice nada a quien lee. La cifra se calcula con él, pero no se cita.
 
 **Está acoplado a la eficacia de pedaleo:** en monopivotes es casi proporcional al anti-squat: cuadro que pedalea firme = cuadro con kickback. Algunos diseños de pivote virtual, y sobre todo los de pivote alto con polea, rompen esa proporción y logran pedaleo firme con kickback bajo; cuando los números muestren ese desacople, destacarlo como virtud de diseño.
 
-**Qué describe en realidad:** cuánto **pelea la cadena con la suspensión**. No mide la eficiencia de pedaleo —eso es el anti-squat— y confundirlos deja dos métricas contando lo mismo. Una cifra baja significa que la suspensión sigue libre mientras pedaleas, y la rueda copia el suelo en una subida rota. Una cifra alta significa que la cadena tira y mantiene la bici más estirada: se pedalea firme, pero la rueda trasera trabaja peor justo cuando pedaleas por encima de raíces. Es un compromiso, no un defecto, y el texto generado no lo describe como un castigo.
+**Cómo se cuenta en el texto generado:** como **eficiencia pedaleando**, en **una sola frase junto al anti-squat**. Para quien lee, la tensión de cadena y el anti-squat describen lo mismo: si la bici mantiene tensión, tu fuerza va a mover la bici; si no, el amortiguador te absorbe parte y dependes más del bloqueo en subidas lisas. Dos frases separadas para el mismo concepto sobran, y "la cadena pelea con la suspensión" queda como si la bici fuera mala: no se usa. Al usuario no le interesa si la rueda resigue mejor o peor las raíces; le interesa si pedalea bien.
 
 **Cuándo se siente de verdad:**
 - Pedaleando por terreno roto (subidas técnicas), que es la marcha con la que se calcula.
@@ -141,7 +143,9 @@ transferencia de carga. 100% representa compensación en el modelo de referencia
 no una promesa de mantener toda la geometría de la bici. Solo se calcula con la
 pinza fija al basculante; frenos flotantes y otros sistemas necesitan otro modelo.
 
-**Lectura por bandas:** **<50%** al frenar la trasera tiende a **estirarse**, el amortiguador se extiende y la suspensión queda suelta: la rueda va más viva y resigue mejor el terreno, a costa de más cabeceo · **50–80%** el equilibrio más común en bicis modernas · **80–110%** al frenar la bici **se agacha de detrás**: da más aplomo y seguridad en pendientes fuertes, pero copia peor el suelo · **>110%** se sienta claramente al frenar.
+**Lectura por bandas, dicha como la nota el piloto:** **<50%** al frenar la trasera **se levanta**: la bici va menos asentada y la bajada se siente más inclinada, pero el amortiguador copia mejor el terreno · **50–80%** el equilibrio más común en bicis modernas · **80–110%** al frenar la trasera **se asienta**, lo que hace la bici **más estable al frenar**, a consecuencia de no copiar el terreno tan de cerca · **>110%** se asienta claramente al frenar.
+
+> No decir "se pone de cuclillas" ni "es más estable en terrenos empinados": lo primero suena feo y lo segundo confunde, porque la estabilidad aquí es la de la frenada, no la de la pendiente.
 
 **Matices de experto:** el cabeceo lo domina la horquilla (el freno delantero es responsable de la gran mayoría del hundimiento frontal), así que el anti-rise trasero afina el comportamiento pero no lo decide; hay bicis rápidas con enfoques opuestos y los pilotos se adaptan. Presentarlo siempre como compromiso con dos caras, nunca como nota buena/mala.
 

@@ -28,26 +28,34 @@ public class GeminiInterpretationProvider implements InterpretationProvider {
             engineer. Interpret the bike; never just list its numbers. This site is aimed at
             riders who go downhill fast, so read the bike with that use in mind.
 
+            No bike is a bad bike. Every trait is a trade-off: say what it gives and what it
+            costs, never in a tone that runs the bike down.
+
             The context gives you a band name for each figure in "readings". Those bands are the
             vocabulary; the sentences are yours. Do not print a band name, explain what it means
-            when riding. Only usefulProgressionPercent is a number most riders understand, so it
-            is the one to lead with.
+            when riding. Lead with totalProgressionPercent: the progression over the whole travel
+            is the one percentage most riders recognise.
 
             Write the summary as flowing plain text, in this order:
             1. The character of the bike in one sentence: linear, progressive or regressive, and
-               what that feels like. Read leverageShape, which splits the travel into the initial
-               feel (0-40%), the mid support where the bike is actually ridden (40-70%) and the
-               bottom-out reserve (70-100%). Say so when a section contradicts the overall figure.
+               what that feels like. Linear means the suspension behaves predictably, and nothing
+               more: never write that it has little reserve of its own, or any phrase like it.
+               Read leverageShape, which splits the travel into the initial feel (0-40%), the mid
+               support where the bike is actually ridden (40-70%) and the bottom-out reserve
+               (70-100%), and say so when a section contradicts the overall figure.
             2. The figures that support it, each with its reading.
-            3. Pedal kickback, if present: it measures how much the chain fights the suspension,
-               never pedalling efficiency, which is what anti-squat measures. Low means the
-               suspension stays free while pedalling and the wheel follows the ground; high means
-               the chain holds the bike extended, firm to pedal but the rear wheel works worse on
-               broken climbs. Never say it punishes the rider's feet. Cite the real gear.
-            4. Anti-rise, if present: below 50 the rear extends under braking, the suspension
-               stays free and the wheel follows the ground, at the cost of more pitching; 80 to
-               110 the bike squats at the rear, steadier on steep ground but copying the surface
-               less well.
+            3. Pedalling, in ONE sentence: whether the rider's effort goes into moving the bike
+               or into the shock. A bike that holds chain tension pedals efficiently, so the
+               effort drives the bike; one that does not lets the shock absorb part of it, and
+               the rider reaches for the lockout more often on smooth climbs. Anti-squat and
+               pedal kickback describe the same thing to the reader, so never give them separate
+               sentences, never say the chain fights or battles the suspension, and never print
+               the gear the figures were calculated in: it means nothing to the reader.
+            4. Braking, if antiRise is present, said the way the rider feels it. If the rear
+               lifts, the bike feels less settled and the slope feels steeper, while the shock
+               copies the ground better. If the rear settles, the bike is more stable under
+               braking, as a consequence of not copying the ground as closely. Do not say the
+               bike squats, and do not tie this to steep terrain: it is about braking.
             5. Who it fits and who it does not, in general terms.
             6. One short closing sentence keeping the reader honest about what this analysis is.
 
@@ -72,7 +80,7 @@ public class GeminiInterpretationProvider implements InterpretationProvider {
             Use between two and four evidenceKeys taken from the context evidence, the ones you
             actually cited. Plain text only, no Markdown and no HTML.
             """;
-    private static final String PROMPT_VERSION = "interpretation-prompt-3";
+    private static final String PROMPT_VERSION = "interpretation-prompt-4";
 
     private final RestClient restClient;
     private final ObjectMapper objectMapper;

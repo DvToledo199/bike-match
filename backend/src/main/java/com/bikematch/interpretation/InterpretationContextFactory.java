@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class InterpretationContextFactory {
 
-    public static final int CONTEXT_VERSION = 3;
+    public static final int CONTEXT_VERSION = 4;
     public static final String RULES_VERSION = "kinematics-rules-1";
 
     /** Section boundaries of the travel, as fractions: initial feel, mid support, reserve. */
@@ -125,7 +125,7 @@ public class InterpretationContextFactory {
         Double lrStart = ratioAtFraction(curve, 0);
         Double lrEnd = ratioAtFraction(curve, 1);
         return new InterpretationContext.LeverageShape(
-                text(leverage.path("progressionBand")),
+                progressionBand(number(leverage.path("totalProgressionPercent"))),
                 trendBetween(lrStart, lrAt40),
                 trendBetween(lrAt40, lrAt70),
                 trendBetween(lrAt70, lrEnd),
@@ -168,12 +168,27 @@ public class InterpretationContextFactory {
             List<InterpretationContext.Evidence> evidence,
             InterpretationContext.Capabilities capabilities) {
         return new InterpretationContext.Readings(
-                text(leverage.path("progressionBand")),
+                progressionBand(number(leverage.path("totalProgressionPercent"))),
                 capabilities.antiSquat() ? antiSquatBand(valueOf(evidence, "antiSquatAtSagPercent")) : null,
                 capabilities.antiRise() ? antiRiseBand(valueOf(evidence, "antiRiseAtSagPercent")) : null,
                 capabilities.cogAwareKickback() ? kickbackBand(valueOf(evidence, "maxKickbackDegrees")) : null,
                 meanLeverageBand(number(leverage.path("lrMean"))),
                 axlePathBand(valueOf(evidence, "maxRearwardMm")));
+    }
+
+    /**
+     * The band of the progression over the whole travel. The engine classifies its band from
+     * the useful progression instead, so classifying here keeps the band and the figure the
+     * reader is shown saying the same thing. Thresholds: base-conocimiento section 3.
+     */
+    private String progressionBand(Double totalProgressionPercent) {
+        if (totalProgressionPercent == null) return null;
+        if (totalProgressionPercent < 0) return "REGRESSIVE";
+        if (totalProgressionPercent < 5) return "LINEAR";
+        if (totalProgressionPercent < 12) return "SLIGHTLY_PROGRESSIVE";
+        if (totalProgressionPercent < 20) return "MEDIUM";
+        if (totalProgressionPercent <= 30) return "HIGH";
+        return "VERY_HIGH";
     }
 
     private String antiSquatBand(Double percent) {
@@ -185,7 +200,7 @@ public class InterpretationContextFactory {
         return "EXTREME";
     }
 
-    /** Low extends the shock under braking and follows the ground; high squats at the rear. */
+    /** Low lifts the rear under braking and copies the ground better; high settles it. */
     private String antiRiseBand(Double percent) {
         if (percent == null) return null;
         if (percent < 50) return "EXTENDS_UNDER_BRAKING";
@@ -242,8 +257,9 @@ public class InterpretationContextFactory {
     ) {
         JsonNode leverage = descriptors.path("leverageDescriptors");
         List<InterpretationContext.Evidence> evidence = new ArrayList<>();
-        addNumber(evidence, "usefulProgressionPercent", "%",
-                leverage.path("usefulProgressionPercent"));
+        // Progression over the whole travel leads: it is the one percentage riders read.
+        addNumber(evidence, "totalProgressionPercent", "%",
+                leverage.path("totalProgressionPercent"));
         addNumber(evidence, "leverageRatioAtSag", "ratio", leverage.path("lrAtSag"));
         addNumber(evidence, "maxRearwardMm", "mm",
                 descriptors.path("axlePathDescriptors").path("maxRearwardMm"));
@@ -257,8 +273,8 @@ public class InterpretationContextFactory {
         }
         addNumber(evidence, "calculatedTravelMm", "mm",
                 descriptors.path("travelCheck").path("calculatedTravelMm"));
-        addNumber(evidence, "totalProgressionPercent", "%",
-                leverage.path("totalProgressionPercent"));
+        addNumber(evidence, "usefulProgressionPercent", "%",
+                leverage.path("usefulProgressionPercent"));
 
         if (evidence.size() < InterpretationContext.MIN_EVIDENCE) {
             throw new InterpretationProviderException(

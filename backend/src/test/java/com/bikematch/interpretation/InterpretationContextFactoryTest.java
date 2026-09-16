@@ -34,20 +34,43 @@ class InterpretationContextFactoryTest {
 
         InterpretationContext context = factory.create(result, "EN", BikeCategory.ENDURO);
 
-        assertThat(context.interpretationContextVersion()).isEqualTo(3);
+        assertThat(context.interpretationContextVersion()).isEqualTo(4);
         assertThat(context.language()).isEqualTo("en");
         assertThat(context.capabilities().antiSquat()).isTrue();
         assertThat(context.conditions().bikeCategory()).isEqualTo("ENDURO");
         assertThat(context.conditions().sagPercent()).isEqualTo(30.0);
         assertThat(context.conditions().chainringTeeth()).isEqualTo(32);
         assertThat(context.conditions().sprocketTeeth()).isEqualTo(52);
-        assertThat(context.leverageShape().progressionBand()).isEqualTo("MEDIUM");
         assertThat(context.leverageShape().leverageRatioInitial()).isEqualTo(2.9);
         assertThat(context.leverageShape().leverageRatioFinal()).isEqualTo(2.35);
+        // The figure shown leads the menu, and the one the engine favours closes it.
         assertThat(context.evidence()).extracting(InterpretationContext.Evidence::key)
-                .containsExactly("usefulProgressionPercent", "leverageRatioAtSag", "maxRearwardMm",
+                .containsExactly("totalProgressionPercent", "leverageRatioAtSag", "maxRearwardMm",
                         "maxKickbackDegrees", "antiSquatAtSagPercent", "antiRiseAtSagPercent",
-                        "calculatedTravelMm", "totalProgressionPercent");
+                        "calculatedTravelMm", "usefulProgressionPercent");
+    }
+
+    /**
+     * The engine bands the useful progression; the reader is shown the total. Classifying the
+     * total here keeps the band and the printed figure from saying different things: 22% over
+     * the whole travel is HIGH, while the engine's own band for this bike is MEDIUM.
+     */
+    @Test
+    void bandsTheProgressionItActuallyShows() {
+        KinematicsResult result = result(
+                "monopivot-reference-v2",
+                "{\"conditions\":{\"sagPercent\":30},"
+                        + "\"leverageDescriptors\":{\"usefulProgressionPercent\":18,"
+                        + "\"totalProgressionPercent\":22,\"lrAtSag\":2.8,\"progressionBand\":\"MEDIUM\"},"
+                        + "\"axlePathDescriptors\":{\"maxRearwardMm\":2},"
+                        + "\"travelCheck\":{\"calculatedTravelMm\":150,\"withinTolerance\":true}}",
+                "{\"cogAwareKickback\":false,\"antiSquat\":false,\"antiRise\":false,\"referenceOnly\":false}",
+                "{}");
+
+        InterpretationContext context = factory.create(result, "en", BikeCategory.ENDURO);
+
+        assertThat(context.readings().progression()).isEqualTo("HIGH");
+        assertThat(context.leverageShape().progressionBand()).isEqualTo("HIGH");
     }
 
     /** The bands are the vocabulary the provider writes with, so the factory has to name them. */
@@ -56,7 +79,8 @@ class InterpretationContextFactoryTest {
         KinematicsResult result = result(
                 "monopivot-reference-v2",
                 "{\"conditions\":{\"sagPercent\":30,\"chainringTeeth\":32,\"sprocketTeeth\":52},"
-                        + "\"leverageDescriptors\":{\"usefulProgressionPercent\":2.5,\"lrAtSag\":2.75,"
+                        + "\"leverageDescriptors\":{\"usefulProgressionPercent\":2.5,"
+                        + "\"totalProgressionPercent\":3.3,\"lrAtSag\":2.75,"
                         + "\"lrMean\":2.73,\"progressionBand\":\"LINEAR\"},"
                         + "\"axlePathDescriptors\":{\"maxRearwardMm\":1.4},"
                         + "\"travelCheck\":{\"calculatedTravelMm\":150,\"withinTolerance\":true}}",
@@ -85,8 +109,8 @@ class InterpretationContextFactoryTest {
         KinematicsResult result = result(
                 "monopivot-reference-v2",
                 "{\"conditions\":{\"sagPercent\":30},"
-                        + "\"leverageDescriptors\":{\"usefulProgressionPercent\":18,\"lrAtSag\":2.8,"
-                        + "\"progressionBand\":\"MEDIUM\"},"
+                        + "\"leverageDescriptors\":{\"usefulProgressionPercent\":18,"
+                        + "\"totalProgressionPercent\":18,\"lrAtSag\":2.8},"
                         + "\"axlePathDescriptors\":{\"maxRearwardMm\":1},"
                         + "\"travelCheck\":{\"calculatedTravelMm\":100,\"withinTolerance\":true}}",
                 "{\"cogAwareKickback\":false,\"antiSquat\":false,\"antiRise\":false,\"referenceOnly\":false}",
@@ -111,7 +135,7 @@ class InterpretationContextFactoryTest {
         KinematicsResult result = result(
                 "monopivot-reference-v2",
                 "{\"conditions\":{\"sagPercent\":30},"
-                        + "\"leverageDescriptors\":{\"usefulProgressionPercent\":18,\"lrAtSag\":2.8},"
+                        + "\"leverageDescriptors\":{\"totalProgressionPercent\":18,\"lrAtSag\":2.8},"
                         + "\"axlePathDescriptors\":{\"maxRearwardMm\":18},"
                         + "\"travelCheck\":{\"calculatedTravelMm\":150,\"withinTolerance\":true}}",
                 "{\"cogAwareKickback\":true,\"antiSquat\":false,\"antiRise\":false,\"referenceOnly\":true}",
@@ -130,7 +154,7 @@ class InterpretationContextFactoryTest {
         KinematicsResult result = result(
                 "monopivot-reference-v2",
                 "{\"conditions\":{\"sagPercent\":30},"
-                        + "\"leverageDescriptors\":{\"usefulProgressionPercent\":18,\"lrAtSag\":2.8},"
+                        + "\"leverageDescriptors\":{\"totalProgressionPercent\":18,\"lrAtSag\":2.8},"
                         + "\"axlePathDescriptors\":{\"maxRearwardMm\":2},"
                         + "\"travelCheck\":{\"calculatedTravelMm\":150,\"withinTolerance\":true}}",
                 "{\"cogAwareKickback\":true,\"antiSquat\":true,\"antiRise\":true,\"referenceOnly\":true}",
@@ -151,7 +175,7 @@ class InterpretationContextFactoryTest {
         KinematicsResult result = result(
                 "monopivot-reference-v2",
                 "{\"conditions\":{\"sagPercent\":30},"
-                        + "\"leverageDescriptors\":{\"usefulProgressionPercent\":18,\"lrAtSag\":2.8},"
+                        + "\"leverageDescriptors\":{\"totalProgressionPercent\":18,\"lrAtSag\":2.8},"
                         + "\"axlePathDescriptors\":{\"maxRearwardMm\":2},"
                         + "\"travelCheck\":{\"calculatedTravelMm\":150,\"withinTolerance\":true}}",
                 "{\"cogAwareKickback\":true,\"antiSquat\":true,\"antiRise\":false,\"referenceOnly\":true}",

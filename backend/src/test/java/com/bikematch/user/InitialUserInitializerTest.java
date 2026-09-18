@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class InitialModeratorInitializerTest {
+class InitialUserInitializerTest {
 
     private static final String VALID_HASH = "$2a$12$" + "a".repeat(53);
 
@@ -26,7 +26,7 @@ class InitialModeratorInitializerTest {
 
     @Test
     void emptyConfigurationDoesNotCreateAnAccount() {
-        new InitialModeratorInitializer(userRepository, "", "", "").run(null);
+        new InitialUserInitializer(userRepository, "", "", "", Role.MODERATOR).run(null);
 
         verifyNoInteractions(userRepository);
     }
@@ -36,11 +36,12 @@ class InitialModeratorInitializerTest {
         given(userRepository.findByEmail("moderator@bikematch.test")).willReturn(Optional.empty());
         given(userRepository.findByUsernameIgnoreCase("moderator")).willReturn(Optional.empty());
 
-        new InitialModeratorInitializer(
+        new InitialUserInitializer(
                 userRepository,
                 " MODERATOR@BikeMatch.test ",
                 " Moderator ",
-                VALID_HASH
+                VALID_HASH,
+                Role.MODERATOR
         ).run(null);
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
@@ -54,11 +55,12 @@ class InitialModeratorInitializerTest {
 
     @Test
     void partialConfigurationFailsInsteadOfCreatingAnUnsafeAccount() {
-        var initializer = new InitialModeratorInitializer(
+        var initializer = new InitialUserInitializer(
                 userRepository,
                 "moderator@bikematch.test",
                 "moderator",
-                ""
+                "",
+                Role.MODERATOR
         );
 
         assertThrows(IllegalStateException.class, () -> initializer.run(null));
@@ -67,11 +69,12 @@ class InitialModeratorInitializerTest {
 
     @Test
     void nonBcryptPasswordIsRejected() {
-        var initializer = new InitialModeratorInitializer(
+        var initializer = new InitialUserInitializer(
                 userRepository,
                 "moderator@bikematch.test",
                 "moderator",
-                "plain-password"
+                "plain-password",
+                Role.MODERATOR
         );
 
         assertThrows(IllegalStateException.class, () -> initializer.run(null));
@@ -86,11 +89,12 @@ class InitialModeratorInitializerTest {
         given(userRepository.findByEmail("moderator@bikematch.test")).willReturn(Optional.of(existing));
         given(userRepository.findByUsernameIgnoreCase("moderator")).willReturn(Optional.of(existing));
 
-        new InitialModeratorInitializer(
+        new InitialUserInitializer(
                 userRepository,
                 "moderator@bikematch.test",
                 "moderator",
-                VALID_HASH
+                VALID_HASH,
+                Role.MODERATOR
         ).run(null);
 
         verify(userRepository, never()).save(org.mockito.ArgumentMatchers.any());
@@ -101,14 +105,34 @@ class InitialModeratorInitializerTest {
         User existingUser = mock(User.class);
         given(userRepository.findByEmail("moderator@bikematch.test")).willReturn(Optional.of(existingUser));
 
-        var initializer = new InitialModeratorInitializer(
+        var initializer = new InitialUserInitializer(
                 userRepository,
                 "moderator@bikematch.test",
                 "moderator",
-                VALID_HASH
+                VALID_HASH,
+                Role.MODERATOR
         );
 
         assertThrows(IllegalStateException.class, () -> initializer.run(null));
         verify(userRepository, never()).save(org.mockito.ArgumentMatchers.any());
+    }
+
+    /** The class is no longer tied to one role: the same seeding works for an administrator. */
+    @Test
+    void theSameInitializerSeedsAnAdministrator() {
+        given(userRepository.findByEmail("admin@bikematch.test")).willReturn(Optional.empty());
+        given(userRepository.findByUsernameIgnoreCase("admin")).willReturn(Optional.empty());
+
+        new InitialUserInitializer(
+                userRepository,
+                "admin@bikematch.test",
+                "admin",
+                VALID_HASH,
+                Role.ADMIN
+        ).run(null);
+
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(captor.capture());
+        assertEquals(Role.ADMIN, captor.getValue().getRole());
     }
 }

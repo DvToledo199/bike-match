@@ -104,7 +104,7 @@ Backend y frontend avanzan juntos, historia a historia. Nunca "todo el backend y
 
 ## 4. Fases (orientado a ~4 semanas)
 
-**F0 — Arranque (días 1–3).** Historias de usuario redactadas y **validadas con el mentor** (lo exige el enunciado antes de programar). GitHub Project montado con backlog priorizado. Decisiones de la sección 1 cerradas. Esqueletos back y front compilando, docker-compose con Postgres, migración V1, CI mínima (GitHub Actions: `mvn verify`), y un hello-world **desplegado** (back y front). Desplegar el día 3, no el día 25: el despliegue siempre da guerra.
+**F0 — Arranque (días 1–3).** Historias de usuario redactadas y **validadas** (el enunciado lo exige antes de programar). GitHub Project montado con backlog priorizado. Decisiones de la sección 1 cerradas. Esqueletos back y front compilando, docker-compose con Postgres, migración V1, CI mínima (GitHub Actions: `mvn verify`), y un hello-world **desplegado** (back y front). Desplegar el día 3, no el día 25: el despliegue siempre da guerra.
 
 **F1 — La parte difícil primero (semana 1).** Objetivo: flujo foto → puntos → curvas demostrable de punta a punta.
 - Motor monopivote como módulo de dominio puro + tests validados contra BikeChecker.
@@ -205,7 +205,7 @@ Respuestas de error consistentes (handler global): `{timestamp, status, error, m
 **Innegociable** (son los mínimos del enunciado): auth + 2 roles, un motor completo funcionando, moderación, tests con 60%, Swagger, Docker, migraciones, despliegue, README, flujo Git ordenado.
 
 La explicación básica es una prioridad de producto distinta de esos mínimos del
-curso. Si es necesario recortarla, revisar expresamente la decisión con David;
+curso. Si es necesario recortarla, la decisión se revisa expresamente;
 mostrar números por sí solo no cumple el objetivo de ayudar a principiantes.
 
 **Riesgos concretos y mitigación:**

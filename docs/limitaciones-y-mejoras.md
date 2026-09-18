@@ -55,11 +55,10 @@ GitHub cuando aplica).
 - **Por qué ahora:** es inherente a marcar a mano sobre foto; para la v1 se asume.
 - **Impacto:** limita la precisión del kickback (y del crecimiento de cadena). Se agrava
   con fotos de referencia pequeñas (la Surge es 500×280 px, ~3,9 mm/px).
-- **Dónde:** investigación **completada** →
-  [`sensibilidad-marcado-pivote-INFORME.md`](investigaciones/sensibilidad-marcado-pivote-INFORME.md).
+- **Dónde:** ensayo de sensibilidad completado.
   **Conclusión acotada:** el ensayo demuestra sensibilidad al marcado, pero no
   descarta errores o limitaciones del motor en comparaciones externas. Se aplican
-  mejor foto, zoom y corrección visual. David descartó promediar cinco
+  mejor foto, zoom y corrección visual. Se descartó promediar cinco
   clics: un punto se marca una vez, con cruz visible y deshacer inmediato.
   Objetivo orientativo: mm/px ≤ ~1,3. Relacionado con #31 y #54.
 
@@ -193,7 +192,7 @@ GitHub cuando aplica).
   Se asume suelo plano y suspensión extendida. No corrige perspectiva ni distingue
   giro de cámara de bicicleta sobre pendiente; radios nominales introducen error.
   Los clientes legacy sin ruedas conservan la normalización antigua sin rotación.
-- **Prueba final con foto real — completada (#54):** David marcó manualmente una
+- **Prueba final con foto real — completada (#54):** se marcó manualmente una
   Orange Stage 6 29'' 2020 en la aplicación, a partir de una foto lateral real.
   El cálculo devolvió 149,0 mm de recorrido frente a 150 mm declarados (0,7 % de
   diferencia), y un leverage ratio de 2,75 → 2,66. La referencia de
@@ -202,8 +201,8 @@ GitHub cuando aplica).
   pedal kickback; BikeMatch obtuvo 20,9°. La coincidencia entra holgadamente
   en la tolerancia del ±3 % para recorrido y leverage; el kickback queda como
   validación orientativa por su sensibilidad al marcado.
-- **Acción final duplicada en resultados — corregida (#113):** David detectó que
-  `View results` no hacía nada y aceptó aplazar su arreglo; no pidió conservarlo.
+- **Acción final duplicada en resultados — corregida (#113):** se detectó que
+  `View results` no hacía nada y su arreglo se aplazó.
   El último paso ya no muestra avance: al calcular aparecen las curvas directamente.
   Se mantienen volver a parámetros y reintentar en caso de error. La futura ficha
   #3 agrupará título, foto, datos, gráficas y explicación/IA en la misma pantalla,

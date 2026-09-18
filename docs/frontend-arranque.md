@@ -1,8 +1,7 @@
 # Arranque del frontend — paquete de traspaso
 
 > **Guía vigente, revisada el 14 de septiembre de 2026.** El frontend del Sprint 1 ya
-> está implementado. Lee esta guía y el README antes de ampliarlo. El estudio histórico está en
-> [`investigaciones/frontend-stack-y-diseno-INFORME.md`](investigaciones/frontend-stack-y-diseno-INFORME.md).
+> está implementado. Lee esta guía y el README antes de ampliarlo.
 
 ---
 
@@ -17,17 +16,14 @@ El servicio de interpretación (#104) y su presentación en el detalle (#105) ya
 #161 conecta el asistente con cuenta, guardado privado y explicación. El preview anónimo sigue calculando
 y mostrando gráficas sin generar explicaciones de IA.
 
-## 1. Perfil de David y forma de trabajar (IMPORTANTE)
-- **David** es estudiante de bootcamp. El **backend lo ha hecho él a mano**; en **frontend parte
-  de CERO** (no ha tocado HTML/CSS/JS/React). **Explícale los conceptos en español, sencillo,
-  con analogías**, y traduce identificadores/comentarios en inglés cuando ayude.
-- El frontend **puede generarse con ayuda de IA, pero debe quedar EXPLICABLE** (defendible en una
-  entrevista). Prioriza **claridad** sobre "rápido". Explica el porqué de cada pieza.
-- **Idioma:** código, identificadores y commits en **inglés**; el texto de la UI vive en
+## 1. Convenciones del proyecto
+- El frontend debe quedar **explicable**: se prioriza la claridad sobre la rapidez, y cada
+  pieza tiene un motivo que se pueda defender.
+- **Idioma:** código, identificadores y commits en **inglés**; el texto de la interfaz vive en
   **react-i18next** (inglés como idioma base) — nunca cadenas fijas en el JSX.
-- **Git:** una tarea = una rama = un PR pequeño con `Closes #N`; integrar tras verificar
-  cuando David lo autorice (ha autorizado este flujo para las correcciones de auditoría).
-- **Diseño:** David dirige **reaccionando a lo que ve** (no sabe teoría de diseño). Ver §6.
+- **Git:** una tarea = una rama = un pull request pequeño con `Closes #N`, integrado solo
+  cuando las comprobaciones pasan.
+- **Diseño:** se dirige iterando sobre lo que se ve en pantalla. Ver §6.
 
 ## 2. Stack decidido (CERRADO — no re-decidir)
 | Capa | Elegido | Nota |
@@ -53,7 +49,8 @@ Un **asistente por pasos**: foto y suspensión → marcado → parámetros y cal
   (el SVG es solo la capa de dibujo de encima, no el formato de la foto).
 - **Marcado:** 6 puntos (`MAIN_PIVOT`, `BOTTOM_BRACKET`, `SHOCK_FRAME`, `SHOCK_SWINGARM`,
   `REAR_AXLE`, `FRONT_AXLE`) sobre una capa **SVG** encima de la foto. Requisitos de precisión
-  (críticos — ver [`sensibilidad-marcado-pivote-INFORME.md`](investigaciones/sensibilidad-marcado-pivote-INFORME.md)):
+  (críticos, por la sensibilidad del kickback al marcado del pivote descrita en
+  [`limitaciones-y-mejoras.md`](limitaciones-y-mejoras.md)):
   **zoom**, **ajuste fino con flechas**, creación con Enter y aviso de baja resolución.
   **Un solo marcado por punto, nunca cinco clics obligatorios.** Las cruces siguen
   visibles; **Undo point** elimina inmediatamente cruz y coordenadas, hasta el primero.
@@ -163,13 +160,13 @@ El preview anónimo no llama a este servicio.
 - Configuración externa y pruebas reales pendientes, diseño y mejoras futuras en
   [`diseno-y-prueba-frontend.md`](diseno-y-prueba-frontend.md).
 
-## 6. Cómo se hará el diseño (con David)
-David no sabe diseño; **dirige reaccionando**. Flujo recomendado:
-1. Pedirle **referencias** (webs/apps cuyo aspecto le guste) o proponerle 1–2 direcciones.
-2. Montar una **primera versión** y **enseñársela** (captura / vista previa del navegador).
-3. Él **corrige** ("este color no, bordes más redondos, más espacio") y se **itera**.
+## 6. Cómo se decide el diseño
+El diseño se dirige iterando, no especificándolo por anticipado:
+1. Partir de **referencias** visuales concretas, o de una o dos direcciones propuestas.
+2. Montar una **primera versión** y verla en el navegador.
+3. Corregir sobre lo visto (color, radios, espaciado) y repetir.
 
-Pautas visuales (informe §4 y §6): estética **moderna y limpia** (referencia negativa: el
+Pautas visuales: estética **moderna y limpia** (referencia negativa: el
 aspecto anticuado de la herramienta comparativa); **modo oscuro** pensado desde el principio;
 **accesibilidad** como checklist (HTML semántico, `label` en inputs, foco visible, contraste AA,
 alternativa por teclado en el marcado, equivalente textual de las gráficas). Convenciones de
@@ -177,8 +174,6 @@ gráficas: un color por curva; kickback como **banda** ("medio/alto"), no cifra 
 progresión y 3 fases como **chips** (nunca solo color); TravelCheck como **alerta** reconocible.
 
 ## 7. Punteros
-- **Estudio del stack:** [`investigaciones/frontend-stack-y-diseno-INFORME.md`](investigaciones/frontend-stack-y-diseno-INFORME.md)
-  (y su encargo [`frontend-stack-y-diseno.md`](investigaciones/frontend-stack-y-diseno.md)).
 - **Contrato del endpoint:** `backend/src/main/java/com/bikematch/kinematics/api/`
   (`PreviewRequest`, `PointDto`, `KinematicsParametersDto`, `PreviewResponse`,
   `MeasurementConditions`, `KinematicsController`, `ApiExceptionHandler`).

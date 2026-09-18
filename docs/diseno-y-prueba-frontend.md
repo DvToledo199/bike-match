@@ -22,7 +22,7 @@ Cada entrega tiene su propia rama, commit y PR.
 
 ## Inicio y navegación (#158)
 
-La primera portada de #158 incluía una ilustración y tres pasos. David rechazó esa
+La primera portada de #158 incluía una ilustración y tres pasos. Se descartó esa
 dirección visual: #169 retira ilustración, textos promocionales largos y estilos
 asociados. La portada pasa a ser una galería de fotos de bicis públicas, con una
 introducción breve y CTA «Analyze your bike». Login y registro siguen accesibles.
@@ -90,7 +90,7 @@ tras calcular el preview era incorrecta.
 El proveedor por defecto es rules. Una respuesta identificada como RULES no es
 una llamada a IA externa; Gemini requiere configuración privada en el backend.
 La prueba con datos reales debe distinguir: cálculo, guardado con Cloudinary,
-texto por reglas, llamada externa a Gemini y comprensión del texto con David.
+texto por reglas, llamada externa a Gemini y comprensión del texto por una persona.
 No dar por probadas las dos últimas solo porque pasen los tests automáticos.
 
 ### Guardado desde las gráficas (#161)
@@ -119,7 +119,7 @@ en el entorno del backend para subir fotos; `INTERPRETATION_PROVIDER=rules` perm
 probar el texto sin proveedor externo. Para probar Gemini hacen falta además
 `INTERPRETATION_PROVIDER=gemini`, `GEMINI_API_KEY` y `GEMINI_MODEL`. No copiar claves
 al frontend ni al repositorio. Verificar por separado guardado real, fuente del
-texto (`RULES`/`AI`) y comprensión con David; no afirmar llamadas reales por pasar CI.
+texto (`RULES`/`AI`) y comprensión del resultado; no afirmar llamadas reales por pasar CI.
 
 Para desarrollo, abrir http://localhost:5173: el backend permite ese origen.
 Abrir 127.0.0.1:5173 con la configuración actual provoca rechazo CORS. No se
@@ -146,4 +146,4 @@ Durante la actualización de desarrollo se reinició el asistente abierto; el
 borrador no guardado se perdió. No confundir conservar estado al navegar con
 persistencia ante recargas/actualizaciones: esa recuperación sigue pendiente en #163.
 La prueba manual #170 debe repetirse con la versión actualizada y sin editar
-archivos mientras David marca la bici.
+archivos mientras se marca la bici.

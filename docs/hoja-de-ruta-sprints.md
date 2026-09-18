@@ -1,8 +1,8 @@
 # Hoja de ruta por sprints — mini-tareas ordenadas
 
 > Estado revisado el 14 de septiembre de 2026. Sprint actual: **2**. Sprint 1 y su
-> demo real contra referencia (#54) están completados. Despliegue y aprobación del
-> mentor no se dan por hechos. La visión comunitaria está en
+> demo real contra referencia (#54) están completados. El despliegue y la validación
+> de las historias no se dan por hechos. La visión comunitaria está en
 > [`vision-producto-v2.md`](vision-producto-v2.md). Identidad, seguridad y persistencia
 > del análisis ya están en backend y en las vistas de Mis bicis y detalle. El guardado
 > desde el asistente (#161) conecta esas vistas; quedan pruebas reales y despliegue.
@@ -26,7 +26,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 
 ## Sprint 0 — Decidir y montar el tablero (días 1–3)
 
-**Objetivo:** historias validadas por el mentor + esqueleto desplegado en una URL pública. Aquí NO se escribe lógica de negocio.
+**Objetivo:** historias de usuario validadas + esqueleto desplegado en una URL pública. Aquí NO se escribe lógica de negocio.
 
 ### Decisiones (una tarde, con timebox)
 - [x] Nombre provisional del repo (máx. 30 min; se puede renombrar luego)
@@ -35,7 +35,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 
 ### Planificación
 - [ ] Repasar las 8+2 historias de usuario del plan, retocarlas a tu gusto y pasarlas al formato del curso
-- [ ] Enviárselas al mentor y conseguir el OK (el enunciado lo exige antes de programar)
+- [ ] Validar las historias antes de programar, como exige el enunciado
 
 ### Repo y tablero
 - [x] Crear el repo (carpetas: `/backend`, `/frontend`, `/docs`, `/docker`)
@@ -50,7 +50,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [ ] Desplegar el back y el front: pendiente separado en #82; proveedor por decidir
 - [ ] Todo esto en una branch, con su issue y su PR mergeada
 
-**Hecho cuando:** el mentor ha validado las historias y una URL pública responde.
+**Hecho cuando:** las historias están validadas y una URL pública responde.
 
 ---
 
@@ -70,7 +70,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [x] Front (IA): gráficas de las curvas que devuelve el endpoint
 - [x] Demo completa con tu foto real (Orange Stage 6, issue #54)
 
-**Hecho cuando:** le enseñas al mentor una foto convertida en curvas que cuadran con BikeChecker.
+**Hecho cuando:** una foto se convierte en curvas que cuadran con la referencia externa.
 
 ---
 
@@ -112,7 +112,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
   - [x] Caché versionada, permisos de lectura/generación y límite de peticiones MVP
 - [x] Texto sencillo junto a las gráficas del detalle (#105)
 - [x] Guardado desde el asistente sin perder el análisis al iniciar sesión (#161)
-- [ ] Prueba real: subida a Cloudinary, explicación por reglas/Gemini y comprensión con David (#170)
+- [ ] Prueba real: subida a Cloudinary, explicación por reglas/Gemini y comprensión del texto (#170)
   - [x] Bloques 0–4: configuración de Cloudinary, cuenta, guardado, marcado y moderación
   - [ ] Bloque 5: explicación con Gemini
   - [x] Tests con base de datos propia (#178)

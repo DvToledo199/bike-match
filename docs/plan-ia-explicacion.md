@@ -39,7 +39,8 @@ guardada accesible a su dueño y luego se reutiliza en el detalle público.
 Las fechas y semanas de la hoja de ruta son orientativas, no una estimación nueva
 de entrega. La IA no es un requisito obligatorio del curso, pero el resumen básico
 sí es prioritario para el producto acordado. No se elimina silenciosamente como
-primer recorte: si tiempo o costes obligan a cambiarlo, se revisa con David.
+primer recorte: si el tiempo o el coste obligan a cambiarlo, la decisión se revisa
+expresamente.
 
 ## Qué se reutiliza y qué falta
 

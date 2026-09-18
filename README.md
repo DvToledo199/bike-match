@@ -294,5 +294,3 @@ explicaciones de aprendizaje en español. La evolución comunitaria se mantiene 
 - [Hoja de ruta](docs/hoja-de-ruta-sprints.md)
 - [Visión de producto V2](docs/vision-producto-v2.md)
 - [Limitaciones](docs/limitaciones-y-mejoras.md)
-- [Informe completo histórico en JSON](docs/auditorias/2026-09-06-informe.json)
-- [Correcciones, pruebas y pendientes](docs/auditorias/2026-09-06-correcciones.md)

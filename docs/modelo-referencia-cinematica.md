@@ -1,6 +1,6 @@
 # Curvas ampliadas: modelo de referencia y mejoras futuras
 
-Decisión aprobada por David el 10 de septiembre de 2026. Se adelantan las curvas
+Decisión tomada el 10 de septiembre de 2026. Se adelantan las curvas
 anti-squat/anti-rise y el kickback cog-aware antes de persistencia e IA. Issues
 #108 (dominio), #31 (kickback) y #109 (API/web). No se modifica auth #94.
 

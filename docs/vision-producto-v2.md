@@ -153,7 +153,7 @@ diseñarán planes y permisos sin acoplar el dominio de bicicletas a un proveedo
 
 ## Orden de construcción del backend
 
-David implementará el backend con acompañamiento, una tarea pequeña cada vez. Los
+El backend se implementa por pasos, una tarea pequeña cada vez. Los
 pasos 1–10 ya están implementados, con vistas de consulta y guardado frontend.
 La integración real con servicios externos y la comprensión del texto no se dan por
 validadas solo con tests. Del paso 11 existe moderación en backend; las funciones
@@ -177,9 +177,8 @@ sociales siguientes siguen pendientes:
 12. Personalización por cuestionario (#10, Sprint 4) y chat futuro (#106). El posible
     pago del chat es una hipótesis pendiente; no se implementa en Sprint 2.
 
-La ayuda seguirá este método: explicación breve del concepto, David plantea o escribe
-el código, revisión conjunta, tests, commit, PR y siguiente issue. El frontend se adapta
-después de que cada contrato del backend esté claro.
+Cada paso sigue el mismo método: concepto, implementación, revisión, tests, commit y
+pull request. El frontend se adapta después de que cada contrato del backend esté claro.
 
 ## Mapa de issues
 

@@ -49,6 +49,54 @@
       }
     }
   },
+  "moderation": {
+    "navLabel": "Moderation",
+    "title": "Bike moderation",
+    "description": "Review publication requests and manage bikes shared with the community.",
+    "views": "Moderation views",
+    "pending": "Pending",
+    "published": "Published",
+    "pendingHelp": "Approve to publish a bike. Reject to keep it out of the catalog without deleting it.",
+    "publishedHelp": "Review bikes currently visible in the public catalog.",
+    "refresh": "Refresh list",
+    "retry": "Try again",
+    "home": "Back to home",
+    "loading": "Loading bikes…",
+    "emptyPending": "No bikes are waiting for review.",
+    "emptyPublished": "There are no published bikes.",
+    "owner": "Submitted by @{{username}}",
+    "requestedAt": "Requested on",
+    "createdAt": "Created on",
+    "approve": "Approve",
+    "approving": "Approving…",
+    "reject": "Reject",
+    "rejecting": "Rejecting…",
+    "removing": "Removing…",
+    "remove": {
+      "open": "Remove bike",
+      "title": "Remove {{name}}",
+      "warning": "This permanently deletes the bike, its photo and analysis. It cannot be undone. The owner will receive a notice with your reason.",
+      "reason": "Reason for removal",
+      "limit": "{{count}} / 500 characters",
+      "invalidReason": "Enter a reason between 1 and 500 characters, not just spaces.",
+      "confirm": "Confirm permanent removal",
+      "cancel": "Cancel"
+    },
+    "success": {
+      "approve": "{{name}} was approved and is now public.",
+      "reject": "{{name}} was rejected and remains outside the public catalog.",
+      "remove": "{{name}} was permanently removed. A notice was sent to its owner."
+    },
+    "errors": {
+      "invalid": "The request was not accepted. Check the information and try again.",
+      "unauthenticated": "Log in with a moderator or administrator account. If you were already logged in, your session may have expired.",
+      "forbidden": "Your account does not have permission to moderate bikes.",
+      "notFound": "This bike no longer exists or is not available for moderation. Refresh the list.",
+      "conflict": "This bike is no longer awaiting this decision. Another moderator may have already reviewed it. Refresh the list.",
+      "connection": "We could not confirm the request. Check your connection and refresh the list before trying again.",
+      "unavailable": "The moderation request could not be confirmed. Refresh the list and try again."
+    }
+  },
   "myBikes": {
     "navLabel": "My bikes",
     "eyebrow": "Your garage",

@@ -9,6 +9,17 @@ const css = readFileSync('src/components/Layout.module.css', 'utf8')
 let styleElement
 afterEach(() => { styleElement?.remove() })
 
+it.each([['USER', false], ['MODERATOR', true], ['ADMIN', true], [null, false]])('shows moderation only for allowed roles (%s)', (role, visible) => {
+  render(<Layout screen="moderation" session={role ? { role } : null} />)
+  const link = screen.queryByRole('link', { name: 'Moderation' })
+  if (visible) {
+    expect(link.getAttribute('href')).toBe('#/moderation')
+    expect(link.getAttribute('aria-current')).toBe('page')
+  } else {
+    expect(link).toBeNull()
+  }
+})
+
 it.each([['home', false], ['analysis', false], ['home', true], ['analysis', true]])('keeps the analysis link foreground on %s (hover: %s)', (currentScreen, hovered) => {
   // Model hover with an attribute because jsdom has no pointer rendering.
   styleElement = document.createElement('style')

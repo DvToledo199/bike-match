@@ -7,6 +7,7 @@ import RegisterForm from './features/auth/RegisterForm.jsx'
 import MyBikesPage from './features/my-bikes/MyBikesPage.jsx'
 import BikeDetailPage from './features/my-bikes/BikeDetailPage.jsx'
 import CatalogPage from './features/catalog/CatalogPage.jsx'
+import ModerationPage from './features/moderation/ModerationPage.jsx'
 import useAppRoute from './hooks/useAppRoute.js'
 import { clearSession, getSession } from './services/session.js'
 
@@ -68,6 +69,7 @@ function App() {
       )}
       {route.screen === 'myBikes' && session && <MyBikesPage onOpenBikeDetail={(id) => openBike(id, '/my-bikes')} />}
       {route.screen === 'catalog' && <CatalogPage onOpenBikeDetail={(id) => openBike(id, '/catalog')} />}
+      {route.screen === 'moderation' && <ModerationPage session={session} />}
       {route.screen === 'bikeDetail' && <BikeDetailPage key={route.bikeId} bikeId={route.bikeId}
         backLabelKey={detailOrigin === '/my-bikes' ? 'bikeDetail.back' : detailOrigin === '/catalog' ? 'bikeDetail.backCatalog' : 'bikeDetail.backHome'}
         onBack={() => navigate(detailOrigin)} />}

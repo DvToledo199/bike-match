@@ -71,6 +71,34 @@ export default function AdminPage({ session }) {
   const loading = users === null && !loadError
   const mustRefresh = Boolean(actionError && actionError.status !== 400)
 
+  // The four states this screen can be in, in the order they are checked.
+  function content() {
+    if (loadError) {
+      return (
+        <div role="alert" className={styles.message}>
+          <p>{t(errorKey(loadError))}</p>
+          <button type="button" onClick={refresh}>{t('admin.retry')}</button>
+        </div>
+      )
+    }
+
+    if (loading) {
+      return <p role="status">{t('admin.loading')}</p>
+    }
+
+    if (users.length === 0) {
+      return <p className={styles.message} role="status">{t('admin.empty')}</p>
+    }
+
+    return (
+      <>
+        {selectedUser && <ChangeRoleForm key={selectedUser.id} user={selectedUser} busy={saving}
+          disabled={saving || mustRefresh} onConfirm={changeRole} onCancel={() => setSelectedId(null)} />}
+        <UsersTable users={users} currentUsername={session.username} disabled={saving || mustRefresh} onSelectUser={selectUser} />
+      </>
+    )
+  }
+
   if (!allowed || accessError) {
     const needsLogin = !session || accessError?.status === 401
     return <section className={styles.page}>
@@ -88,16 +116,7 @@ export default function AdminPage({ session }) {
       </header>
       {notice && <p className={styles.success} role="status">{t('admin.success', { username: notice.username, role: t(`admin.roles.${notice.role}`) })}</p>}
       {actionError && <p className={styles.error} role="alert">{t(errorKey(actionError))}</p>}
-      {loadError ? <div role="alert" className={styles.message}>
-        <p>{t(errorKey(loadError))}</p>
-        <button type="button" onClick={refresh}>{t('admin.retry')}</button>
-      </div> : loading ? <p role="status">{t('admin.loading')}</p> : users.length === 0 ? (
-        <p className={styles.message} role="status">{t('admin.empty')}</p>
-      ) : <>
-        {selectedUser && <ChangeRoleForm key={selectedUser.id} user={selectedUser} busy={saving}
-          disabled={saving || mustRefresh} onConfirm={changeRole} onCancel={() => setSelectedId(null)} />}
-        <UsersTable users={users} currentUsername={session.username} disabled={saving || mustRefresh} onSelectUser={selectUser} />
-      </>}
+      {content()}
     </section>
   )
 }

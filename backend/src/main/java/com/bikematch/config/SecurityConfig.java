@@ -69,7 +69,8 @@ public class SecurityConfig {
                                 "/api/auth/register",
                                 "/api/auth/login"
                         ).permitAll()
-                        .requestMatchers("/api/moderation/**").hasRole("MODERATOR")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/moderation/**").hasAnyRole("MODERATOR", "ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(
                         jwtAuthenticationFilter,

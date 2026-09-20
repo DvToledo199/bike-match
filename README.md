@@ -79,19 +79,37 @@ privadas requieren `Authorization: Bearer <JWT>`.
 
 - Sin token o con un token inválido/caducado: `401 Unauthorized`.
 - Token válido sin el permiso requerido: `403 Forbidden`.
-- Las rutas futuras bajo `/api/moderation/**` exigen `ROLE_MODERATOR`; las de usuario
-  quedan protegidas y los controladores concretos añadirán sus reglas al crearse.
+- `/api/admin/**` exige `ROLE_ADMIN`.
+- `/api/moderation/**` acepta `ROLE_MODERATOR` o `ROLE_ADMIN`: un administrador puede
+  hacer también el trabajo de moderación.
+- El resto de rutas privadas solo exigen estar identificado.
 
 La sesión es *stateless*: el backend no guarda una sesión web. En cada petición
 privada, el filtro verifica firma, caducidad, ID y rol del JWT antes de llegar al
 controlador.
 
-### Moderador inicial local
+### Cuentas iniciales locales
 
-La cuenta moderadora es opcional. Añade **las tres** variables a tu `.env` local
-ignorando por Git: `INITIAL_MODERATOR_EMAIL`, `INITIAL_MODERATOR_USERNAME` e
-`INITIAL_MODERATOR_PASSWORD_HASH`. El último valor debe ser un hash BCrypt, no una
-contraseña. Con Docker instalado puedes generar uno sin que se muestre la contraseña:
+La aplicación puede sembrar al arrancar dos cuentas opcionales, una moderadora y una
+administradora. Cada una necesita **sus tres** variables en el `.env` local, que Git
+ignora:
+
+| Cuenta | Variables |
+|---|---|
+| Moderador | `INITIAL_MODERATOR_EMAIL`, `INITIAL_MODERATOR_USERNAME`, `INITIAL_MODERATOR_PASSWORD_HASH` |
+| Administrador | `INITIAL_ADMIN_EMAIL`, `INITIAL_ADMIN_USERNAME`, `INITIAL_ADMIN_PASSWORD_HASH` |
+
+Existen porque ninguna de las dos se puede crear desde la aplicación: el registro da
+siempre de alta usuarios normales, y solo un administrador puede cambiarle el rol a
+otra persona. Sin esta siembra, una base de datos nueva no tendría a nadie con
+permisos.
+
+El moderador revisa las bicis pendientes y puede retirarlas. El administrador consulta
+las cuentas (`GET /api/admin/users`) y concede o retira el rol de moderador
+(`PUT /api/admin/users/{userId}/role`), además de poder moderar.
+
+El tercer valor debe ser un **hash BCrypt**, no una contraseña. Con Docker instalado
+puedes generar uno sin que la contraseña se muestre por pantalla:
 
 ```bash
 docker run --rm -it httpd:2.4-alpine htpasswd -nBC 12 moderator
@@ -103,17 +121,20 @@ En macOS, `htpasswd` ya viene instalado y no hace falta Docker:
 htpasswd -nBC 12 moderator
 ```
 
-El comando la solicita de forma oculta y muestra `moderator:$2...`; copia solo la
-parte que empieza por `$2` como `INITIAL_MODERATOR_PASSWORD_HASH`. Al arrancar, la
-aplicación crea la cuenta si no existe. Con las tres variables vacías no hace nada;
-una configuración incompleta, un hash que no sea BCrypt o un conflicto con otra cuenta
-detienen el arranque para no crear una cuenta insegura ni promocionar a alguien por
-accidente. El esquema sigue perteneciendo a Flyway: esto es un dato inicial local, no
-una contraseña dentro de una migración versionada.
+El comando pide la contraseña de forma oculta y muestra `moderator:$2...`; se copia
+solo la parte que empieza por `$2`.
 
-Para iniciar sesión como moderador usa `INITIAL_MODERATOR_EMAIL` y la **contraseña que
-escribiste al generar el hash**, nunca el hash, que solo sirve para que el backend
-compruebe esa contraseña. Si la cuenta ya existe, cambiar estas variables no la modifica.
+Al arrancar, la aplicación crea cada cuenta si no existe. Con sus tres variables vacías
+no hace nada. Una configuración incompleta, un hash que no sea BCrypt o un conflicto
+con una cuenta que ya existe **detienen el arranque**: así no se crea una cuenta
+insegura, y nadie asciende a un usuario existente con solo editar una variable.
+
+Para iniciar sesión se usa el correo y la **contraseña que se escribió al generar el
+hash**, nunca el hash, que solo sirve para que el backend la compruebe. Si la cuenta ya
+existe, cambiar estas variables no la modifica.
+
+El esquema sigue perteneciendo a Flyway: esto es un dato inicial local, no una
+contraseña dentro de una migración versionada.
 
 ## Documentación de la API (Swagger)
 
@@ -133,7 +154,8 @@ Para probar una operación protegida:
 3. Pulsa **Authorize**, pega el token (sin escribir `Bearer`) y confirma.
 4. Desde ese momento, Swagger UI envía `Authorization: Bearer <token>` en cada petición.
 
-La moderación exige además una cuenta con rol `MODERATOR` (ver el apartado anterior).
+La moderación exige una cuenta con rol `MODERATOR` o `ADMIN`, y las rutas de
+administración exigen `ADMIN` (ver el apartado anterior).
 
 ## Pruebas
 

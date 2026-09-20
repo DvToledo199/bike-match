@@ -4,6 +4,12 @@ import { afterEach, expect, it, vi } from 'vitest'
 import App from './App.jsx'
 import { listPublicBikes } from './services/myBikes.js'
 import { loginUser } from './services/authLogin.js'
+import { listPendingBikes } from './services/moderation.js'
+
+vi.mock('./services/moderation.js', () => ({
+  listPendingBikes: vi.fn().mockResolvedValue([]),
+  approveBike: vi.fn(), rejectBike: vi.fn(), removeBike: vi.fn(),
+}))
 
 vi.mock('./features/analysis-wizard/AnalysisWizard.jsx', () => ({ default: function Draft() {
   const [value, setValue] = useState('')
@@ -28,6 +34,21 @@ afterEach(() => { window.history.replaceState(null, '', '/'); sessionStorage.cle
 async function visit(hash) {
   await act(async () => { window.location.hash = hash; window.dispatchEvent(new HashChangeEvent('hashchange')) })
 }
+
+it('opens the moderation route for a moderator', async () => {
+  sessionStorage.setItem('bikematch.session', JSON.stringify({ accessToken: 'token', role: 'MODERATOR' }))
+  window.history.replaceState(null, '', '/#/moderation')
+  render(<App />)
+  expect(await screen.findByText('No bikes are waiting for review.')).toBeTruthy()
+  expect(listPendingBikes).toHaveBeenCalled()
+})
+
+it('explains a forced moderation route without a session', () => {
+  window.history.replaceState(null, '', '/#/moderation')
+  render(<App />)
+  expect(screen.getByRole('heading', { name: 'Bike moderation' })).toBeTruthy()
+  expect(screen.getByRole('alert').textContent).toContain('Log in')
+})
 
 function signIn() {
   loginUser.mockResolvedValue({

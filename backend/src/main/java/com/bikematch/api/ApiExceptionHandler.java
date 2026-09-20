@@ -12,8 +12,11 @@ import com.bikematch.media.ImageStorageException;
 import com.bikematch.interpretation.InterpretationNotAvailableException;
 import com.bikematch.interpretation.InterpretationRateLimitException;
 import com.bikematch.moderation.RemovalNoticeNotFoundException;
+import com.bikematch.user.CannotChangeOwnRoleException;
 import com.bikematch.user.CurrentUserNotFoundException;
 import java.util.stream.Collectors;
+
+import com.bikematch.user.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -139,5 +142,15 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ImageStorageException.class)
     public ProblemDetail handleImageStorage(ImageStorageException exception) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, exception.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ProblemDetail handleUserNotFound(UserNotFoundException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+    }
+
+    @ExceptionHandler(CannotChangeOwnRoleException.class)
+    public ProblemDetail handleCannotChangeOwnRole(CannotChangeOwnRoleException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
     }
 }

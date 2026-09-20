@@ -1,0 +1,26 @@
+.page { display: grid; gap: var(--space-md); }
+.page h1 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0 0 var(--space-sm); }
+.page p { margin: 0; }
+.page button { min-height: 2.75rem; padding: 0.65rem 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-text); font: inherit; font-weight: 600; cursor: pointer; }
+.page button:hover:not(:disabled) { border-color: var(--color-text-muted); }
+.page button:focus-visible, .page textarea:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 3px; }
+.page button:disabled { opacity: 0.55; cursor: not-allowed; }
+.page button[aria-pressed='true'], .page .primary { background: var(--color-primary); color: var(--color-on-primary); border-color: var(--color-primary); }
+.page .danger { color: var(--color-danger); border-color: var(--color-danger); }
+.toolbar, .actions, .pagination { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); }
+.toolbar { justify-content: space-between; }
+.pagination { justify-content: center; }
+.muted { color: var(--color-text-muted); }
+.success { color: var(--color-success); }
+.error { color: var(--color-danger); }
+.message { padding: var(--space-lg); border: 1px solid var(--color-border); border-radius: var(--radius-md); display: grid; justify-items: start; gap: var(--space-md); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr)); gap: var(--space-lg); align-items: start; }
+.card { min-width: 0; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); }
+.photo { aspect-ratio: 16 / 9; display: grid; place-items: center; background: var(--color-bg); }
+.photo img { width: 100%; height: 100%; min-height: 0; object-fit: contain; }
+.cardBody { padding: var(--space-lg); display: grid; gap: var(--space-sm); overflow-wrap: anywhere; }
+.card h2 { font-size: 1.25rem; margin: 0; }
+.cardBody > .actions { margin-top: var(--space-sm); }
+.removeForm { display: grid; gap: var(--space-sm); padding-top: var(--space-md); border-top: 1px solid var(--color-border); }
+.removeForm label { font-weight: 600; }
+.removeForm textarea { width: 100%; resize: vertical; min-height: 6rem; border: 1px solid var(--color-text-muted); border-radius: var(--radius-sm); padding: var(--space-sm); background: var(--color-bg); color: var(--color-text); font: inherit; }

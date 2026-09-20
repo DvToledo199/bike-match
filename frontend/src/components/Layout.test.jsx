@@ -9,6 +9,17 @@ const css = readFileSync('src/components/Layout.module.css', 'utf8')
 let styleElement
 afterEach(() => { styleElement?.remove() })
 
+it.each([['USER', false], ['MODERATOR', false], ['ADMIN', true], [null, false]])('shows administration only for an admin (%s)', (role, visible) => {
+  render(<Layout screen="admin" session={role ? { role } : null} />)
+  const link = screen.queryByRole('link', { name: 'Administration' })
+  if (visible) {
+    expect(link.getAttribute('href')).toBe('#/admin')
+    expect(link.getAttribute('aria-current')).toBe('page')
+  } else {
+    expect(link).toBeNull()
+  }
+})
+
 it.each([['USER', false], ['MODERATOR', true], ['ADMIN', true], [null, false]])('shows moderation only for allowed roles (%s)', (role, visible) => {
   render(<Layout screen="moderation" session={role ? { role } : null} />)
   const link = screen.queryByRole('link', { name: 'Moderation' })

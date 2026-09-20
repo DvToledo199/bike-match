@@ -5,6 +5,11 @@ import App from './App.jsx'
 import { listPublicBikes } from './services/myBikes.js'
 import { loginUser } from './services/authLogin.js'
 import { listPendingBikes } from './services/moderation.js'
+import { listUsers } from './services/admin.js'
+
+vi.mock('./services/admin.js', () => ({
+  listUsers: vi.fn().mockResolvedValue([]), changeUserRole: vi.fn(),
+}))
 
 vi.mock('./services/moderation.js', () => ({
   listPendingBikes: vi.fn().mockResolvedValue([]),
@@ -41,6 +46,23 @@ it('opens the moderation route for a moderator', async () => {
   render(<App />)
   expect(await screen.findByText('No bikes are waiting for review.')).toBeTruthy()
   expect(listPendingBikes).toHaveBeenCalled()
+})
+
+it('opens administration for an administrator', async () => {
+  sessionStorage.setItem('bikematch.session', JSON.stringify({ accessToken: 'token', username: 'owner', role: 'ADMIN' }))
+  window.history.replaceState(null, '', '/#/admin')
+  render(<App />)
+  expect(await screen.findByText('There are no accounts to display.')).toBeTruthy()
+  expect(listUsers).toHaveBeenCalled()
+})
+
+it('refuses administration when a moderator forces the route', () => {
+  sessionStorage.setItem('bikematch.session', JSON.stringify({ accessToken: 'token', role: 'MODERATOR' }))
+  window.history.replaceState(null, '', '/#/admin')
+  render(<App />)
+  expect(screen.getByRole('heading', { name: 'Account administration' })).toBeTruthy()
+  expect(screen.getByRole('alert').textContent).toContain('does not have permission')
+  expect(screen.queryByRole('table')).toBeNull()
 })
 
 it('explains a forced moderation route without a session', () => {

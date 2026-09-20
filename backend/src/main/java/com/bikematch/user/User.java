@@ -2,6 +2,7 @@ package com.bikematch.user;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
@@ -60,5 +61,10 @@ public class User {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public void changeRoleTo (Role newRole) {
+        Objects.requireNonNull(newRole,"Role is required");
+        this.role = newRole;
     }
 }

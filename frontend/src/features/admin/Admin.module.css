@@ -1,0 +1,25 @@
+.page { display: grid; gap: var(--space-lg); }
+.page h1 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0 0 var(--space-sm); }
+.page h2 { font-size: 1.25rem; margin: 0; }
+.page p { margin: 0; }
+.header, .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md); }
+.header { justify-content: space-between; }
+.page button { min-height: 2.75rem; padding: 0.65rem 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-text); font: inherit; font-weight: 600; cursor: pointer; }
+.page button:hover:not(:disabled) { border-color: var(--color-text-muted); }
+.page button:focus-visible, .page select:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 3px; }
+.page button:disabled { opacity: 0.55; cursor: not-allowed; }
+.page .primary { background: var(--color-primary); color: var(--color-on-primary); border-color: var(--color-primary); }
+.muted { color: var(--color-text-muted); }
+.error { color: var(--color-danger); }
+.success { color: var(--color-success); }
+.message, .form { padding: var(--space-lg); border: 1px solid var(--color-border); border-radius: var(--radius-md); display: grid; justify-items: start; gap: var(--space-md); }
+.form { background: var(--color-surface); }
+.form label { font-weight: 600; }
+.form select { min-height: 2.75rem; max-width: 100%; padding: var(--space-sm); background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-text-muted); border-radius: var(--radius-sm); font: inherit; }
+.tableScroll { min-width: 0; overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; text-align: left; background: var(--color-surface); }
+.table caption { text-align: left; font-weight: 700; padding-bottom: var(--space-sm); }
+.table th, .table td { padding: var(--space-md); border-bottom: 1px solid var(--color-border); overflow-wrap: anywhere; }
+.table thead th { background: var(--color-bg); }
+.table button { white-space: nowrap; }
+@media (max-width: 40rem) { .table th, .table td { padding: var(--space-sm); } }

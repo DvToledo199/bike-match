@@ -49,6 +49,43 @@
       }
     }
   },
+  "admin": {
+    "navLabel": "Administration",
+    "title": "Account administration",
+    "description": "Review accounts and grant or remove the moderator role.",
+    "accounts": "User accounts",
+    "username": "Username",
+    "role": "Role",
+    "createdAt": "Joined",
+    "actions": "Actions",
+    "yourAccount": "Your account — role cannot be changed here",
+    "adminReadOnly": "Administrator — read only",
+    "changeRole": "Change role",
+    "changeRoleFor": "Change role for @{{username}}",
+    "newRole": "New role",
+    "chooseDifferentRole": "Select a different role to enable confirmation.",
+    "confirmation": "Confirm changing @{{username}} from {{previousRole}} to {{nextRole}}.",
+    "existingSessions": "The new role applies on the account’s next login. Existing sessions keep their current permissions until they expire.",
+    "confirm": "Confirm role change",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "success": "@{{username}} now has the {{role}} role for future logins. Existing sessions are unchanged.",
+    "refresh": "Refresh accounts",
+    "retry": "Try again",
+    "home": "Back to home",
+    "loading": "Loading accounts…",
+    "empty": "There are no accounts to display.",
+    "roles": { "USER": "User", "MODERATOR": "Moderator", "ADMIN": "Administrator" },
+    "errors": {
+      "invalid": "The role change was not accepted. Check the selected role and try again.",
+      "unauthenticated": "Log in with an administrator account. If you were already logged in, your session may have expired.",
+      "forbidden": "Your account does not have permission to manage users.",
+      "notFound": "This account no longer exists. Refresh the accounts before trying again.",
+      "ownRole": "You cannot change your own role. Refresh the accounts and select a different user.",
+      "connection": "We could not confirm the request. Check your connection and refresh the accounts before trying again.",
+      "unavailable": "The administration request could not be confirmed. Refresh the accounts and try again."
+    }
+  },
   "moderation": {
     "navLabel": "Moderation",
     "title": "Bike moderation",

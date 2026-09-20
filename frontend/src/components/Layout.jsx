@@ -17,6 +17,9 @@ function Layout({ children, session, screen, onLogout }) {
             {(session.role === 'MODERATOR' || session.role === 'ADMIN') && (
               <a href="#/moderation" aria-current={screen === 'moderation' ? 'page' : undefined}>{t('moderation.navLabel')}</a>
             )}
+            {session.role === 'ADMIN' && (
+              <a href="#/admin" aria-current={screen === 'admin' ? 'page' : undefined}>{t('admin.navLabel')}</a>
+            )}
             <button type="button" onClick={onLogout}>{t('auth.logout')}</button>
           </> : <>
             <a href="#/login" aria-current={screen === 'login' ? 'page' : undefined}>{t('auth.openLogin')}</a>

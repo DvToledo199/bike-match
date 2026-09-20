@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 function readRoute() {
   const path = window.location.hash.slice(1)
   if (/^\/bikes\/[1-9]\d*$/.test(path)) return { screen: 'bikeDetail', bikeId: path.split('/')[2] }
-  const screens = { '/': 'home', '/analyze': 'analysis', '/catalog': 'catalog', '/login': 'login', '/register': 'register', '/my-bikes': 'myBikes', '/moderation': 'moderation' }
+  const screens = { '/': 'home', '/analyze': 'analysis', '/catalog': 'catalog', '/login': 'login', '/register': 'register', '/my-bikes': 'myBikes', '/moderation': 'moderation', '/admin': 'admin' }
   return { screen: screens[path] ?? 'home' }
 }
 

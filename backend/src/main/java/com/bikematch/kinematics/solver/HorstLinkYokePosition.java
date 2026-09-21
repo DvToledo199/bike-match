@@ -13,6 +13,6 @@ public record HorstLinkYokePosition(
 
     public HorstLinkPosition asHorstLinkPosition() {
         return new HorstLinkPosition(
-                shockCompressionMm, horstPivot, rockerSeatstayPivot, shockYokeEye, rearAxle);
+                shockCompressionMm, horstPivot, rockerSeatstayPivot, yokeRockerPivot, rearAxle);
     }
 }

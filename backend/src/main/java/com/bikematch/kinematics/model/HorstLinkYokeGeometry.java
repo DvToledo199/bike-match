@@ -7,9 +7,9 @@ import java.util.Objects;
 /**
  * Fully extended geometry of a Horst link driven through a rigid yoke.
  *
- * <p>The yoke is fixed to the rocker, so its pivot and the physical shock eye rotate together
- * with the rocker. The shock stroke is measured between {@code shockFrame} and
- * {@code shockYokeEye}; it is never measured to the yoke-rocker pivot.</p>
+ * <p>The yoke is fixed relative to the shock axis and pivots at {@code yokeRockerPivot}.
+ * Its physical shock eye is not a rigid point of the rocker. The stroke and photo scale use
+ * {@code shockFrame} and {@code shockYokeEye}, excluding the extension.</p>
  */
 public record HorstLinkYokeGeometry(
         Point2D mainPivot,
@@ -41,7 +41,7 @@ public record HorstLinkYokeGeometry(
 
     public HorstLinkGeometry asHorstLinkGeometry() {
         return new HorstLinkGeometry(mainPivot, horstPivot, rockerFramePivot, rockerSeatstayPivot,
-                shockFrame, shockYokeEye, rearAxle);
+                shockFrame, yokeRockerPivot, rearAxle);
     }
 
     private static void requireFinitePoint(Point2D point, String name) {

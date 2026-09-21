@@ -20,17 +20,20 @@ it('accepts finite negative response percentages', () => {
   expect(validatePreview(referencePreview()).antiSquatCurve[1].percent).toBe(-10.2)
 })
 
-it('accepts a Horst reference response only with its seatstay brake model', () => {
+it.each(['horst-link-reference-v1', 'horst-link-yoke-reference-v2'])('accepts %s only with its seatstay brake model', (version) => {
   const horstPreview = referencePreview()
-  horstPreview.conditions.modelVersion = 'horst-link-reference-v1'
+  horstPreview.conditions.modelVersion = version
   horstPreview.conditions.reference.brakeModel = 'SEATSTAY_FIXED'
 
   expect(validatePreview(horstPreview)).toBe(horstPreview)
+  horstPreview.conditions.reference.brakeModel = 'SWINGARM_FIXED'
+  expect(() => validatePreview(horstPreview)).toThrow('invalidResponse')
 })
 
 it('rejects old or incomplete reference responses before rendering', () => {
   for (const mutate of [
     (data) => { data.conditions.modelVersion = 'monopivot-v1' },
+    (data) => { data.conditions.modelVersion = 'horst-link-yoke-reference-v1' },
     (data) => { data.conditions.modelVersion = 'horst-link-reference-v1' },
     (data) => { delete data.antiRiseCurve },
     (data) => { data.antiSquatCurve[0].percent = Infinity },

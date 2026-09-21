@@ -381,7 +381,7 @@
         },
         "yokeRockerPivot": {
           "label": "Yoke-to-rocker pivot",
-          "description": "The centre of the pivot where the rigid yoke joins the rocker link."
+          "description": "The pivot where the shock extension turns relative to the rocker link."
         },
         "shockYokeEye": {
           "label": "Yoke-side shock eye",
@@ -432,12 +432,12 @@
           "unit": "mm"
         },
         "chainring": {
-          "label": "Chainring teeth",
+          "label": "Front chainring teeth",
           "help": "Number of teeth on the front chainring.",
           "unit": "teeth"
         },
         "sprocket": {
-          "label": "Largest rear sprocket",
+          "label": "Largest cassette sprocket (teeth)",
           "help": "Teeth on the biggest cog in your rear cassette.",
           "unit": "teeth"
         },
@@ -581,7 +581,7 @@
       "errors": {
         "timeout": "The calculation took too long. Try again; your marks and measurements are still here.",
         "invalidResponse": "The service returned incomplete or invalid results. Your marks are safe; try again.",
-        "invalidRequest": "Check the marks, shock measurements and wheel setup. Use a level side photo on flat ground and a supported single-pivot layout, then try again.",
+        "invalidRequest": "The marks and measurements could not produce a valid suspension movement. Check the selected suspension layout, pivot positions and shock measurements. For a yoke, mark the actual shock eye separately from the pivot joining the extension to the rocker.",
         "network": "We could not reach the calculation service. Check that the BikeMatch backend is running, then try again.",
         "rateLimited": "Please wait a moment before requesting another explanation.",
         "server": "The calculation service had a problem. Try again in a moment.",

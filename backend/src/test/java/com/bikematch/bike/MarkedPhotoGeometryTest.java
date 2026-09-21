@@ -32,6 +32,16 @@ class MarkedPhotoGeometryTest {
     }
 
     @Test
+    void acceptsTheTenRequiredHorstLinkYokePointsUsingSchemaVersionThree() {
+        MarkedPhotoGeometry geometry = MarkedPhotoGeometry.create(
+                1800, 1200, horstLinkYokePoints(), SuspensionLayout.HORST_LINK_YOKE);
+
+        assertThat(geometry.schemaVersion()).isEqualTo(3);
+        assertThat(geometry.suspensionLayout()).isEqualTo(SuspensionLayout.HORST_LINK_YOKE);
+        assertThat(geometry.points()).hasSize(10);
+    }
+
+    @Test
     void rejectsSixMonopivotPointsWhenTheGeometryClaimsToBeHorstLink() {
         assertThatThrownBy(() -> MarkedPhotoGeometry.create(
                 1800, 1200, validPoints(), SuspensionLayout.HORST_LINK))
@@ -93,6 +103,20 @@ class MarkedPhotoGeometryTest {
                 new MarkedPhotoPoint(PointType.ROCKER_SEATSTAY_PIVOT, 620, 590),
                 new MarkedPhotoPoint(PointType.SHOCK_FRAME, 900, 500),
                 new MarkedPhotoPoint(PointType.SHOCK_ROCKER, 730, 590),
+                new MarkedPhotoPoint(PointType.BOTTOM_BRACKET, 1000, 850),
+                new MarkedPhotoPoint(PointType.REAR_AXLE, 450, 800),
+                new MarkedPhotoPoint(PointType.FRONT_AXLE, 1500, 800));
+    }
+
+    private List<MarkedPhotoPoint> horstLinkYokePoints() {
+        return List.of(
+                new MarkedPhotoPoint(PointType.MAIN_PIVOT, 805, 796),
+                new MarkedPhotoPoint(PointType.HORST_PIVOT, 620, 796),
+                new MarkedPhotoPoint(PointType.ROCKER_FRAME_PIVOT, 805, 590),
+                new MarkedPhotoPoint(PointType.ROCKER_SEATSTAY_PIVOT, 620, 590),
+                new MarkedPhotoPoint(PointType.SHOCK_FRAME, 900, 500),
+                new MarkedPhotoPoint(PointType.YOKE_ROCKER_PIVOT, 690, 575),
+                new MarkedPhotoPoint(PointType.SHOCK_YOKE_EYE, 730, 590),
                 new MarkedPhotoPoint(PointType.BOTTOM_BRACKET, 1000, 850),
                 new MarkedPhotoPoint(PointType.REAR_AXLE, 450, 800),
                 new MarkedPhotoPoint(PointType.FRONT_AXLE, 1500, 800));

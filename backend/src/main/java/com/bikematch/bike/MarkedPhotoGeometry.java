@@ -14,11 +14,13 @@ public record MarkedPhotoGeometry(
 
     public static final int SINGLE_PIVOT_SCHEMA_VERSION = 1;
     public static final int HORST_LINK_SCHEMA_VERSION = 2;
-    public static final int CURRENT_SCHEMA_VERSION = HORST_LINK_SCHEMA_VERSION;
+    public static final int HORST_LINK_YOKE_SCHEMA_VERSION = 3;
+    public static final int CURRENT_SCHEMA_VERSION = HORST_LINK_YOKE_SCHEMA_VERSION;
     private static final int MAXIMUM_IMAGE_SIDE_PIXELS = 100_000;
 
     public MarkedPhotoGeometry {
-        if (schemaVersion != SINGLE_PIVOT_SCHEMA_VERSION && schemaVersion != HORST_LINK_SCHEMA_VERSION) {
+        if (schemaVersion != SINGLE_PIVOT_SCHEMA_VERSION && schemaVersion != HORST_LINK_SCHEMA_VERSION
+                && schemaVersion != HORST_LINK_YOKE_SCHEMA_VERSION) {
             throw new IllegalArgumentException("Unsupported marked-photo schema version");
         }
         requireImageDimension(imageWidth, "Image width");
@@ -75,19 +77,32 @@ public record MarkedPhotoGeometry(
                         || type == PointType.ROCKER_FRAME_PIVOT
                         || type == PointType.ROCKER_SEATSTAY_PIVOT
                         || type == PointType.SHOCK_ROCKER);
+        boolean yokePointPresent = points.stream()
+                .filter(Objects::nonNull)
+                .map(MarkedPhotoPoint::type)
+                .anyMatch(type -> type == PointType.YOKE_ROCKER_PIVOT
+                        || type == PointType.SHOCK_YOKE_EYE);
+        if (yokePointPresent) {
+            return HORST_LINK_YOKE_SCHEMA_VERSION;
+        }
         return horstPointPresent ? HORST_LINK_SCHEMA_VERSION : SINGLE_PIVOT_SCHEMA_VERSION;
     }
 
     private static int schemaVersionFor(SuspensionLayout layout) {
-        return layout == SuspensionLayout.SINGLE_PIVOT
-                ? SINGLE_PIVOT_SCHEMA_VERSION
-                : HORST_LINK_SCHEMA_VERSION;
+        return switch (layout) {
+            case SINGLE_PIVOT -> SINGLE_PIVOT_SCHEMA_VERSION;
+            case HORST_LINK -> HORST_LINK_SCHEMA_VERSION;
+            case HORST_LINK_YOKE -> HORST_LINK_YOKE_SCHEMA_VERSION;
+        };
     }
 
     private static SuspensionLayout layoutFor(int schemaVersion) {
-        return schemaVersion == SINGLE_PIVOT_SCHEMA_VERSION
-                ? SuspensionLayout.SINGLE_PIVOT
-                : SuspensionLayout.HORST_LINK;
+        return switch (schemaVersion) {
+            case SINGLE_PIVOT_SCHEMA_VERSION -> SuspensionLayout.SINGLE_PIVOT;
+            case HORST_LINK_SCHEMA_VERSION -> SuspensionLayout.HORST_LINK;
+            case HORST_LINK_YOKE_SCHEMA_VERSION -> SuspensionLayout.HORST_LINK_YOKE;
+            default -> throw new IllegalArgumentException("Unsupported marked-photo schema version");
+        };
     }
 
     private static void requireImageDimension(int value, String name) {

@@ -73,9 +73,11 @@ export function hasValidParameters(parameters) {
 export function getCalibration(points, eyeToEyeMm, suspensionLayout = 'SINGLE_PIVOT') {
   const eyeToEye = Number(eyeToEyeMm)
   const shockFrame = points.SHOCK_FRAME
-  const movingShockEye = suspensionLayout === 'HORST_LINK'
-    ? points.SHOCK_ROCKER
-    : points.SHOCK_SWINGARM
+  const movingShockEye = {
+    SINGLE_PIVOT: points.SHOCK_SWINGARM,
+    HORST_LINK: points.SHOCK_ROCKER,
+    HORST_LINK_YOKE: points.SHOCK_YOKE_EYE,
+  }[suspensionLayout]
 
   if (!Number.isFinite(eyeToEye) || eyeToEye <= 0 || !shockFrame || !movingShockEye) {
     return null

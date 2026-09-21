@@ -12,7 +12,7 @@ export function validatePreview(data) {
   const bands = ['REGRESSIVE', 'LINEAR', 'SLIGHTLY_PROGRESSIVE', 'MEDIUM', 'HIGH', 'VERY_HIGH']
   const reference = data?.conditions?.reference
   const modelVersion = data?.conditions?.modelVersion
-  const expectedBrakeModel = modelVersion === 'horst-link-reference-v1'
+  const expectedBrakeModel = ['horst-link-reference-v1', 'horst-link-yoke-reference-v2'].includes(modelVersion)
     ? 'SEATSTAY_FIXED'
     : modelVersion === 'monopivot-reference-v2' ? 'SWINGARM_FIXED' : null
   if (!validCurve(data?.leverageCurve, ['wheelTravelMm', 'ratio'])

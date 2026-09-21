@@ -3,6 +3,7 @@ package com.bikematch.kinematics.solver;
 import com.bikematch.kinematics.curve.CurveChecks;
 import com.bikematch.kinematics.geometry.CircleIntersections;
 import com.bikematch.kinematics.geometry.Point2D;
+import com.bikematch.kinematics.geometry.RigidShockExtension;
 import com.bikematch.kinematics.model.HorstLinkYokeGeometry;
 
 import java.util.ArrayList;
@@ -10,10 +11,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Analytic sweep of a Horst link whose rocker carries a rigid shock yoke.
+ * Analytic sweep of a Horst link driven by a shock-mounted rigid extension.
  *
- * <p>The physical shock eye drives the rocker. The yoke-rocker joint is transported with the
- * same rotation, retaining the complete marked yoke geometry at every position.</p>
+ * <p>The yoke joint drives the rocker. The yoke keeps its offsets relative to the shock axis,
+ * while rotating freely relative to the rocker. Compression excludes the extension.</p>
  */
 public final class HorstLinkYokeSolver {
     private static final int STEPS = 100;
@@ -27,31 +28,29 @@ public final class HorstLinkYokeSolver {
         Point2D shockFrame = geometry.shockFrame();
         double chainstayLength = mainPivot.distanceTo(geometry.horstPivot());
         double seatstayLength = geometry.horstPivot().distanceTo(geometry.rockerSeatstayPivot());
-        double rockerToShockEyeLength = rockerFramePivot.distanceTo(geometry.shockYokeEye());
-        double restShockLength = shockFrame.distanceTo(geometry.shockYokeEye());
+        double rockerToYokeLength = rockerFramePivot.distanceTo(geometry.yokeRockerPivot());
+        RigidShockExtension extension = RigidShockExtension.from(
+                shockFrame, geometry.shockYokeEye(), geometry.yokeRockerPivot());
 
-        if (shockStrokeMm >= restShockLength) {
+        if (shockStrokeMm >= extension.restShockLengthMm()) {
             throw new IllegalArgumentException("Shock stroke must be shorter than eye-to-eye length");
         }
 
-        Point2D previousShockEye = geometry.shockYokeEye();
+        Point2D previousYokePivot = geometry.yokeRockerPivot();
         Point2D previousHorstPivot = geometry.horstPivot();
         List<HorstLinkYokePosition> positions = new ArrayList<>(STEPS + 1);
 
         for (int step = 0; step <= STEPS; step++) {
             double compression = shockStrokeMm * step / STEPS;
-            double shockLength = restShockLength - compression;
-
-            Point2D shockYokeEye = continuousIntersection(
-                    CircleIntersections.between(rockerFramePivot, rockerToShockEyeLength,
-                            shockFrame, shockLength),
-                    previousShockEye, compression, "rigid yoke");
-            double rockerRotation = rotationBetweenVectors(rockerFramePivot, geometry.shockYokeEye(),
-                    rockerFramePivot, shockYokeEye);
+            Point2D yokeRockerPivot = continuousIntersection(
+                    CircleIntersections.between(rockerFramePivot, rockerToYokeLength,
+                            shockFrame, extension.jointDistanceAt(compression)),
+                    previousYokePivot, compression, "shock extension");
+            double rockerRotation = rotationBetweenVectors(rockerFramePivot, geometry.yokeRockerPivot(),
+                    rockerFramePivot, yokeRockerPivot);
             Point2D rockerSeatstayPivot = geometry.rockerSeatstayPivot()
                     .rotateAround(rockerFramePivot, rockerRotation);
-            Point2D yokeRockerPivot = geometry.yokeRockerPivot()
-                    .rotateAround(rockerFramePivot, rockerRotation);
+            Point2D shockYokeEye = extension.movingEyeAt(shockFrame, yokeRockerPivot, compression);
 
             Point2D horstPivot = continuousIntersection(
                     CircleIntersections.between(mainPivot, chainstayLength,
@@ -61,7 +60,7 @@ public final class HorstLinkYokeSolver {
 
             positions.add(new HorstLinkYokePosition(compression, horstPivot, rockerSeatstayPivot,
                     yokeRockerPivot, shockYokeEye, rearAxle));
-            previousShockEye = shockYokeEye;
+            previousYokePivot = yokeRockerPivot;
             previousHorstPivot = horstPivot;
         }
         return List.copyOf(positions);

@@ -113,6 +113,42 @@ class KinematicsControllerTest {
     }
 
     @Test
+    void tenPointShockMountedYokeReturnsCorrectedCurvesOverHttp() throws Exception {
+        // Synthetic parallelogram, a 210 mm physical shock and a separate rigid extension.
+        String body = """
+                {
+                  "suspensionLayout": "HORST_LINK_YOKE",
+                  "eyeToEyeMm": 210,
+                  "points": [
+                    {"type":"MAIN_PIVOT", "x":1000, "y":1300},
+                    {"type":"HORST_PIVOT", "x":800, "y":1300},
+                    {"type":"ROCKER_FRAME_PIVOT", "x":1000, "y":600},
+                    {"type":"ROCKER_SEATSTAY_PIVOT", "x":800, "y":600},
+                    {"type":"SHOCK_FRAME", "x":1500, "y":300},
+                    {"type":"YOKE_ROCKER_PIVOT", "x":800, "y":600},
+                    {"type":"SHOCK_YOKE_EYE", "x":1113.9590873924158, "y":465.44610540325044},
+                    {"type":"BOTTOM_BRACKET", "x":1500, "y":1300},
+                    {"type":"REAR_AXLE", "x":680, "y":1240},
+                    {"type":"FRONT_AXLE", "x":3200, "y":1240}
+                  ],
+                  "parameters": {
+                    "shockStrokeMm":55, "chainringTeeth":32, "sprocketTeeth":51,
+                    "declaredTravelMm":150, "sagPercent":25, "wheelConfiguration":"FULL_29"
+                  }
+                }
+                """;
+        mockMvc.perform(post("/api/kinematics/preview").contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.conditions.modelVersion").value("horst-link-yoke-reference-v2"))
+                .andExpect(jsonPath("$.conditions.reference.brakeModel").value("SEATSTAY_FIXED"))
+                .andExpect(jsonPath("$.leverageCurve.length()").value(100))
+                .andExpect(jsonPath("$.axlePath.length()").value(101))
+                .andExpect(jsonPath("$.kickbackCurve.length()").value(101))
+                .andExpect(jsonPath("$.antiSquatCurve.length()").value(101))
+                .andExpect(jsonPath("$.antiRiseCurve.length()").value(101));
+    }
+
+    @Test
     void emptyPointsIsRejectedWith400() throws Exception {
         String body = """
                 {

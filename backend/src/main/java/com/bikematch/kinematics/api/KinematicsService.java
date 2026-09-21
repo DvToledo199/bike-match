@@ -213,14 +213,14 @@ public class KinematicsService {
             KickbackCurve kickbackCurve = KickbackCurve.from(
                     axlePath, input.pointOf(PointType.BOTTOM_BRACKET), parameters.chainringTeeth());
             return new CalculatedCurves(axlePath, leverageCurve, kickbackCurve,
-                    new SuspensionResponseCurves(List.of(), List.of()), "horst-link-yoke-v1");
+                    new SuspensionResponseCurves(List.of(), List.of()), "horst-link-yoke-v2");
         }
 
         HorstLinkCurves curves = HorstLinkCurves.from(positions, new HorstLinkCurveInput(
                 curveGeometry, input.pointOf(PointType.BOTTOM_BRACKET), input.pointOf(PointType.FRONT_AXLE),
                 input.parameters(), setup));
         return new CalculatedCurves(curves.axlePath(), curves.leverage(), curves.kickback(), curves.responses(),
-                "horst-link-yoke-reference-v1");
+                "horst-link-yoke-reference-v2");
     }
 
     private record CalculatedCurves(

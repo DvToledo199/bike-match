@@ -1,5 +1,8 @@
 # Curvas ampliadas: modelo de referencia y mejoras futuras
 
+El modelo de extensión rígida del amortiguador para Horst, su corrección #249 y
+los límites de validación se describen en [modelo-yoke-horst.md](modelo-yoke-horst.md).
+
 Decisión tomada el 10 de septiembre de 2026. Se adelantan las curvas
 anti-squat/anti-rise y el kickback cog-aware antes de persistencia e IA. Issues
 #108 (dominio), #31 (kickback) y #109 (API/web). No se modifica auth #94.

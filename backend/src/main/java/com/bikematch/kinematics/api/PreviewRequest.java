@@ -11,7 +11,7 @@ import jakarta.validation.constraints.DecimalMax;
 import java.util.List;
 
 public record PreviewRequest(
-        @NotEmpty @Size(min = 6, max = 9) List<@NotNull @Valid PointDto> points,
+        @NotEmpty @Size(min = 6, max = 10) List<@NotNull @Valid PointDto> points,
         @NotNull @DecimalMin("100") @DecimalMax("300") Double eyeToEyeMm,
         @NotNull @Valid KinematicsParametersDto parameters,
         SuspensionLayout suspensionLayout

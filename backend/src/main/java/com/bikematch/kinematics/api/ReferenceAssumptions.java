@@ -17,7 +17,7 @@ public record ReferenceAssumptions(WheelConfiguration wheelConfiguration,
         return new ReferenceAssumptions(setup.wheels(), setup.wheels().frontRadiusMm(),
                 setup.wheels().rearRadiusMm(), setup.centerOfGravityHeightMm(), rotationDegrees,
                 "FIXED_FRAME_LOCAL_GROUND",
-                layout == SuspensionLayout.HORST_LINK ? "SEATSTAY_FIXED" : "SWINGARM_FIXED",
+                layout.isHorstLink() ? "SEATSTAY_FIXED" : "SWINGARM_FIXED",
                 "ANALYTICAL_REFERENCE");
     }
 }

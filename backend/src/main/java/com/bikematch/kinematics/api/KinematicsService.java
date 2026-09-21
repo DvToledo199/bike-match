@@ -14,11 +14,14 @@ import com.bikematch.kinematics.model.KinematicsInput;
 import com.bikematch.kinematics.model.KinematicsParameters;
 import com.bikematch.kinematics.model.HorstLinkCurveInput;
 import com.bikematch.kinematics.model.HorstLinkGeometry;
+import com.bikematch.kinematics.model.HorstLinkYokeGeometry;
 import com.bikematch.kinematics.model.MarkedPoint;
 import com.bikematch.kinematics.model.PointType;
 import com.bikematch.kinematics.model.ReferenceSetup;
 import com.bikematch.kinematics.solver.HorstLinkPosition;
 import com.bikematch.kinematics.solver.HorstLinkSolver;
+import com.bikematch.kinematics.solver.HorstLinkYokePosition;
+import com.bikematch.kinematics.solver.HorstLinkYokeSolver;
 import com.bikematch.kinematics.solver.MonopivotSolver;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,7 @@ public class KinematicsService {
 
     private final MonopivotSolver monopivotSolver = new MonopivotSolver();
     private final HorstLinkSolver horstLinkSolver = new HorstLinkSolver();
+    private final HorstLinkYokeSolver horstLinkYokeSolver = new HorstLinkYokeSolver();
 
     /** Turns the request (points in pixels + calibration) into the engine's input (points in mm). */
     private PreparedInput prepareInput(PreviewRequest request) {
@@ -109,9 +113,11 @@ public class KinematicsService {
         ReferenceSetup setup = parameters.wheelConfiguration() == null ? null
                 : ReferenceSetup.standard(parameters.wheelConfiguration());
 
-        CalculatedCurves calculated = prepared.layout() == SuspensionLayout.SINGLE_PIVOT
-                ? calculateMonopivot(input, parameters, setup)
-                : calculateHorstLink(input, parameters, setup);
+        CalculatedCurves calculated = switch (prepared.layout()) {
+            case SINGLE_PIVOT -> calculateMonopivot(input, parameters, setup);
+            case HORST_LINK -> calculateHorstLink(input, parameters, setup);
+            case HORST_LINK_YOKE -> calculateHorstLinkYoke(input, parameters, setup);
+        };
 
         LeverageDescriptors leverageDescriptors = LeverageDescriptors.from(
                 calculated.leverageCurve(), parameters.sagPercent());
@@ -180,6 +186,41 @@ public class KinematicsService {
                 input.parameters(), setup));
         return new CalculatedCurves(curves.axlePath(), curves.leverage(), curves.kickback(), curves.responses(),
                 "horst-link-reference-v1");
+    }
+
+    private CalculatedCurves calculateHorstLinkYoke(KinematicsInput input,
+                                                    KinematicsParametersDto parameters,
+                                                    ReferenceSetup setup) {
+        HorstLinkYokeGeometry geometry = new HorstLinkYokeGeometry(
+                input.pointOf(PointType.MAIN_PIVOT),
+                input.pointOf(PointType.HORST_PIVOT),
+                input.pointOf(PointType.ROCKER_FRAME_PIVOT),
+                input.pointOf(PointType.ROCKER_SEATSTAY_PIVOT),
+                input.pointOf(PointType.SHOCK_FRAME),
+                input.pointOf(PointType.YOKE_ROCKER_PIVOT),
+                input.pointOf(PointType.SHOCK_YOKE_EYE),
+                input.pointOf(PointType.REAR_AXLE));
+        List<HorstLinkYokePosition> yokePositions = horstLinkYokeSolver.sweep(
+                geometry, parameters.shockStrokeMm());
+        List<HorstLinkPosition> positions = yokePositions.stream()
+                .map(HorstLinkYokePosition::asHorstLinkPosition)
+                .toList();
+        List<Point2D> axlePath = positions.stream().map(HorstLinkPosition::rearAxle).toList();
+        HorstLinkGeometry curveGeometry = geometry.asHorstLinkGeometry();
+
+        if (setup == null) {
+            LeverageCurve leverageCurve = LeverageCurve.from(axlePath, parameters.shockStrokeMm());
+            KickbackCurve kickbackCurve = KickbackCurve.from(
+                    axlePath, input.pointOf(PointType.BOTTOM_BRACKET), parameters.chainringTeeth());
+            return new CalculatedCurves(axlePath, leverageCurve, kickbackCurve,
+                    new SuspensionResponseCurves(List.of(), List.of()), "horst-link-yoke-v1");
+        }
+
+        HorstLinkCurves curves = HorstLinkCurves.from(positions, new HorstLinkCurveInput(
+                curveGeometry, input.pointOf(PointType.BOTTOM_BRACKET), input.pointOf(PointType.FRONT_AXLE),
+                input.parameters(), setup));
+        return new CalculatedCurves(curves.axlePath(), curves.leverage(), curves.kickback(), curves.responses(),
+                "horst-link-yoke-reference-v1");
     }
 
     private record CalculatedCurves(

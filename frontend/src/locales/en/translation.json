@@ -311,6 +311,7 @@
       "suspensionLayouts": {
         "singlePivot": "Single pivot",
         "horstLink": "Four-bar (Horst link)",
+        "horstLinkYoke": "Four-bar (Horst link with rigid yoke)",
         "dualLink": "Dual link / virtual pivot"
       },
       "comingSoon": "Coming soon",
@@ -377,6 +378,14 @@
         "shockRocker": {
           "label": "Rocker-side shock mount",
           "description": "The centre of the shock mounting bolt attached to the rocker link."
+        },
+        "yokeRockerPivot": {
+          "label": "Yoke-to-rocker pivot",
+          "description": "The centre of the pivot where the rigid yoke joins the rocker link."
+        },
+        "shockYokeEye": {
+          "label": "Yoke-side shock eye",
+          "description": "The physical shock mounting bolt on the yoke. Do not mark the yoke-to-rocker pivot here."
         },
         "bottomBracket": {
           "label": "Bottom bracket",

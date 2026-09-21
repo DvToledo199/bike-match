@@ -67,3 +67,19 @@ it('switches to the nine-point Horst link guide', () => {
   expect(container.querySelectorAll('g[data-selected]').length).toBe(9)
   expect(JSON.parse(screen.getByLabelText('Stored marks').textContent).SHOCK_ROCKER).toBeTruthy()
 })
+
+it('switches to the ten-point rigid-yoke Horst link guide', () => {
+  const { container } = render(<MarkerTest suspensionLayout="HORST_LINK_YOKE" />)
+  const marker = screen.getByRole('application', { name: 'Bike photo used to mark suspension points' })
+
+  for (let index = 0; index < 10; index++) {
+    fireEvent.keyDown(marker, { key: 'ArrowRight', shiftKey: true })
+    fireEvent.keyDown(marker, { key: 'Enter' })
+  }
+
+  expect(screen.getByText('10 of 10 points marked')).toBeTruthy()
+  expect(container.querySelectorAll('g[data-selected]').length).toBe(10)
+  const marks = JSON.parse(screen.getByLabelText('Stored marks').textContent)
+  expect(marks.YOKE_ROCKER_PIVOT).toBeTruthy()
+  expect(marks.SHOCK_YOKE_EYE).toBeTruthy()
+})

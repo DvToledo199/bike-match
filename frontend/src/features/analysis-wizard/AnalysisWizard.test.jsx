@@ -77,6 +77,25 @@ it('clears incompatible marks and the stale preview when the layout changes', ()
   })
 })
 
+it('clears incompatible marks and the stale preview when the yoke layout is selected', () => {
+  state.wizard.activeStepIndex = 0
+  state.wizard.wizardData = {
+    ...state.wizard.wizardData,
+    suspensionLayout: 'HORST_LINK',
+    points: { SHOCK_ROCKER: { type: 'SHOCK_ROCKER', x: 10, y: 10 } },
+  }
+  state.preview.data = {}
+  render(<AnalysisWizard />)
+
+  fireEvent.click(screen.getByRole('radio', { name: 'Four-bar (Horst link with rigid yoke)' }))
+
+  expect(state.preview.cancelPreview).toHaveBeenCalledOnce()
+  expect(state.wizard.updateWizardData).toHaveBeenCalledWith({
+    suspensionLayout: 'HORST_LINK_YOKE',
+    points: {},
+  })
+})
+
 it('shows explicit registration actions above and below completed curves for a guest', () => {
   state.preview.data = {}
   render(<AnalysisWizard />)

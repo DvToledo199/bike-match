@@ -37,3 +37,13 @@ it('uses the rocker-side shock eye to calibrate a Horst link', () => {
 
   expect(getCalibration(points, 200, 'HORST_LINK')).toMatchObject({ isValid: true, mmPerPixel: 2 })
 })
+
+it('uses the physical shock eye instead of the yoke pivot to calibrate a yoke Horst link', () => {
+  const points = {
+    SHOCK_FRAME: { x: 10, y: 10 },
+    YOKE_ROCKER_PIVOT: { x: 60, y: 10 },
+    SHOCK_YOKE_EYE: { x: 110, y: 10 },
+  }
+
+  expect(getCalibration(points, 200, 'HORST_LINK_YOKE')).toMatchObject({ isValid: true, mmPerPixel: 2 })
+})

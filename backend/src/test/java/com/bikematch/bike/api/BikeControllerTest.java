@@ -34,6 +34,7 @@ import com.bikematch.bike.GetBikeDetailService.BikeDetail;
 import com.bikematch.bike.GetBikeDetailService.KinematicsResultDetail;
 import com.bikematch.bike.MarkedPhotoGeometry;
 import com.bikematch.bike.PublishBikeService;
+import com.bikematch.bike.SuspensionLayout;
 import com.bikematch.kinematics.model.WheelConfiguration;
 import com.bikematch.config.RestAccessDeniedHandler;
 import com.bikematch.config.RestAuthenticationEntryPoint;
@@ -97,6 +98,25 @@ class BikeControllerTest {
                 {"type":"BOTTOM_BRACKET","x":778.4,"y":855.4},
                 {"type":"REAR_AXLE","x":409.0,"y":826.1},
                 {"type":"FRONT_AXLE","x":1432.5,"y":826.1}
+              ]
+            }
+            """;
+
+    private static final String YOKE_ANALYSIS_REQUEST = """
+            {
+              "imageWidth": 4000,
+              "imageHeight": 2000,
+              "points": [
+                {"type":"MAIN_PIVOT","x":1000,"y":1300},
+                {"type":"HORST_PIVOT","x":800,"y":1300},
+                {"type":"ROCKER_FRAME_PIVOT","x":1000,"y":600},
+                {"type":"ROCKER_SEATSTAY_PIVOT","x":800,"y":600},
+                {"type":"SHOCK_FRAME","x":1500,"y":300},
+                {"type":"YOKE_ROCKER_PIVOT","x":800,"y":600},
+                {"type":"SHOCK_YOKE_EYE","x":1113.9590873924158,"y":465.44610540325044},
+                {"type":"BOTTOM_BRACKET","x":1500,"y":1300},
+                {"type":"REAR_AXLE","x":680,"y":1240},
+                {"type":"FRONT_AXLE","x":3200,"y":1240}
               ]
             }
             """;
@@ -373,11 +393,63 @@ class BikeControllerTest {
                 .hasSize(6);
     }
 
-    @Test
-    void missingTokenCannotFinalizeAnAnalysis() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void authenticatedOwnerCanFinalizeHorstLayouts(boolean hasYoke) throws Exception {
+        authenticateUserToken();
+        String request = hasYoke ? YOKE_ANALYSIS_REQUEST : YOKE_ANALYSIS_REQUEST
+                .replace("YOKE_ROCKER_PIVOT", "SHOCK_ROCKER")
+                .replace("    {\"type\":\"SHOCK_YOKE_EYE\",\"x\":1113.9590873924158,\"y\":465.44610540325044},\n", "");
+
+        mockMvc.perform(post("/api/bikes/{bikeId}/analysis", 7L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isCreated())
+                .andExpect(header().string(HttpHeaders.LOCATION, "/api/bikes/7/analysis"));
+
+        ArgumentCaptor<MarkedPhotoGeometry> geometryCaptor =
+                ArgumentCaptor.forClass(MarkedPhotoGeometry.class);
+        verify(finalizeBikeAnalysisService)
+                .finalizeAnalysis(eq(42L), eq(7L), geometryCaptor.capture());
+        MarkedPhotoGeometry geometry = geometryCaptor.getValue();
+        org.assertj.core.api.Assertions.assertThat(geometry.suspensionLayout())
+                .isEqualTo(hasYoke ? SuspensionLayout.HORST_LINK_YOKE : SuspensionLayout.HORST_LINK);
+        org.assertj.core.api.Assertions.assertThat(geometry.schemaVersion()).isEqualTo(hasYoke ? 3 : 2);
+        org.assertj.core.api.Assertions.assertThat(geometry.points()).hasSize(hasYoke ? 10 : 9);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"missing", "duplicate", "excess", "outside", "negative", "null"})
+    void invalidYokePointsAreRejectedBeforeCalculation(String problem) throws Exception {
+        authenticateUserToken();
+        String invalidRequest = switch (problem) {
+            case "missing" -> YOKE_ANALYSIS_REQUEST.replace(
+                    "    {\"type\":\"SHOCK_YOKE_EYE\",\"x\":1113.9590873924158,\"y\":465.44610540325044},\n", "");
+            case "duplicate" -> YOKE_ANALYSIS_REQUEST.replace("SHOCK_YOKE_EYE", "YOKE_ROCKER_PIVOT");
+            case "excess" -> YOKE_ANALYSIS_REQUEST.replace(
+                    "\"points\": [", "\"points\": [{\"type\":\"MAIN_PIVOT\",\"x\":1000,\"y\":1300},");
+            case "outside" -> YOKE_ANALYSIS_REQUEST.replace("\"x\":3200", "\"x\":4001");
+            case "negative" -> YOKE_ANALYSIS_REQUEST.replace("\"x\":3200", "\"x\":-1");
+            default -> YOKE_ANALYSIS_REQUEST.replace("\"FRONT_AXLE\"", "null");
+        };
+
+        mockMvc.perform(post("/api/bikes/{bikeId}/analysis", 7L)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer user-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRequest))
+                .andExpect(status().isBadRequest());
+
+        verify(finalizeBikeAnalysisService, never())
+                .finalizeAnalysis(anyLong(), anyLong(), any(MarkedPhotoGeometry.class));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void missingTokenCannotFinalizeAnAnalysis(boolean hasYoke) throws Exception {
         mockMvc.perform(post("/api/bikes/{bikeId}/analysis", 7L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(VALID_ANALYSIS_REQUEST))
+                        .content(hasYoke ? YOKE_ANALYSIS_REQUEST : VALID_ANALYSIS_REQUEST))
                 .andExpect(status().isUnauthorized());
 
         verify(finalizeBikeAnalysisService, never())

@@ -56,6 +56,36 @@ it('reconciles a saved analysis after a lost finalization response', async () =>
   expect(requestApi.mock.calls.filter(([path]) => path.endsWith('/photo'))).toHaveLength(1)
 })
 
+it('resumes a rejected ten-point yoke analysis without recreating the bike or uploading its photo again', async () => {
+  const pointTypes = [
+    'MAIN_PIVOT', 'BOTTOM_BRACKET', 'HORST_PIVOT', 'ROCKER_FRAME_PIVOT',
+    'ROCKER_SEATSTAY_PIVOT', 'SHOCK_FRAME', 'YOKE_ROCKER_PIVOT',
+    'SHOCK_YOKE_EYE', 'REAR_AXLE', 'FRONT_AXLE',
+  ]
+  const points = Object.fromEntries(pointTypes.map((type, index) => [type, { type, x: 100 + index, y: 200 }]))
+  const yokeInput = {
+    ...input,
+    wizardData: { ...input.wizardData, suspensionLayout: 'HORST_LINK_YOKE', points },
+  }
+  requestApi.mockResolvedValueOnce({ id: 42 }).mockResolvedValueOnce({})
+    .mockRejectedValueOnce(new ApiError('invalidRequest', 400))
+  const saver = createAnalysisSaver()
+
+  await expect(saver.save(yokeInput, vi.fn())).rejects.toMatchObject({ status: 400 })
+  expect(saver.checkpoint).toMatchObject({ bikeId: 42, photoUploaded: true, complete: false })
+  expect(generateBikeInterpretation).not.toHaveBeenCalled()
+
+  await expect(saver.save(yokeInput, vi.fn())).resolves.toEqual({ bikeId: 42, explanationReady: true })
+  expect(requestApi.mock.calls.map(([path]) => path)).toEqual([
+    '/api/bikes', '/api/bikes/42/photo', '/api/bikes/42/analysis', '/api/bikes/42/analysis',
+  ])
+  expect(JSON.parse(requestApi.mock.calls[0][1].body).suspensionLayout).toBe('HORST_LINK_YOKE')
+  const originalRequest = JSON.parse(requestApi.mock.calls[2][1].body)
+  expect(originalRequest.points).toEqual(Object.values(points))
+  expect(JSON.parse(requestApi.mock.calls[3][1].body)).toEqual(originalRequest)
+  expect(saver.checkpoint.complete).toBe(true)
+})
+
 it('does not retry creation automatically if the server may have created the bike', async () => {
   requestApi.mockRejectedValue(new ApiError('network'))
   const saver = createAnalysisSaver()

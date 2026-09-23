@@ -54,7 +54,7 @@
     "title": "Account administration",
     "description": "Review accounts and grant or remove the moderator role.",
     "accounts": "User accounts",
-    "username": "Username",
+    "username": "Username / email",
     "role": "Role",
     "createdAt": "Joined",
     "actions": "Actions",

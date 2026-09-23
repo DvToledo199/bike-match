@@ -6,9 +6,10 @@ vi.mock('./apiClient.js', () => ({ requestApi: vi.fn() }))
 
 beforeEach(() => { vi.resetAllMocks() })
 
-it('requests the account summaries without pagination or private profile fields', async () => {
-  requestApi.mockResolvedValue([{ id: 2, username: 'rider', role: 'USER' }])
-  expect(await listUsers()).toEqual([{ id: 2, username: 'rider', role: 'USER' }])
+it('requests account summaries including emails from the admin endpoint', async () => {
+  const users = [{ id: 2, username: 'rider', email: 'rider@example.com', role: 'USER', createdAt: '2026-09-19T10:00:00Z' }]
+  requestApi.mockResolvedValue(users)
+  expect(await listUsers()).toEqual(users)
   expect(requestApi).toHaveBeenCalledWith('/api/admin/users')
 })
 

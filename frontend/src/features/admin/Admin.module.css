@@ -1,4 +1,4 @@
-.page { display: grid; gap: var(--space-lg); }
+.page { display: grid; min-width: 0; gap: var(--space-lg); }
 .page h1 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0 0 var(--space-sm); }
 .page h2 { font-size: 1.25rem; margin: 0; }
 .page p { margin: 0; }
@@ -21,5 +21,13 @@
 .table caption { text-align: left; font-weight: 700; padding-bottom: var(--space-sm); }
 .table th, .table td { padding: var(--space-md); border-bottom: 1px solid var(--color-border); overflow-wrap: anywhere; }
 .table thead th { background: var(--color-bg); }
+.email { display: block; font-size: 0.875rem; font-weight: 400; color: var(--color-text-muted); overflow-wrap: anywhere; }
 .table button { white-space: nowrap; }
-@media (max-width: 40rem) { .table th, .table td { padding: var(--space-sm); } }
+@media (max-width: 40rem) {
+  .table, .table caption, .table tbody { display: block; }
+  .table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .table tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: var(--space-sm); border-bottom: 1px solid var(--color-border); }
+  .table th, .table td { min-width: 0; padding: var(--space-sm); border: 0; }
+  .table th[scope='row'], .accountActions { grid-column: 1 / -1; }
+  .table td[data-label]::before { content: attr(data-label); display: block; color: var(--color-text-muted); font-size: 0.875rem; }
+}

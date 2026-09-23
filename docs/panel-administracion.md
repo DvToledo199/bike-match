@@ -43,6 +43,14 @@ Forzar la ruta sin ser administrador no muestra cuentas. Si una petición devuel
 - Red, tiempo de espera o servidor: no dar el cambio por confirmado; actualizar
   antes de intentarlo de nuevo porque el servidor podría haberlo aplicado.
 
+**La web es hoy más estricta que el servidor.** La tabla oculta el botón en
+cualquier fila con rol `ADMIN`, pero el backend solo rechaza el cambio sobre la
+propia cuenta autenticada (`409`). Una llamada directa a
+`PUT /api/admin/users/{id}/role` sobre otro administrador sería aceptada. No es
+una escalada de privilegios, porque la ruta sigue exigiendo rol `ADMIN`, pero la
+regla de no degradar a otro administrador vive únicamente en el frontend.
+Trasladarla al backend necesitaría su propia tarea.
+
 **Un cambio de rol no revoca los JWT ya emitidos.** El backend actual lee el rol
 del token: los nuevos inicios de sesión obtienen el rol actualizado y las sesiones
 anteriores conservan sus permisos hasta caducar. El formulario y el mensaje de

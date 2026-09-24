@@ -7,6 +7,9 @@ import { getBikeDetail, toKinematicsData } from '../../services/myBikes.js'
 import { getSession } from '../../services/session.js'
 import styles from './BikeDetailPage.module.css'
 
+// The API sends the layout as a code; the wizard already names each one in both languages.
+const layoutKeys = { SINGLE_PIVOT: 'singlePivot', HORST_LINK: 'horstLink', HORST_LINK_YOKE: 'horstLinkYoke' }
+
 function BikeDetailPage({ bikeId, onBack, backLabelKey = 'bikeDetail.back' }) {
   const { t, i18n } = useTranslation()
   const language = i18n.resolvedLanguage
@@ -135,10 +138,10 @@ function BikeDetailPage({ bikeId, onBack, backLabelKey = 'bikeDetail.back' }) {
         <h2 id="bike-specifications-title">{t('bikeDetail.specifications')}</h2>
         <dl className={styles.specifications}>
           <div><dt>{t('myBikes.fields.year')}</dt><dd>{bike.modelYear ?? t('myBikes.notAvailable')}</dd></div>
-          <div><dt>{t('myBikes.fields.category')}</dt><dd>{bike.category ?? t('myBikes.notAvailable')}</dd></div>
-          <div><dt>{t('bikeDetail.fields.layout')}</dt><dd>{bike.suspensionLayout}</dd></div>
+          <div><dt>{t('myBikes.fields.category')}</dt><dd>{bike.category ? t(`saveAnalysis.categories.${bike.category}`) : t('myBikes.notAvailable')}</dd></div>
+          <div><dt>{t('bikeDetail.fields.layout')}</dt><dd>{t(`wizard.photo.suspensionLayouts.${layoutKeys[bike.suspensionLayout] ?? 'singlePivot'}`)}</dd></div>
           <div><dt>{t('bikeDetail.fields.travel')}</dt><dd>{bike.declaredTravelMm} mm</dd></div>
-          <div><dt>{t('bikeDetail.fields.wheelConfiguration')}</dt><dd>{bike.wheelConfiguration}</dd></div>
+          <div><dt>{t('bikeDetail.fields.wheelConfiguration')}</dt><dd>{bike.wheelConfiguration ? t(`wizard.parameters.wheels.options.${bike.wheelConfiguration}`) : t('myBikes.notAvailable')}</dd></div>
           <div><dt>{t('bikeDetail.fields.sag')}</dt><dd>{bike.sagPercent}%</dd></div>
         </dl>
       </section>

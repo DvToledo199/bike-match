@@ -139,7 +139,7 @@
   },
   "myBikes": {
     "navLabel": "My bikes",
-    "eyebrow": "Your garage",
+    "eyebrow": "My garage",
     "title": "My bikes",
     "description": "Your saved analyses and their current visibility status.",
     "loading": "Loading your bikes…",

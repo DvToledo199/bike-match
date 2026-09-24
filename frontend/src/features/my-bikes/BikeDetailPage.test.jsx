@@ -64,6 +64,11 @@ it('shows the saved bike photo, specifications and charts', async () => {
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Orange Stage 6' })).toBeTruthy())
   expect(screen.getByRole('img', { name: 'Photo of Orange Stage 6' })).toBeTruthy()
   expect(screen.getByText('Bike specifications')).toBeTruthy()
+  // Stored codes are shown with their names, never as ENDURO or SINGLE_PIVOT.
+  expect(screen.getByText('Single pivot')).toBeTruthy()
+  expect(screen.getByText('Full 29″ — both wheels')).toBeTruthy()
+  expect(screen.queryByText('SINGLE_PIVOT')).toBeNull()
+  expect(screen.queryByText('ENDURO')).toBeNull()
   await waitFor(() => expect(screen.getByText('This analysis shows a progressive response.')).toBeTruthy())
   expect(screen.getByText('Useful progression')).toBeTruthy()
   // Where the text comes from heads the card, and the note about its limits is said once.

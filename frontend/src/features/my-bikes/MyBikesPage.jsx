@@ -267,7 +267,7 @@ function BikeCard({
         </div>
         <dl className={styles.details}>
           <div><dt>{t('myBikes.fields.year')}</dt><dd>{bike.modelYear ?? t('myBikes.notAvailable')}</dd></div>
-          <div><dt>{t('myBikes.fields.category')}</dt><dd>{bike.category ?? t('myBikes.notAvailable')}</dd></div>
+          <div><dt>{t('myBikes.fields.category')}</dt><dd>{bike.category ? t(`saveAnalysis.categories.${bike.category}`) : t('myBikes.notAvailable')}</dd></div>
           <div><dt>{t('myBikes.fields.analysis')}</dt><dd>{bike.analyzed ? t('myBikes.analysisReady') : t('myBikes.analysisPending')}</dd></div>
         </dl>
         <button type="button" className={styles.detailButton} onClick={onOpenDetails}>

@@ -46,3 +46,10 @@ it.each([['home', false], ['analysis', false], ['home', true], ['analysis', true
   const accentRules = [...styleElement.sheet.cssRules].filter((rule) => rule.style?.color === 'var(--color-primary)')
   expect(accentRules.some((rule) => link.matches(rule.selectorText))).toBe(false)
 })
+
+it('shows who is logged in next to logging out', () => {
+  render(<Layout screen="home" session={{ username: 'rider_one', role: 'USER' }} onLogout={() => {}}>content</Layout>)
+
+  expect(screen.getByText('@rider_one')).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Log out' })).toBeTruthy()
+})

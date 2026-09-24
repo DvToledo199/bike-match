@@ -21,6 +21,7 @@ function Layout({ children, session, screen, onLogout }) {
             {session.role === 'ADMIN' && (
               <a href="#/admin" aria-current={screen === 'admin' ? 'page' : undefined}>{t('admin.navLabel')}</a>
             )}
+            {session.username && <span className={styles.username}>@{session.username}</span>}
             <button type="button" onClick={onLogout}>{t('auth.logout')}</button>
           </> : <>
             <a href="#/login" aria-current={screen === 'login' ? 'page' : undefined}>{t('auth.openLogin')}</a>

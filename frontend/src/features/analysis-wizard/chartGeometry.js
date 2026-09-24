@@ -19,12 +19,3 @@ export function getEqualScaleDomains(points) {
     yDomain: [centerY - span / 2, centerY + span / 2],
   }
 }
-
-export function getKickbackLevel(curve) {
-  // Negative rotation is chain release, not a stronger backwards pedal kick.
-  const peak = Math.max(0, ...curve.map((sample) => sample.kickbackDegrees))
-  if (peak < 20) return 'low'
-  if (peak < 35) return 'medium'
-  if (peak < 45) return 'high'
-  return 'veryHigh'
-}

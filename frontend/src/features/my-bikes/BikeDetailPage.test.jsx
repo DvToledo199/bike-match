@@ -66,6 +66,9 @@ it('shows the saved bike photo, specifications and charts', async () => {
   expect(screen.getByText('Bike specifications')).toBeTruthy()
   await waitFor(() => expect(screen.getByText('This analysis shows a progressive response.')).toBeTruthy())
   expect(screen.getByText('Useful progression')).toBeTruthy()
+  // Where the text comes from heads the card, and the note about its limits is said once.
+  expect(screen.getByText('Rules-based summary')).toBeTruthy()
+  expect(screen.getByText('Note:')).toBeTruthy()
   expect(screen.getByRole('region', { name: 'Saved kinematics charts' })).toBeTruthy()
   expect(getBikeDetail).toHaveBeenCalledWith(7)
   expect(getBikeInterpretation).toHaveBeenCalledWith(7, 'en')

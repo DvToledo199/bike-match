@@ -9,7 +9,6 @@ import {
   YAxis,
 } from 'recharts'
 import { useTranslation } from 'react-i18next'
-import KinematicsDescriptors from './KinematicsDescriptors.jsx'
 import styles from './KinematicsCharts.module.css'
 import { chartAxisSize, chartMargin, getEqualScaleDomains, relativeAxlePath } from './chartGeometry.js'
 
@@ -113,6 +112,7 @@ function CurveChart({ config, data, domains, square }) {
       </div>
       <p className={styles.axisLabels}>{t('wizard.charts.axes', { x: t(config.xAxisKey), y: t(config.yAxisKey) })}</p>
       <ChartSummary config={config} data={data} />
+      {config.highlight && <p className={styles.chartHighlight}>{config.highlight}</p>}
     </section>
   )
 }
@@ -122,6 +122,7 @@ function KinematicsCharts({ data }) {
   const axlePoints = relativeAxlePath(data.axlePath)
   const axleDomains = getEqualScaleDomains(axlePoints)
   const { reference, chainringTeeth, sprocketTeeth } = data.conditions
+  const { leverageDescriptors, axlePathDescriptors, travelCheck } = data
   const charts = [
     {
       id: 'leverage',
@@ -137,6 +138,9 @@ function KinematicsCharts({ data }) {
       tooltipLabelKey: 'wizard.charts.tooltip.wheelTravel',
       tooltipValueKey: 'wizard.charts.tooltip.leverage',
       summaryKey: 'wizard.charts.leverage.summary',
+      highlight: t('wizard.charts.leverage.highlight', {
+        total: formatNumber(leverageDescriptors.totalProgressionPercent),
+      }),
     },
     {
       id: 'kickback',
@@ -167,6 +171,10 @@ function KinematicsCharts({ data }) {
       tooltipLabelKey: 'wizard.charts.tooltip.axleX',
       tooltipValueKey: 'wizard.charts.tooltip.axleY',
       summaryKey: 'wizard.charts.axle.summary',
+      highlight: t('wizard.charts.axle.highlight', {
+        rearward: formatNumber(axlePathDescriptors.maxRearwardMm),
+        travel: formatNumber(axlePathDescriptors.atTravelPercent),
+      }),
     },
   ]
   for (const [id, curve, color] of [
@@ -196,6 +204,15 @@ function KinematicsCharts({ data }) {
           })}
         </p>
         <p className={styles.description}>{t('wizard.charts.referenceLimit')}</p>
+        <p className={travelCheck.withinTolerance ? styles.referenceNotice : styles.travelWarning}>
+          {t(travelCheck.withinTolerance
+            ? 'wizard.charts.travelCheck.withinTolerance'
+            : 'wizard.charts.travelCheck.outsideTolerance', {
+            calculated: formatNumber(travelCheck.calculatedTravelMm),
+            declared: formatNumber(travelCheck.declaredTravelMm),
+            deviation: formatNumber(travelCheck.deviationPercent),
+          })}
+        </p>
       </div>
       {charts.map((chart) => (
         <CurveChart
@@ -206,7 +223,6 @@ function KinematicsCharts({ data }) {
           square={chart.id === 'axle'}
         />
       ))}
-      <KinematicsDescriptors data={data} />
     </div>
   )
 }

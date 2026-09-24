@@ -35,3 +35,13 @@ it('shows five labelled graphs, endpoint summaries and honest reference conditio
   expect(screen.queryByText(/does not affect the v1/)).toBeNull()
   expect(container.querySelectorAll('table')).toHaveLength(0)
 })
+
+/** Each key figure sits under its own curve; the old summary cards repeated the charts. */
+it('shows the key figures under their charts and checks the travel once, at the top', () => {
+  render(<KinematicsCharts data={referencePreview()} />)
+
+  expect(screen.getByText('Total progression: 20.0%')).toBeTruthy()
+  expect(screen.getByText('Maximum rearward movement: 5.0 mm, at 100.0% of the travel.')).toBeTruthy()
+  expect(screen.getByText(/The calculated travel is 150.0 mm, close to the declared 150.0 mm/)).toBeTruthy()
+  expect(screen.queryByRole('heading', { name: 'What these curves mean' })).toBeNull()
+})

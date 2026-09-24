@@ -1,7 +1,10 @@
 package com.bikematch.interpretation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,6 +15,10 @@ import org.springframework.stereotype.Component;
  * carries: see {@code docs/base-conocimiento-cinematica.md}. No bike is made to sound bad,
  * no spring is recommended, and the gear the figures were calculated in is not printed: it
  * means nothing to the reader.
+ *
+ * <p>The sentences live in {@code messages.properties} (English) and
+ * {@code messages_es.properties} (Spanish). This class only chooses which ones apply;
+ * Spring's MessageSource returns them in the language of the context.
  */
 @Component
 public class RulesBasedInterpretationProvider implements InterpretationProvider {
@@ -21,6 +28,12 @@ public class RulesBasedInterpretationProvider implements InterpretationProvider 
 
     /** The context offers a menu of figures; a stored explanation may cite at most four. */
     private static final int MAX_CITED_EVIDENCE = 4;
+
+    private final MessageSource messages;
+
+    public RulesBasedInterpretationProvider(MessageSource messages) {
+        this.messages = messages;
+    }
 
     @Override
     public String providerVersion() {
@@ -34,25 +47,25 @@ public class RulesBasedInterpretationProvider implements InterpretationProvider 
 
     @Override
     public Interpretation generate(InterpretationContext context) {
+        Locale locale = Locale.forLanguageTag(context.language());
         if (!context.dataQuality().travelCheckPassed()) {
             return new Interpretation(
-                    "The calculated travel does not match the declared travel. Review the photo marks and calibration before drawing conclusions; the curves remain available as a reference.",
+                    text("rules.travelMismatch", locale),
                     Interpretation.Source.RULES,
                     PROVIDER_VERSION,
                     citedEvidence(context)
             );
         }
 
-        StringBuilder summary = new StringBuilder("This saved analysis shows ");
-        appendLeverage(summary, context);
-        summary.append('.');
-        appendPedalling(summary, context);
-        appendBraking(summary, context);
-        appendAxlePath(summary, context);
-        summary.append(" These are geometric tendencies from a marked photo, not a personal setup recommendation or a laboratory measurement.");
+        List<String> sentences = new ArrayList<>();
+        sentences.add(text("rules.opening", locale, leverage(context, locale)));
+        optionalText("rules.pedalling.", context.readings().antiSquat(), locale).ifPresent(sentences::add);
+        optionalText("rules.braking.", context.readings().antiRise(), locale).ifPresent(sentences::add);
+        axlePath(context, locale).ifPresent(sentences::add);
+        sentences.add(text("rules.closing", locale));
 
         return new Interpretation(
-                summary.toString(),
+                String.join(" ", sentences),
                 Interpretation.Source.RULES,
                 PROVIDER_VERSION,
                 citedEvidence(context)
@@ -65,82 +78,45 @@ public class RulesBasedInterpretationProvider implements InterpretationProvider 
     }
 
     /** Progression over the whole travel: the one percentage riders actually read. */
-    private void appendLeverage(StringBuilder summary, InterpretationContext context) {
+    private String leverage(InterpretationContext context, Locale locale) {
         EvidenceValue progression = evidence(context, "totalProgressionPercent");
         if (progression == null) {
-            summary.append("a suspension response that should be read together with its leverage curve");
-            return;
+            return text("rules.leverage.withoutProgression", locale);
         }
-        summary.append(character(context.readings().progression()))
-                .append(" (progression: ")
-                .append(format(progression.value()))
-                .append(progression.unit())
-                .append(")");
+        String leverage = character(context.readings().progression(), locale) + " "
+                + text("rules.leverage.progression", locale, format(progression.value()) + progression.unit());
         String bottomOut = context.leverageShape() == null ? null : context.leverageShape().bottomOutTrend();
         if ("REGRESSIVE".equals(bottomOut)) {
-            summary.append(", with the leverage rising again over the last stretch of travel");
+            leverage += text("rules.leverage.bottomOutRising", locale);
         }
+        return leverage;
     }
 
-    /** Linear means predictable, and nothing more; high progression does not imply pop. */
-    private String character(String progressionBand) {
-        if (progressionBand == null) {
-            return "a leverage response to be read together with its curve";
-        }
-        return switch (progressionBand) {
-            case "REGRESSIVE" -> "a regressive leverage response, which asks more of the shock at the end of the travel";
-            case "LINEAR" -> "a linear leverage response, so the suspension behaves predictably";
-            case "SLIGHTLY_PROGRESSIVE" -> "a slightly progressive leverage response";
-            case "MEDIUM" -> "a progressive leverage response";
-            case "HIGH" -> "a strongly progressive leverage response, with growing support";
-            case "VERY_HIGH" -> "a very progressive leverage response, with a wide margin against hits that would use up the travel at once";
-            default -> "a leverage response to be read together with its curve";
-        };
+    private String character(String progressionBand, Locale locale) {
+        return optionalText("rules.character.", progressionBand, locale)
+                .orElseGet(() -> text("rules.character.unknown", locale));
     }
 
-    /**
-     * Pedalling in one sentence. Chain tension and anti-squat describe the same thing to the
-     * rider: whether the effort goes into moving forward or into the shock.
-     */
-    private void appendPedalling(StringBuilder summary, InterpretationContext context) {
-        String band = context.readings().antiSquat();
-        if (band == null) {
-            return;
-        }
-        summary.append(switch (band) {
-            case "SOFT" -> " Pedalling, the shock takes up part of your effort, so on smooth climbs you will reach for the lockout more often.";
-            case "BALANCED" -> " It pedals in balance: part of your effort reaches the shock, but not enough to get in the way.";
-            case "FIRM", "VERY_FIRM" -> " It pedals efficiently: the chain keeps the bike extended, so your effort goes into moving forward rather than into the shock.";
-            case "EXTREME" -> " It pedals very firmly, with almost none of your effort reaching the shock.";
-            default -> "";
-        });
-    }
-
-    /** Said the way the rider feels it: a rear that lifts, or one that settles. */
-    private void appendBraking(StringBuilder summary, InterpretationContext context) {
-        String band = context.readings().antiRise();
-        if (band == null) {
-            return;
-        }
-        summary.append(switch (band) {
-            case "EXTENDS_UNDER_BRAKING" -> " Braking, the rear lifts a little, so the bike feels less settled and the slope feels steeper, while the shock copies the ground better.";
-            case "BALANCED" -> " Braking, it sits in the balance most modern bikes aim for.";
-            case "SQUATS_UNDER_BRAKING" -> " Braking, the rear settles, which makes the bike more stable, as a consequence of not copying the ground as closely.";
-            case "SITS_HARD_UNDER_BRAKING" -> " Braking, the rear settles clearly, which makes the bike very stable, as a consequence of copying the ground less closely.";
-            default -> "";
-        });
-    }
-
-    private void appendAxlePath(StringBuilder summary, InterpretationContext context) {
+    /** Only an axle path worth a sentence gets one. */
+    private Optional<String> axlePath(InterpretationContext context, Locale locale) {
         EvidenceValue rearward = evidence(context, "maxRearwardMm");
         String band = context.readings().axlePath();
         if (rearward == null || !("SLIGHT".equals(band) || "NOTICEABLE".equals(band))) {
-            return;
+            return Optional.empty();
         }
-        summary.append(" The rear axle moves up to ")
-                .append(format(rearward.value()))
-                .append(rearward.unit())
-                .append(" rearward, which helps it swallow square edges.");
+        return Optional.of(text("rules.axlePath", locale, format(rearward.value()) + rearward.unit()));
+    }
+
+    private String text(String key, Locale locale, Object... figures) {
+        return messages.getMessage(key, figures, locale);
+    }
+
+    /** A band without a sentence of its own, or no band at all, adds nothing. */
+    private Optional<String> optionalText(String keyPrefix, String band, Locale locale) {
+        if (band == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(messages.getMessage(keyPrefix + band, null, null, locale));
     }
 
     private EvidenceValue evidence(InterpretationContext context, String key) {

@@ -1,0 +1,4 @@
+.switcher { display: inline-flex; flex-shrink: 0; padding: 0.15rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
+.switcher button { min-width: 2.4rem; padding: 0.35rem 0.5rem; border: none; border-radius: calc(var(--radius-sm) - 2px); background: none; color: var(--color-text-muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; }
+.switcher button:hover { color: var(--color-text); }
+.switcher button[aria-pressed='true'] { background: var(--color-text); color: var(--color-surface); }

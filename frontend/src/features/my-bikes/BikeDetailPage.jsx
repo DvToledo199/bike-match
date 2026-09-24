@@ -8,7 +8,8 @@ import { getSession } from '../../services/session.js'
 import styles from './BikeDetailPage.module.css'
 
 function BikeDetailPage({ bikeId, onBack, backLabelKey = 'bikeDetail.back' }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const language = i18n.resolvedLanguage
   const [bike, setBike] = useState(null)
   const [error, setError] = useState(null)
   const [reloadKey, setReloadKey] = useState(0)
@@ -40,7 +41,7 @@ function BikeDetailPage({ bikeId, onBack, backLabelKey = 'bikeDetail.back' }) {
     setInterpretationError(null)
     setInterpretationLoading(true)
 
-    getBikeInterpretation(bikeId)
+    getBikeInterpretation(bikeId, language)
       .then((result) => {
         if (active) setInterpretation(result)
       })
@@ -52,13 +53,13 @@ function BikeDetailPage({ bikeId, onBack, backLabelKey = 'bikeDetail.back' }) {
       })
 
     return () => { active = false }
-  }, [bike, bikeId])
+  }, [bike, bikeId, language])
 
   async function handleGenerateInterpretation() {
     setInterpretationGenerating(true)
     setInterpretationError(null)
     try {
-      setInterpretation(await generateBikeInterpretation(bikeId))
+      setInterpretation(await generateBikeInterpretation(bikeId, language))
     } catch (requestError) {
       setInterpretationError(requestError)
     } finally {

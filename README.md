@@ -224,7 +224,8 @@ La explicación básica se genera y se reutiliza desde el backend. `POST
 bici y devuelve un resumen junto con 2–4 cifras que lo respaldan. `GET
 /api/bikes/{id}/interpretation?language=en` permite leer una explicación ya guardada
 si la bici es pública o si quien consulta es su propietario; una visita pública no
-genera una llamada al proveedor. El modo predeterminado es `rules`, determinista y sin
+genera una llamada al proveedor. `language` admite `en` y `es`, y la web envía el idioma
+elegido en la interfaz. El modo predeterminado es `rules`, determinista y sin
 coste externo. Gemini se activa únicamente con `INTERPRETATION_PROVIDER=google-genai`,
 `GEMINI_API_KEY` y `GEMINI_MODEL` en el entorno del backend, y se llama mediante Spring AI
 (`ChatClient` con el módulo de Google GenAI); si falla, se guarda una

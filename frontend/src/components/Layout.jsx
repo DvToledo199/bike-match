@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import LanguageSwitcher from './LanguageSwitcher.jsx'
 import styles from './Layout.module.css'
 
 function Layout({ children, session, screen, onLogout }) {
@@ -27,6 +28,7 @@ function Layout({ children, session, screen, onLogout }) {
           </>}
           <a href="#/analyze" className={styles.analyzeLink} aria-current={screen === 'analysis' ? 'page' : undefined}>{t('app.analyze')}</a>
         </nav>
+        <div className={styles.language}><LanguageSwitcher /></div>
       </header>
       <main id="main-content" className={styles.main} data-screen={screen} tabIndex="-1">{children}</main>
       <footer className={styles.footer}><span>{t('app.title')}</span><span>{t('app.footer')}</span></footer>

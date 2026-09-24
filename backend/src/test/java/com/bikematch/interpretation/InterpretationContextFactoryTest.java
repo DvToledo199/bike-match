@@ -1,6 +1,7 @@
 package com.bikematch.interpretation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 import com.bikematch.bike.BikeCategory;
@@ -168,6 +169,23 @@ class InterpretationContextFactoryTest {
         assertThat(context.allowedTopics())
                 .doesNotContain("springType", "volumeSpacers")
                 .contains("riderFit");
+    }
+
+    @Test
+    void acceptsSpanishAndRejectsLanguagesTheProvidersCannotWrite() {
+        KinematicsResult result = result(
+                "monopivot-reference-v2",
+                "{\"conditions\":{\"sagPercent\":30},"
+                        + "\"leverageDescriptors\":{\"totalProgressionPercent\":18,\"lrAtSag\":2.8},"
+                        + "\"axlePathDescriptors\":{\"maxRearwardMm\":2},"
+                        + "\"travelCheck\":{\"calculatedTravelMm\":150,\"withinTolerance\":true}}",
+                "{\"cogAwareKickback\":true,\"antiSquat\":false,\"antiRise\":false,\"referenceOnly\":true}",
+                "{}");
+
+        assertThat(factory.create(result, " ES ", BikeCategory.ENDURO).language()).isEqualTo("es");
+        assertThatThrownBy(() -> factory.create(result, "fr", BikeCategory.ENDURO))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Spanish (es)");
     }
 
     @Test

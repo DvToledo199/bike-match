@@ -45,7 +45,8 @@ Before running, copy `.env.example` to `.env` (repo root) and
   migration in `backend/src/main/resources/db/migration`. Never create or alter
   tables by hand. Hibernate runs with `ddl-auto=validate`.
 - **Language:** code, API, database and commit messages in English. UI text
-  lives in the react-i18next translation files (English is the base language).
+  lives in the react-i18next translation files (English is the base language; every
+  key also exists in Spanish, and a test fails if one is missing).
 
 ## Workflow
 

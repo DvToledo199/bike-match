@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
  * no spring is recommended, and the gear the figures were calculated in is not printed: it
  * means nothing to the reader.
  *
+ * <p>The page shows the note about what this analysis is under every explanation, so the
+ * text does not end by repeating it.
+ *
  * <p>The sentences live in {@code messages.properties} (English) and
  * {@code messages_es.properties} (Spanish). This class only chooses which ones apply;
  * Spring's MessageSource returns them in the language of the context.
@@ -23,7 +26,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RulesBasedInterpretationProvider implements InterpretationProvider {
 
-    private static final String PROVIDER_VERSION = "rules-4";
+    private static final String PROVIDER_VERSION = "rules-5";
     private static final String PROMPT_VERSION = "interpretation-prompt-1";
 
     /** The context offers a menu of figures; a stored explanation may cite at most four. */
@@ -62,7 +65,6 @@ public class RulesBasedInterpretationProvider implements InterpretationProvider 
         optionalText("rules.pedalling.", context.readings().antiSquat(), locale).ifPresent(sentences::add);
         optionalText("rules.braking.", context.readings().antiRise(), locale).ifPresent(sentences::add);
         axlePath(context, locale).ifPresent(sentences::add);
-        sentences.add(text("rules.closing", locale));
 
         return new Interpretation(
                 String.join(" ", sentences),

@@ -54,8 +54,8 @@ public class GeminiInterpretationProvider implements InterpretationProvider {
                copies the ground better. If the rear settles, the bike is more stable under
                braking, as a consequence of not copying the ground as closely. Do not say the
                bike squats, and do not tie this to steep terrain: it is about braking.
-            5. Who it fits and who it does not, in general terms.
-            6. One short closing sentence keeping the reader honest about what this analysis is.
+            5. Who it fits and who it does not, in general terms. Do not add a closing
+               disclaimer: the page shows one under every explanation.
 
             Rules:
             - Use only values present in the JSON context. Never invent a number or a metric, and
@@ -80,7 +80,7 @@ public class GeminiInterpretationProvider implements InterpretationProvider {
             Use between two and four evidenceKeys taken from the context evidence, the ones you
             actually cited. Plain text only, no Markdown and no HTML.
             """;
-    private static final String PROMPT_VERSION = "interpretation-prompt-5";
+    private static final String PROMPT_VERSION = "interpretation-prompt-6";
 
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;

@@ -24,11 +24,11 @@ class RulesBasedInterpretationProviderTest {
         Interpretation result = provider.generate(referenceContext(true, true));
 
         assertThat(result.source()).isEqualTo(Interpretation.Source.RULES);
-        assertThat(result.providerVersion()).isEqualTo("rules-4");
+        assertThat(result.providerVersion()).isEqualTo("rules-5");
         assertThat(result.summary())
                 .contains("progressive leverage response")
                 .contains("22%")
-                .contains("These are geometric tendencies")
+                .doesNotContain("geometric tendencies")
                 .doesNotContain("pressure")
                 .doesNotContain("clicks");
         assertThat(result.evidence()).hasSize(3);
@@ -128,10 +128,10 @@ class RulesBasedInterpretationProviderTest {
                 .contains("(progresión: 3.3%)")
                 .contains("se comporta de forma predecible")
                 .contains("Pedalea con equilibrio")
-                .contains("la parte trasera se asienta")
-                .endsWith("ni una medición de laboratorio.")
+                .endsWith("como consecuencia de no copiar el terreno con tanta precisión.")
+                .doesNotContain("tendencias geométricas")
                 .doesNotContain("This saved analysis");
-        assertThat(result.providerVersion()).isEqualTo("rules-4");
+        assertThat(result.providerVersion()).isEqualTo("rules-5");
     }
 
     @Test

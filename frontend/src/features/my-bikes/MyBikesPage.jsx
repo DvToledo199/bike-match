@@ -260,10 +260,10 @@ function BikeCard({
       )}
       <div className={styles.cardBody}>
         <div className={styles.cardHeading}>
-          <h2>{title || t('myBikes.unnamed')}</h2>
           <span className={`${styles.status} ${styles[`status${statusKey}`]}`}>
             {t(`myBikes.status.${statusKey}`)}
           </span>
+          <h2>{title || t('myBikes.unnamed')}</h2>
         </div>
         <dl className={styles.details}>
           <div><dt>{t('myBikes.fields.year')}</dt><dd>{bike.modelYear ?? t('myBikes.notAvailable')}</dd></div>

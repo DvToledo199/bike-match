@@ -25,7 +25,7 @@ public class GeminiClientConfig {
     @Bean
     Client googleGenAiClient(
             @Value("${spring.ai.google.genai.api-key:}") String apiKey,
-            @Value("${app.interpretation.gemini.timeout:PT30S}") Duration timeout
+            @Value("${app.interpretation.gemini.timeout:PT60S}") Duration timeout
     ) {
         if (apiKey.isBlank()) {
             throw new IllegalStateException("INTERPRETATION_PROVIDER=google-genai requires GEMINI_API_KEY");

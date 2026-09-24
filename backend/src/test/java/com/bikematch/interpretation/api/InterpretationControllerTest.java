@@ -53,7 +53,8 @@ class InterpretationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.source").value("RULES"))
                 .andExpect(jsonPath("$.summary").value("A concise explanation."))
-                .andExpect(jsonPath("$.evidence[0].key").value("usefulProgressionPercent"));
+                .andExpect(jsonPath("$.evidence[0].key").value("usefulProgressionPercent"))
+                .andExpect(jsonPath("$.fallback").value(true));
     }
 
     @Test
@@ -88,6 +89,7 @@ class InterpretationControllerTest {
                 "rules-1",
                 "A concise explanation.",
                 evidence,
-                Instant.parse("2026-09-14T12:00:00Z"));
+                Instant.parse("2026-09-14T12:00:00Z"),
+                true);
     }
 }

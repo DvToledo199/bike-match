@@ -113,6 +113,28 @@ it('lets the owner generate the explanation when it is missing', async () => {
   expect(generateBikeInterpretation).toHaveBeenCalledWith(7, 'en')
 })
 
+it('says when the AI did not answer, shows the rules text as a stand-in and offers to try again', async () => {
+  sessionStorage.setItem('bikematch.session', JSON.stringify({
+    accessToken: 'token',
+    tokenType: 'Bearer',
+    username: 'david',
+  }))
+  getBikeDetail.mockResolvedValue(bike)
+  getBikeInterpretation.mockResolvedValue({ ...explanation, fallback: true })
+  generateBikeInterpretation.mockResolvedValue({ ...explanation, source: 'AI', fallback: false })
+
+  render(<BikeDetailPage bikeId={7} onBack={vi.fn()} />)
+
+  await waitFor(() => expect(screen.getByText(/The AI could not answer right now/)).toBeTruthy())
+  expect(screen.getByRole('heading', { name: 'For now, an approximate description' })).toBeTruthy()
+  expect(screen.getByText('This analysis shows a progressive response.')).toBeTruthy()
+  screen.getByRole('button', { name: 'Try again with AI' }).click()
+
+  await waitFor(() => expect(screen.getByRole('heading', { name: 'What this analysis suggests' })).toBeTruthy())
+  expect(screen.getByText('AI-generated summary')).toBeTruthy()
+  expect(generateBikeInterpretation).toHaveBeenCalledWith(7, 'en')
+})
+
 it('explains when the bike cannot be accessed and allows going back', async () => {
   const onBack = vi.fn()
   getBikeDetail.mockRejectedValue({ status: 404 })

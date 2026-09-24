@@ -1,26 +1,24 @@
 package com.bikematch.interpretation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.time.Duration;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 
 /**
- * Gemini adapter. It is only created when the application explicitly selects it.
+ * Gemini adapter, built on Spring AI. It is only created when the application explicitly selects it.
  * The rest of the application talks to the InterpretationProvider interface.
+ * <p>
+ * Spring AI builds the request, sends it with the configured key and model, and returns the text.
+ * This class only decides what to ask and checks that the answer is safe to show.
  */
 @Component
-@ConditionalOnProperty(name = "app.interpretation.provider", havingValue = "gemini")
+@ConditionalOnProperty(name = "spring.ai.model.chat", havingValue = "google-genai")
 public class GeminiInterpretationProvider implements InterpretationProvider {
 
     private static final String SYSTEM_INSTRUCTION = """
@@ -82,28 +80,21 @@ public class GeminiInterpretationProvider implements InterpretationProvider {
             """;
     private static final String PROMPT_VERSION = "interpretation-prompt-4";
 
-    private final RestClient restClient;
+    private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
-    private final String apiKey;
     private final String model;
 
     public GeminiInterpretationProvider(
+            ChatClient.Builder chatClientBuilder,
             ObjectMapper objectMapper,
-            @Value("${app.interpretation.gemini.api-key:}") String apiKey,
-            @Value("${app.interpretation.gemini.model:}") String model,
-            @Value("${app.interpretation.gemini.base-url:https://generativelanguage.googleapis.com}") String baseUrl,
-            @Value("${app.interpretation.gemini.timeout:PT15S}") Duration timeout
+            @Value("${spring.ai.google.genai.chat.options.model:}") String model
     ) {
+        if (model.isBlank()) {
+            throw new IllegalStateException("INTERPRETATION_PROVIDER=google-genai requires GEMINI_MODEL");
+        }
+        this.chatClient = chatClientBuilder.build();
         this.objectMapper = objectMapper;
-        this.apiKey = apiKey;
         this.model = model;
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(timeout);
-        requestFactory.setReadTimeout(timeout);
-        this.restClient = RestClient.builder()
-                .baseUrl(baseUrl)
-                .requestFactory(requestFactory)
-                .build();
     }
 
     @Override
@@ -118,75 +109,62 @@ public class GeminiInterpretationProvider implements InterpretationProvider {
 
     @Override
     public Interpretation generate(InterpretationContext context) {
-        if (apiKey.isBlank() || model.isBlank()) {
-            throw new InterpretationProviderException(
-                    "Gemini provider requires GEMINI_API_KEY and GEMINI_MODEL");
-        }
+        String answer = ask(context);
+        GeneratedExplanation generated = read(answer);
+        return validated(generated, context);
+    }
 
+    /** The instructions go as the system message and the bike's context, as JSON, as the user message. */
+    private String ask(InterpretationContext context) {
         try {
-            JsonNode response = restClient.post()
-                    .uri("/v1beta/models/{model}:generateContent", model)
-                    .header("x-goog-api-key", apiKey)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(requestFor(context))
-                    .retrieve()
-                    .body(JsonNode.class);
-            return parseResponse(response, context);
-        } catch (RestClientException | JsonProcessingException exception) {
+            return chatClient.prompt()
+                    .system(SYSTEM_INSTRUCTION)
+                    .user(objectMapper.writeValueAsString(context))
+                    .call()
+                    .content();
+        } catch (JsonProcessingException | RuntimeException exception) {
             throw new InterpretationProviderException("Gemini did not return a valid explanation", exception);
         }
     }
 
-    private ObjectNode requestFor(InterpretationContext context) throws JsonProcessingException {
-        ObjectNode request = objectMapper.createObjectNode();
-        ObjectNode systemInstruction = request.putObject("system_instruction");
-        systemInstruction.putArray("parts").addObject().put("text", SYSTEM_INSTRUCTION);
-
-        ObjectNode userContent = request.putArray("contents").addObject();
-        userContent.put("role", "user");
-        userContent.putArray("parts").addObject()
-                .put("text", objectMapper.writeValueAsString(context));
-
-        request.putObject("generationConfig").put("responseMimeType", "application/json");
-        return request;
-    }
-
-    private Interpretation parseResponse(JsonNode response, InterpretationContext context)
-            throws JsonProcessingException {
-        String rawText = response == null
-                ? ""
-                : response.at("/candidates/0/content/parts/0/text").asText("");
-        if (rawText.isBlank()) {
+    private GeneratedExplanation read(String answer) {
+        if (answer == null || answer.isBlank()) {
             throw new InterpretationProviderException("Gemini returned no explanation text");
         }
+        try {
+            return objectMapper.readValue(answer, GeneratedExplanation.class);
+        } catch (JsonProcessingException exception) {
+            throw new InterpretationProviderException("Gemini did not return a valid explanation", exception);
+        }
+    }
 
-        JsonNode generated = objectMapper.readTree(rawText);
-        String summary = generated.path("summary").asText("").trim();
-        JsonNode evidenceKeys = generated.path("evidenceKeys");
+    /** The model's text reaches the page, so it must be plain text that only cites figures we sent. */
+    private Interpretation validated(GeneratedExplanation generated, InterpretationContext context) {
+        String summary = generated.summary() == null ? "" : generated.summary().trim();
+        List<String> evidenceKeys = generated.evidenceKeys();
         if (summary.isBlank() || summary.length() > Interpretation.MAX_SUMMARY_LENGTH
                 || summary.contains("<") || summary.contains(">")
-                || !evidenceKeys.isArray() || evidenceKeys.size() < 2 || evidenceKeys.size() > 4) {
+                || evidenceKeys == null || evidenceKeys.size() < 2 || evidenceKeys.size() > 4) {
             throw new InterpretationProviderException("Gemini returned an unsafe explanation shape");
         }
 
         Set<String> allowedEvidence = context.evidence().stream()
                 .map(InterpretationContext.Evidence::key)
-                .collect(java.util.stream.Collectors.toSet());
-        Set<String> selectedEvidence = new HashSet<>();
-        for (JsonNode evidenceKey : evidenceKeys) {
-            if (!evidenceKey.isTextual() || !allowedEvidence.contains(evidenceKey.asText())) {
-                throw new InterpretationProviderException("Gemini returned an unknown evidence key");
-            }
-            selectedEvidence.add(evidenceKey.asText());
+                .collect(Collectors.toSet());
+        if (!allowedEvidence.containsAll(evidenceKeys)) {
+            throw new InterpretationProviderException("Gemini returned an unknown evidence key");
         }
-
-        if (selectedEvidence.size() < 2) {
+        if (Set.copyOf(evidenceKeys).size() < 2) {
             throw new InterpretationProviderException("Gemini returned duplicate evidence keys");
         }
 
         var evidence = context.evidence().stream()
-                .filter(item -> selectedEvidence.contains(item.key()))
+                .filter(item -> evidenceKeys.contains(item.key()))
                 .toList();
         return new Interpretation(summary, Interpretation.Source.AI, providerVersion(), evidence);
+    }
+
+    /** The JSON shape the instructions ask Gemini to return. */
+    private record GeneratedExplanation(String summary, List<String> evidenceKeys) {
     }
 }

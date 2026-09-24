@@ -225,8 +225,9 @@ bici y devuelve un resumen junto con 2–4 cifras que lo respaldan. `GET
 /api/bikes/{id}/interpretation?language=en` permite leer una explicación ya guardada
 si la bici es pública o si quien consulta es su propietario; una visita pública no
 genera una llamada al proveedor. El modo predeterminado es `rules`, determinista y sin
-coste externo. Gemini se activa únicamente con `INTERPRETATION_PROVIDER=gemini`,
-`GEMINI_API_KEY` y `GEMINI_MODEL` en el entorno del backend; si falla, se guarda una
+coste externo. Gemini se activa únicamente con `INTERPRETATION_PROVIDER=google-genai`,
+`GEMINI_API_KEY` y `GEMINI_MODEL` en el entorno del backend, y se llama mediante Spring AI
+(`ChatClient` con el módulo de Google GenAI); si falla, se guarda una
 explicación por reglas identificada como `source=RULES`. No se envían foto, puntos,
 correo, contraseña ni perfil personal al proveedor. Los modelos `gemini-2.5-*` ya no
 están disponibles para cuentas nuevas: usa el identificador que devuelva la lista de
@@ -245,8 +246,9 @@ La caché se versiona por resultado, contexto, reglas, idioma, proveedor y promp
 Generar solo reutiliza la explicación del proveedor configurado: con Gemini activo, una
 bici que solo tiene texto por reglas vuelve a pedírsela a Gemini. Leer devuelve la que
 haya guardada, sea del proveedor elegido o del respaldo. Al generar, el navegador espera
-hasta 45 segundos, por encima del máximo del proveedor (`GEMINI_TIMEOUT`: 15 segundos
-para conectar y otros 15 para leer). Las
+hasta 45 segundos, por encima del máximo del proveedor (`GEMINI_TIMEOUT`: 30 segundos
+en total y un solo intento, sin los reintentos que Spring AI y el cliente de Google harían
+por defecto). Las
 peticiones que tendrían que llamar al proveedor tienen además un enfriamiento local
 configurable (`INTERPRETATION_GENERATION_COOLDOWN`, 30 segundos por defecto); el
 resumen y el contexto tienen límites de tamaño y la respuesta externa se valida como

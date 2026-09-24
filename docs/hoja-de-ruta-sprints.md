@@ -121,6 +121,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
   - [x] Frontend: foto al guardar y sesión iniciada tras registrarse (#180)
   - [x] Borrar una bici: el dueño (#181, #182) y el moderador, con aviso al dueño (#183, #184)
   - [x] README y limitaciones: Cloudinary, moderador inicial y traducción automática (#185)
+  - [x] Interfaz y explicación en español, con selector de idioma (#210)
   - [ ] Decidir si el registro pide repetir correo y contraseña
   - [ ] Recuperar la contraseña, pendiente de elegir cómo enviar correos (#186)
   - [ ] Botón «Denunciar foto»: opciones y decisión en #167

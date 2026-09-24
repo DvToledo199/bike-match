@@ -31,7 +31,9 @@ function InterpretationSummary({
     return (
       <section className={styles.card} aria-labelledby="interpretation-title" aria-busy="true">
         <h2 id="interpretation-title">{t('bikeDetail.interpretation.title')}</h2>
-        <p className={styles.muted}>{t('bikeDetail.interpretation.loading')}</p>
+        <p className={styles.muted}>
+          {t(generating ? 'bikeDetail.interpretation.generating' : 'bikeDetail.interpretation.loading')}
+        </p>
       </section>
     )
   }
@@ -53,19 +55,39 @@ function InterpretationSummary({
             {t(canGenerate ? 'bikeDetail.interpretation.generate' : 'bikeDetail.interpretation.retry')}
           </button>
         )}
+        {canGenerate && <p className={styles.hint}>{t('bikeDetail.interpretation.generateHint')}</p>}
       </section>
     )
   }
 
   return (
     <section className={styles.card} aria-labelledby="interpretation-title">
+      {/* The AI did not answer: say so, offer to try again, and show the rules text as a stand-in. */}
+      {interpretation.fallback && canGenerate && (
+        <div className={styles.notice} role="status">
+          <p>{t('bikeDetail.interpretation.fallbackNotice')}</p>
+          {error && (
+            <p>{t(error.status === 429
+              ? 'bikeDetail.interpretation.rateLimited'
+              : 'bikeDetail.interpretation.unavailable')}</p>
+          )}
+          <button type="button" className={styles.actionButton} onClick={onGenerate}>
+            {t('bikeDetail.interpretation.retryAi')}
+          </button>
+          <p className={styles.hint}>{t('bikeDetail.interpretation.generateHint')}</p>
+        </div>
+      )}
       <div className={styles.heading}>
         <p className={styles.eyebrow}>
           {t(interpretation.source === 'AI'
             ? 'bikeDetail.interpretation.aiSource'
             : 'bikeDetail.interpretation.rulesSource')}
         </p>
-        <h2 id="interpretation-title">{t('bikeDetail.interpretation.title')}</h2>
+        <h2 id="interpretation-title">
+          {t(interpretation.fallback
+            ? 'bikeDetail.interpretation.fallbackTitle'
+            : 'bikeDetail.interpretation.title')}
+        </h2>
       </div>
       <p className={styles.summary}>{interpretation.summary}</p>
       <dl className={styles.evidence}>

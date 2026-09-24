@@ -223,6 +223,11 @@
       "unavailable": "La explicación no está disponible ahora mismo. Las curvas guardadas siguen disponibles más abajo.",
       "rateLimited": "Espera un momento antes de pedir otra explicación.",
       "generate": "Generar explicación",
+      "generating": "Generando la explicación… Puede tardar hasta un minuto.",
+      "generateHint": "Puede tardar hasta un minuto.",
+      "fallbackTitle": "Por ahora, una descripción aproximada",
+      "fallbackNotice": "La IA no ha podido responder ahora mismo: algo está fallando. Inténtalo más tarde.",
+      "retryAi": "Volver a intentarlo con IA",
       "retry": "Reintentar",
       "rulesSource": "Resumen basado en reglas",
       "aiSource": "Resumen generado con IA",
@@ -584,7 +589,7 @@
       "creating": "Creando tu bici privada…",
       "uploading": "Subiendo tu foto…",
       "saving": "Guardando el análisis…",
-      "explaining": "Preparando tu resumen…"
+      "explaining": "Preparando tu resumen… Puede tardar hasta un minuto."
     },
     "errors": {
       "uncertainCreate": "No hemos podido confirmar si la bici se ha creado. Revisa Mis bicis antes de empezar de nuevo para no duplicarla.",

@@ -223,6 +223,11 @@
       "unavailable": "The explanation is unavailable right now. The saved curves are still available below.",
       "rateLimited": "Please wait a moment before requesting another explanation.",
       "generate": "Generate explanation",
+      "generating": "Generating the explanation… It can take up to a minute.",
+      "generateHint": "It can take up to a minute.",
+      "fallbackTitle": "For now, an approximate description",
+      "fallbackNotice": "The AI could not answer right now; something is not working. Try again later.",
+      "retryAi": "Try again with AI",
       "retry": "Try again",
       "rulesSource": "Rules-based summary",
       "aiSource": "AI-generated summary",
@@ -584,7 +589,7 @@
       "creating": "Creating your private bike…",
       "uploading": "Uploading your photo…",
       "saving": "Saving the analysis…",
-      "explaining": "Preparing your summary…"
+      "explaining": "Preparing your summary… It can take up to a minute."
     },
     "errors": {
       "uncertainCreate": "We could not confirm whether the bike was created. Check My bikes before starting again to avoid a duplicate.",

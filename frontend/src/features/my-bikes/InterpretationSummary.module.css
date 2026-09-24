@@ -45,6 +45,26 @@
   color: var(--color-text);
 }
 
+.hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.notice {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-left: 3px solid var(--color-warning);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-surface));
+}
+
+.notice p {
+  margin: 0;
+  color: var(--color-text);
+}
+
 .evidence {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));

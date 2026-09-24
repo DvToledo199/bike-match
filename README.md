@@ -229,7 +229,9 @@ elegido en la interfaz. El modo predeterminado es `rules`, determinista y sin
 coste externo. Gemini se activa únicamente con `INTERPRETATION_PROVIDER=google-genai`,
 `GEMINI_API_KEY` y `GEMINI_MODEL` en el entorno del backend, y se llama mediante Spring AI
 (`ChatClient` con el módulo de Google GenAI); si falla, se guarda una
-explicación por reglas identificada como `source=RULES`. No se envían foto, puntos,
+explicación por reglas identificada como `source=RULES` y la respuesta lleva
+`fallback=true`: la web avisa de que la IA no ha respondido, muestra ese texto como
+descripción aproximada y permite volver a intentarlo. No se envían foto, puntos,
 correo, contraseña ni perfil personal al proveedor. Los modelos `gemini-2.5-*` ya no
 están disponibles para cuentas nuevas: usa el identificador que devuelva la lista de
 modelos de tu clave, por ejemplo `gemini-3.6-flash`.
@@ -248,7 +250,7 @@ La caché se versiona por resultado, contexto, reglas, idioma, proveedor y promp
 Generar solo reutiliza la explicación del proveedor configurado: con Gemini activo, una
 bici que solo tiene texto por reglas vuelve a pedírsela a Gemini. Leer devuelve la que
 haya guardada, sea del proveedor elegido o del respaldo. Al generar, el navegador espera
-hasta 45 segundos, por encima del máximo del proveedor (`GEMINI_TIMEOUT`: 30 segundos
+hasta 75 segundos, por encima del máximo del proveedor (`GEMINI_TIMEOUT`: 60 segundos
 en total y un solo intento, sin los reintentos que Spring AI y el cliente de Google harían
 por defecto). Las
 peticiones que tendrían que llamar al proveedor tienen además un enfriamiento local

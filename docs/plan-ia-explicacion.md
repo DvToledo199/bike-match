@@ -123,9 +123,10 @@ explicación generada sea correcta.
 ## Coste, privacidad y disponibilidad
 
 - El proveedor por defecto es `rules`: funciona sin red ni coste y sirve para desarrollo
-  y fallback. Gemini es opcional mediante `INTERPRETATION_PROVIDER=gemini`,
+  y fallback. Gemini es opcional mediante `INTERPRETATION_PROVIDER=google-genai`,
   `GEMINI_API_KEY` y `GEMINI_MODEL`; se llama desde el backend con la clave fuera del
-  repositorio. No se añade Spring AI ni se cambia Spring Boot. No se promete IA gratuita
+  repositorio, mediante Spring AI 1.1.8, la línea compatible con el Spring Boot del curso,
+  que no cambia (#258). No se promete IA gratuita
   ilimitada: las cuotas y el precio dependen del proveedor/modelo elegido.
 - El resumen básico no exige peso ni cuestionario. No se envían correo, contraseña,
   foto ni datos personales para explicar los resultados geométricos.

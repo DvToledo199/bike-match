@@ -181,7 +181,7 @@ Arquetipos rápidos si el usuario no concreta: *saltador/agresivo* → progresi�
 2. **Los datos que lo sostienen.** 2–4 métricas con su cifra y su lectura, de mayor a menor relevancia.
 3. **Compromisos y avisos.** Qué se paga a cambio; alertas de forma (tramos regresivos, sag en zona engañosa) y la advertencia de datos si el motor la marcó.
 4. **Para quién es.** Perfil de piloto/uso al que le encaja y a quién no, personalizado si hay cuestionario.
-5. **Cierre honesto.** Recordatorio breve de que el análisis parte de puntos marcados sobre foto y de que el reglaje final se afina rodando.
+5. **Cierre honesto (lo pone la web, no el texto).** El recordatorio de que el análisis parte de puntos marcados sobre foto se muestra una sola vez, al pie de cada explicación, para no repetirlo dentro del texto.
 
 > El antiguo punto de **amortiguador y reglaje** se ha retirado de la estructura generada por lo explicado en la sección 3: con la curva sola no se puede recomendar resorte.
 

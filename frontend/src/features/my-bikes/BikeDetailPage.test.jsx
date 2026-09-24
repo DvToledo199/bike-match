@@ -68,7 +68,7 @@ it('shows the saved bike photo, specifications and charts', async () => {
   expect(screen.getByText('Useful progression')).toBeTruthy()
   expect(screen.getByRole('region', { name: 'Saved kinematics charts' })).toBeTruthy()
   expect(getBikeDetail).toHaveBeenCalledWith(7)
-  expect(getBikeInterpretation).toHaveBeenCalledWith(7)
+  expect(getBikeInterpretation).toHaveBeenCalledWith(7, 'en')
 })
 
 it('names every figure the explanation cites', async () => {
@@ -107,7 +107,7 @@ it('lets the owner generate the explanation when it is missing', async () => {
   screen.getByRole('button', { name: 'Generate explanation' }).click()
 
   await waitFor(() => expect(screen.getByText('This analysis shows a progressive response.')).toBeTruthy())
-  expect(generateBikeInterpretation).toHaveBeenCalledWith(7)
+  expect(generateBikeInterpretation).toHaveBeenCalledWith(7, 'en')
 })
 
 it('explains when the bike cannot be accessed and allows going back', async () => {

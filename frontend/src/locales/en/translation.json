@@ -8,6 +8,9 @@
     "tagline": "Mountain bike suspension kinematics, explained",
     "skipToContent": "Skip to main content"
   },
+  "language": {
+    "label": "Language"
+  },
   "auth": {
     "openRegister": "Sign up",
     "openLogin": "Log in",

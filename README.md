@@ -157,6 +157,55 @@ Para probar una operación protegida:
 La moderación exige una cuenta con rol `MODERATOR` o `ADMIN`, y las rutas de
 administración exigen `ADMIN` (ver el apartado anterior).
 
+## Despliegue
+
+La versión publicada usa dos servicios con plan gratuito sin fecha de caducidad:
+
+| Pieza | Servicio | Cómo se construye |
+|---|---|---|
+| Web (React) | Render, sitio estático | `npm ci && npm run build` en `frontend/` |
+| API (Spring Boot) | Render, contenedor | [`backend/Dockerfile`](backend/Dockerfile) |
+| Base de datos | Neon, PostgreSQL | Flyway crea el esquema al arrancar la API |
+
+Direcciones: pendientes de la primera publicación. La documentación de la API desplegada
+está en `<dirección de la API>/swagger-ui.html`.
+
+[`render.yaml`](render.yaml) describe los dos servicios de Render (un *Blueprint*): al
+conectarlo, Render crea la API y la web y pide los valores secretos, que no están en el
+repositorio.
+
+**El Dockerfile** tiene dos etapas. La primera compila el jar con el Maven del proyecto;
+la segunda solo lleva Java y ese jar, sin Maven ni el código fuente, y lo ejecuta con un
+usuario sin privilegios. La imagen no ejecuta los tests porque necesitan PostgreSQL, y ya
+corren en CI en cada pull request.
+
+**Variables de la API**
+
+| Variable | Contenido |
+|---|---|
+| `SPRING_DATASOURCE_URL` | `jdbc:postgresql://<host de Neon>/<base>?sslmode=require`, sin usuario ni contraseña |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD` | Credenciales de Neon |
+| `JWT_SECRET_BASE64` | La genera Render: clave aleatoria de 256 bits en base64 |
+| `CORS_ALLOWED_ORIGINS` | Dirección de la web publicada |
+| `CLOUDINARY_URL` | Credenciales de Cloudinary para las fotos |
+| `INTERPRETATION_PROVIDER`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Explicación con Gemini |
+| `INITIAL_ADMIN_EMAIL`, `INITIAL_ADMIN_USERNAME`, `INITIAL_ADMIN_PASSWORD_HASH` | Primer administrador; la contraseña solo como hash BCrypt (ver *Cuentas iniciales locales*) |
+
+La web solo necesita `VITE_API_URL`, la dirección de la API. Vite la incorpora al compilar:
+si cambia, hay que volver a desplegar la web.
+
+**Límites del plan gratuito y decisiones**
+
+- La API se duerme tras 15 minutos sin visitas. La primera petición después tarda cerca de
+  un minuto en despertarla; las siguientes van a velocidad normal.
+- El contenedor tiene 512 MB. La máquina virtual de Java limita su memoria al 75 % y usa el
+  recolector más ligero; en local, con ese mismo límite, la API arranca usando unos 350 MB.
+- La base de datos de Neon es accesible desde internet, con conexión cifrada obligatoria y
+  contraseña. La alternativa privada dentro de Render caduca a los 30 días en el plan
+  gratuito, así que se descartó.
+- Dentro del contenedor la API escucha en todas las interfaces (`SERVER_ADDRESS=0.0.0.0`) y
+  en el puerto que asigna Render (`PORT`). En local sigue escuchando solo en `127.0.0.1`.
+
 ## Pruebas
 
 ```bash

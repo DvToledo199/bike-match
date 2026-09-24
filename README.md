@@ -238,10 +238,11 @@ El contexto que recibe el proveedor lleva, además de las cifras, la forma de la
 palanca (banda de progresión, tendencia de cada tercio y LR inicial, en sag y final) y
 las condiciones del cálculo (categoría, sag y desarrollo). Con eso, el texto sigue la
 estructura de la [base de conocimiento](docs/base-conocimiento-cinematica.md): carácter
-de la bici, cifras que lo sostienen, compromisos, qué tipo de resorte le casa, para quién
-encaja y un cierre honesto. Puede hablar de muelle o aire y de espaciadores en términos
-generales; siguen prohibidas las marcas, las presiones, los clics, las garantías y
-cualquier suposición sobre el peso o el reglaje de quien consulta.
+de la bici, cifras que lo sostienen, pedaleo, frenada y para quién encaja. No recomienda
+amortiguador, muelle, aire ni espaciadores, y están prohibidas las marcas, las presiones,
+los clics, las garantías y cualquier suposición sobre el peso o el reglaje de quien
+consulta. La advertencia sobre el alcance del análisis no forma parte del texto: la web
+la muestra una sola vez, al pie de cada explicación.
 
 La caché se versiona por resultado, contexto, reglas, idioma, proveedor y prompt.
 Generar solo reutiliza la explicación del proveedor configurado: con Gemini activo, una

@@ -34,10 +34,10 @@ class RulesMessagesTest {
                     .withConfiguration(AutoConfigurations.of(MessageSourceAutoConfiguration.class))
                     .run(context -> {
                         MessageSource messages = context.getBean(MessageSource.class);
-                        assertThat(messages.getMessage("rules.closing", null, Locale.ENGLISH))
-                                .startsWith("These are geometric tendencies");
-                        assertThat(messages.getMessage("rules.closing", null, Locale.forLanguageTag("es")))
-                                .startsWith("Son tendencias geométricas");
+                        assertThat(messages.getMessage("rules.travelMismatch", null, Locale.ENGLISH))
+                                .startsWith("The calculated travel does not match");
+                        assertThat(messages.getMessage("rules.travelMismatch", null, Locale.forLanguageTag("es")))
+                                .startsWith("El recorrido calculado no coincide");
                     });
         } finally {
             Locale.setDefault(machineLocale);

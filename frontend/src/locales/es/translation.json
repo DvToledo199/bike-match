@@ -216,7 +216,6 @@
     "specifications": "Datos de la bici",
     "noResult": "Esta bici aún no tiene un resultado cinemático guardado.",
     "interpretation": {
-      "eyebrow": "En palabras sencillas",
       "title": "Qué sugiere este análisis",
       "loading": "Cargando la explicación…",
       "ownerMissing": "Este análisis guardado aún no tiene explicación. Genérala a partir de su resultado verificado.",
@@ -227,7 +226,8 @@
       "retry": "Reintentar",
       "rulesSource": "Resumen basado en reglas",
       "aiSource": "Resumen generado con IA",
-      "limit": "Es una explicación de referencia de la geometría. No es una recomendación de reglaje personal ni una medición de laboratorio.",
+      "limitLabel": "Advertencia:",
+      "limit": "son tendencias geométricas a partir de una foto marcada, no una recomendación de reglaje personal ni una medición de laboratorio.",
       "evidence": {
         "usefulProgression": "Progresión útil",
         "totalProgression": "Progresión total",
@@ -497,7 +497,8 @@
         "title": "Relación de palanca",
         "description": "Cuánto movimiento de la rueda llega al amortiguador a lo largo del recorrido.",
         "axis": "Relación de palanca",
-        "summary": "Empieza en {{start}} y termina en {{end}}."
+        "summary": "Empieza en {{start}} y termina en {{end}}.",
+        "highlight": "Progresión total: {{total}}%"
       },
       "kickback": {
         "title": "Pedal kickback",
@@ -510,64 +511,10 @@
         "description": "Movimiento desde la posición inicial (0, 0), con la misma escala en los dos ejes. La izquierda es hacia atrás, la derecha hacia delante y arriba es compresión.",
         "xAxis": "Desplazamiento hacia delante (mm)",
         "yAxis": "Desplazamiento hacia arriba (mm)",
-        "summary": "Empieza en X {{startX}} mm, Y {{startY}} mm y termina en X {{endX}} mm, Y {{endY}} mm."
-      }
-    },
-    "descriptors": {
-      "eyebrow": "De un vistazo",
-      "title": "Qué significan estas curvas",
-      "description": "Estos datos destacados se calculan a partir de las curvas de arriba. Describen tendencias, no mediciones de laboratorio.",
-      "leverage": {
-        "title": "Palanca y progresión",
-        "description": "La relación de palanca indica cómo actúa el movimiento de la rueda sobre el amortiguador. La progresión útil se centra en la parte del recorrido que va después del sag.",
-        "initial": "Relación inicial",
-        "atSag": "Relación en el sag",
-        "final": "Relación final",
-        "average": "Relación media",
-        "totalProgression": "Progresión total",
-        "usefulProgression": "Progresión útil"
+        "summary": "Empieza en X {{startX}} mm, Y {{startY}} mm y termina en X {{endX}} mm, Y {{endY}} mm.",
+        "highlight": "Retroceso máximo: {{rearward}} mm, al {{travel}}% del recorrido."
       },
-      "progressionBands": {
-        "REGRESSIVE": "Progresión regresiva",
-        "LINEAR": "Progresión lineal",
-        "SLIGHTLY_PROGRESSIVE": "Ligeramente progresiva",
-        "MEDIUM": "Progresión media",
-        "HIGH": "Progresión alta",
-        "VERY_HIGH": "Progresión muy alta"
-      },
-      "shape": {
-        "title": "Forma de la suspensión",
-        "description": "Cada tercio del recorrido se lee por separado. El tercio final es la zona de tope.",
-        "phases": {
-          "initial": "Tercio inicial",
-          "middle": "Tercio medio",
-          "final": "Tercio final"
-        }
-      },
-      "trends": {
-        "PROGRESSIVE": "Progresiva",
-        "LINEAR": "Lineal",
-        "REGRESSIVE": "Regresiva"
-      },
-      "axle": {
-        "title": "Movimiento del eje trasero",
-        "description": "Cuánto retrocede el eje trasero al comprimirse la suspensión.",
-        "maxRearward": "Retroceso máximo",
-        "atTravel": "En el recorrido de la rueda"
-      },
-      "kickback": {
-        "title": "Nivel de pedal kickback",
-        "description": "Un nivel basado en el mayor giro del pedal estimado a lo largo del recorrido.",
-        "conditions": "Estimado en todo el recorrido con {{chainring}}/{{sprocket}}T y la transmisión engranada. Compara niveles con el mismo desarrollo. El sag ({{sag}}%) se usa para los datos de palanca, no para el kickback.",
-        "levels": {
-          "low": "Bajo",
-          "medium": "Medio",
-          "high": "Alto",
-          "veryHigh": "Muy alto"
-        }
-      },
-      "travel": {
-        "title": "Comprobación del recorrido",
+      "travelCheck": {
         "withinTolerance": "El recorrido calculado es de {{calculated}} mm, cercano a los {{declared}} mm declarados ({{deviation}}% de diferencia).",
         "outsideTolerance": "El recorrido calculado es de {{calculated}} mm y el declarado, de {{declared}} mm ({{deviation}}% de diferencia). Revisa las marcas y la medida del amortiguador antes de fiarte de este resultado."
       }

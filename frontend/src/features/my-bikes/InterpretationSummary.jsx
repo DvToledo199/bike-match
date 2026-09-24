@@ -30,7 +30,6 @@ function InterpretationSummary({
   if (loading || generating) {
     return (
       <section className={styles.card} aria-labelledby="interpretation-title" aria-busy="true">
-        <p className={styles.eyebrow}>{t('bikeDetail.interpretation.eyebrow')}</p>
         <h2 id="interpretation-title">{t('bikeDetail.interpretation.title')}</h2>
         <p className={styles.muted}>{t('bikeDetail.interpretation.loading')}</p>
       </section>
@@ -41,7 +40,6 @@ function InterpretationSummary({
     const isMissing = error?.status === 404
     return (
       <section className={styles.card} aria-labelledby="interpretation-title">
-        <p className={styles.eyebrow}>{t('bikeDetail.interpretation.eyebrow')}</p>
         <h2 id="interpretation-title">{t('bikeDetail.interpretation.title')}</h2>
         <p className={styles.muted}>
           {isMissing
@@ -62,15 +60,12 @@ function InterpretationSummary({
   return (
     <section className={styles.card} aria-labelledby="interpretation-title">
       <div className={styles.heading}>
-        <div>
-          <p className={styles.eyebrow}>{t('bikeDetail.interpretation.eyebrow')}</p>
-          <h2 id="interpretation-title">{t('bikeDetail.interpretation.title')}</h2>
-        </div>
-        <span className={styles.sourceBadge}>
+        <p className={styles.eyebrow}>
           {t(interpretation.source === 'AI'
             ? 'bikeDetail.interpretation.aiSource'
             : 'bikeDetail.interpretation.rulesSource')}
-        </span>
+        </p>
+        <h2 id="interpretation-title">{t('bikeDetail.interpretation.title')}</h2>
       </div>
       <p className={styles.summary}>{interpretation.summary}</p>
       <dl className={styles.evidence}>
@@ -81,7 +76,9 @@ function InterpretationSummary({
           </div>
         ))}
       </dl>
-      <p className={styles.limit}>{t('bikeDetail.interpretation.limit')}</p>
+      <p className={styles.limit}>
+        <strong>{t('bikeDetail.interpretation.limitLabel')}</strong> {t('bikeDetail.interpretation.limit')}
+      </p>
     </section>
   )
 }

@@ -126,6 +126,22 @@
   font-weight: 600;
 }
 
+.chartHighlight {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.travelWarning {
+  margin: var(--space-md) 0 0;
+  padding: var(--space-sm) var(--space-md);
+  border-left: 3px solid var(--color-warning);
+  background-color: color-mix(in srgb, var(--color-warning) 10%, var(--color-surface));
+  color: var(--color-text);
+  font-weight: 600;
+}
+
 .axisLabels {
   margin: 0;
   color: var(--color-text);

@@ -57,7 +57,8 @@ class GeminiInterpretationProviderTest {
         assertThat(messages).extracting(message -> message.getMessageType())
                 .containsExactly(MessageType.SYSTEM, MessageType.USER);
         assertThat(messages.get(0).getText())
-                .contains("{\"summary\":\"...\",\"evidenceKeys\":[\"...\"]}");
+                .contains("{\"summary\":\"...\",\"evidenceKeys\":[\"...\"]}")
+                .contains("Write in the language given by \"language\" in the context");
         assertThat(messages.get(1).getText()).isEqualTo(objectMapper.writeValueAsString(context));
     }
 

@@ -73,12 +73,14 @@ public class GeminiInterpretationProvider implements InterpretationProvider {
             - If dataQuality.travelCheckPassed is false, lead with that warning and draw no firm
               conclusion.
             - Keep the whole summary under 170 words.
+            - Write in the language given by "language" in the context: English for en, Spanish
+              from Spain for es.
 
             Return exactly JSON with this shape: {\"summary\":\"...\",\"evidenceKeys\":[\"...\"]}.
             Use between two and four evidenceKeys taken from the context evidence, the ones you
             actually cited. Plain text only, no Markdown and no HTML.
             """;
-    private static final String PROMPT_VERSION = "interpretation-prompt-4";
+    private static final String PROMPT_VERSION = "interpretation-prompt-5";
 
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;

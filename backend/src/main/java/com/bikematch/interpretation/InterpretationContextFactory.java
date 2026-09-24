@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,6 +29,9 @@ public class InterpretationContextFactory {
 
     /** Above this the chain model, which has no idler, cannot be trusted on these bikes. */
     private static final double AXLE_PATH_BEYOND_MODEL_MM = 10;
+
+    /** The languages the interface and both providers can write in. */
+    private static final Set<String> SUPPORTED_LANGUAGES = Set.of("en", "es");
 
     private final ObjectMapper objectMapper;
 
@@ -359,8 +363,8 @@ public class InterpretationContextFactory {
 
     private String normalizeLanguage(String requestedLanguage) {
         String language = requestedLanguage == null ? "en" : requestedLanguage.trim().toLowerCase(Locale.ROOT);
-        if (!language.equals("en")) {
-            throw new IllegalArgumentException("Only the English interpretation is available yet");
+        if (!SUPPORTED_LANGUAGES.contains(language)) {
+            throw new IllegalArgumentException("Interpretations are available in English (en) and Spanish (es)");
         }
         return language;
     }

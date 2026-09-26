@@ -9,7 +9,8 @@ function Layout({ children, session, screen, onLogout }) {
       <a className={styles.skipLink} href="#main-content" onClick={(event) => { event.preventDefault(); document.getElementById('main-content')?.focus() }}>{t('app.skipToContent')}</a>
       <header className={styles.header}>
         <a className={styles.logo} href="#/" aria-label={t('app.homeLabel')}>
-          <span className={styles.logoMark} aria-hidden="true">/</span>{t('app.title')}
+          <img className={styles.logoMark} src="/bikematch-logo.svg" alt="" aria-hidden="true" />
+          <span><span className={styles.logoBike}>Bike</span><span className={styles.logoMatch}>Match</span></span>
         </a>
         <nav className={styles.accountActions} aria-label={t('app.navigation')}>
           <a href="#/catalog" aria-current={screen === 'catalog' ? 'page' : undefined}>{t('catalog.navLabel')}</a>

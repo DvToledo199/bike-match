@@ -1,5 +1,6 @@
 package com.bikematch.user.api;
 
+import static org.hamcrest.Matchers.aMapWithSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -9,6 +10,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,17 +65,21 @@ class AdminUserControllerTest {
     private JwtService jwtService;
 
     @Test
-    void administratorSeesTheAccountsWithoutEmailsOrHashes() throws Exception {
+    void administratorSeesAccountEmailsButNotPasswordHashes() throws Exception {
         authenticate("admin-token", "90", "ADMIN");
         given(listUsersService.list()).willReturn(List.of(
-                new UserSummary(88L, "rider", Role.USER, Instant.parse("2026-09-15T16:58:20Z"))));
+                new UserSummary(88L, "rider", "rider@example.com", Role.USER,
+                        Instant.parse("2026-09-15T16:58:20Z"))));
 
         mockMvc.perform(get("/api/admin/users")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer admin-token"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]", aMapWithSize(5)))
+                .andExpect(jsonPath("$[0].id").value(88))
                 .andExpect(jsonPath("$[0].username").value("rider"))
+                .andExpect(jsonPath("$[0].email").value("rider@example.com"))
                 .andExpect(jsonPath("$[0].role").value("USER"))
-                .andExpect(jsonPath("$[0].email").doesNotExist())
+                .andExpect(jsonPath("$[0].createdAt").value("2026-09-15T16:58:20Z"))
                 .andExpect(jsonPath("$[0].passwordHash").doesNotExist());
     }
 
@@ -83,7 +89,20 @@ class AdminUserControllerTest {
 
         mockMvc.perform(get("/api/admin/users")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer user-token"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andExpect(content().string(""));
+
+        verify(listUsersService, never()).list();
+    }
+
+    @Test
+    void aModeratorCannotReadAccountEmails() throws Exception {
+        authenticate("moderator-token", "89", "MODERATOR");
+
+        mockMvc.perform(get("/api/admin/users")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer moderator-token"))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string(""));
 
         verify(listUsersService, never()).list();
     }
@@ -104,7 +123,10 @@ class AdminUserControllerTest {
     @Test
     void anonymousVisitorIsRejected() throws Exception {
         mockMvc.perform(get("/api/admin/users"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string(""));
+
+        verify(listUsersService, never()).list();
     }
 
     @Test

@@ -20,6 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             select new com.bikematch.user.UserSummary(
                 user.id,
                 user.username,
+                user.email,
                 user.role,
                 user.createdAt
             )

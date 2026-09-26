@@ -7,7 +7,7 @@ Ruta: `#/admin`. Solo se ofrece a una sesión con rol `ADMIN`.
 - `AdminPage`: guarda cuentas, cuenta seleccionada, carga, envío, errores y
   confirmación. Carga la lista con `useEffect` y envía los cambios desde el
   manejador del formulario.
-- `UsersTable`: muestra username, rol y fecha de alta. El botón de cada fila
+- `UsersTable`: muestra username, correo, rol y fecha de alta. El botón de cada fila
   comunica la cuenta seleccionada a la pantalla; la tabla no hace llamadas HTTP.
 - `ChangeRoleForm`: guarda el rol elegido mientras se edita, presenta el cambio
   anterior → nuevo y pide confirmación. Elegir una opción aún no envía nada.
@@ -16,8 +16,17 @@ Ruta: `#/admin`. Solo se ofrece a una sesión con rol `ADMIN`.
 
 ## Flujo
 
-Al entrar, `GET /api/admin/users` devuelve una lista sin paginación. No se piden
-correos, contraseñas ni datos personales adicionales.
+Al entrar, `GET /api/admin/users` devuelve una lista sin paginación con id,
+username, correo, rol y fecha de alta. Mostrar el correo es una decisión deliberada
+para distinguir cuentas con nombres parecidos antes de cambiar un rol (#253).
+Este dato personal solo se devuelve en este listado protegido para `ADMIN` y solo
+se muestra en el panel de administración; no se incorpora a otros endpoints ni
+pantallas. No se devuelven contraseñas, hashes ni datos personales adicionales.
+
+El correo aparece debajo del username, sin añadir otra columna. Las direcciones
+largas se parten en varias líneas. En pantallas estrechas cada fila apila la
+identidad, el rol, la fecha y las acciones, sin ensanchar la página. Se conservan
+los encabezados y roles de tabla para las tecnologías de asistencia.
 
 Seleccionar una cuenta abre el formulario. Confirmar envía
 `PUT /api/admin/users/{id}/role` con `{ "role": "MODERATOR" }` o `USER`.
@@ -54,8 +63,12 @@ Trasladarla al backend necesitaría su propia tarea.
 **Un cambio de rol no revoca los JWT ya emitidos.** El backend actual lee el rol
 del token: los nuevos inicios de sesión obtienen el rol actualizado y las sesiones
 anteriores conservan sus permisos hasta caducar. El formulario y el mensaje de
-éxito lo explican. La invalidación inmediata necesitaría su propia tarea de backend,
-fuera de esta issue; no se ha cambiado ningún contrato ni código de backend.
+éxito lo explican. La invalidación inmediata necesitaría su propia tarea de backend.
+Añadir el correo al listado (#253) no cambia estas reglas.
 
 Tests: carga, vacío, reintento, permisos, cambio en ambas direcciones, confirmación,
-actualización tras 204, bloqueo de duplicados y mensajes por código HTTP.
+actualización tras 204, bloqueo de duplicados y mensajes por código HTTP. El listado
+incluye el correo para `ADMIN`, no devuelve hashes y sigue rechazando a `USER`,
+`MODERATOR` y visitantes sin sesión. Se comprueban cuentas con usernames parecidos
+y correos distintos. La vista se verifica a 320, 375, 768 y 1280 px, también con
+direcciones largas, sin desbordamiento horizontal.

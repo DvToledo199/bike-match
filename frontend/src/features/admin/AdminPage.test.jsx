@@ -7,10 +7,10 @@ vi.mock('../../services/admin.js', () => ({ changeUserRole: vi.fn(), listUsers: 
 
 const session = { username: 'owner', role: 'ADMIN', accessToken: 'token' }
 const users = [
-  { id: 1, username: 'owner', role: 'ADMIN', createdAt: '2026-09-18T09:00:00Z' },
-  { id: 2, username: 'rider', role: 'USER', createdAt: '2026-09-19T10:00:00Z' },
-  { id: 3, username: 'reviewer', role: 'MODERATOR', createdAt: '2026-09-20T11:00:00Z' },
-  { id: 4, username: 'other_admin', role: 'ADMIN', createdAt: '2026-09-20T12:00:00Z' },
+  { id: 1, username: 'owner', email: 'owner@example.com', role: 'ADMIN', createdAt: '2026-09-18T09:00:00Z' },
+  { id: 2, username: 'rider', email: 'rider@example.com', role: 'USER', createdAt: '2026-09-19T10:00:00Z' },
+  { id: 3, username: 'reviewer', email: 'reviewer@example.com', role: 'MODERATOR', createdAt: '2026-09-20T11:00:00Z' },
+  { id: 4, username: 'other_admin', email: 'other-admin@example.com', role: 'ADMIN', createdAt: '2026-09-20T12:00:00Z' },
 ]
 
 beforeEach(() => {
@@ -19,14 +19,33 @@ beforeEach(() => {
   changeUserRole.mockResolvedValue(null)
 })
 
-it('loads only the account summary columns and lists current roles', async () => {
+it('loads account emails next to their usernames and lists current roles', async () => {
   render(<AdminPage session={session} />)
   expect(screen.getByText('Loading accounts…')).toBeTruthy()
   expect(await screen.findByRole('table', { name: 'User accounts' })).toBeTruthy()
-  expect(screen.getAllByRole('columnheader').map((cell) => cell.textContent)).toEqual(['Username', 'Role', 'Joined', 'Actions'])
+  expect(screen.getAllByRole('columnheader').map((cell) => cell.textContent)).toEqual(['Username / email', 'Role', 'Joined', 'Actions'])
   expect(within(screen.getByRole('row', { name: /rider/ })).getByRole('cell', { name: 'User', exact: true })).toBeTruthy()
-  expect(screen.queryByText('Email')).toBeNull()
+  for (const user of users) {
+    const identity = screen.getByRole('rowheader', { name: `${user.username} ${user.email}` })
+    expect(within(identity).getByText(user.email)).toBeTruthy()
+  }
   expect(listUsers).toHaveBeenCalledWith()
+})
+
+it('distinguishes similar usernames by email and changes the selected account', async () => {
+  listUsers.mockResolvedValue([
+    users[1],
+    { ...users[1], id: 5, username: 'rider_2', email: 'second@example.com' },
+  ])
+  render(<AdminPage session={session} />)
+  const row = await screen.findByRole('row', { name: /rider_2 second@example.com/ })
+  expect(within(row).getByText('second@example.com')).toBeTruthy()
+  fireEvent.click(within(row).getByRole('button', { name: 'Change role for @rider_2' }))
+  fireEvent.change(screen.getByRole('combobox'), { target: { value: 'MODERATOR' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Confirm role change' }))
+  await screen.findByText(/@rider_2 now has the Moderator role/)
+  expect(changeUserRole).toHaveBeenCalledExactlyOnceWith(5, 'MODERATOR')
+  expect(within(screen.getByRole('row', { name: /rider rider@example.com/ })).getByRole('cell', { name: 'User', exact: true })).toBeTruthy()
 })
 
 it('shows the empty state', async () => {
@@ -41,6 +60,7 @@ it.each([null, { role: 'USER' }, { role: 'MODERATOR' }])('does not request accou
   expect(screen.getByRole('alert').textContent).toContain(account ? 'does not have permission' : 'Log in')
   expect(listUsers).not.toHaveBeenCalled()
   expect(screen.queryByRole('table')).toBeNull()
+  expect(screen.queryByText('rider@example.com')).toBeNull()
 })
 
 it.each([
@@ -52,6 +72,7 @@ it.each([
   expect((await screen.findByRole('alert')).textContent).toContain(message)
   expect(screen.queryByRole('table')).toBeNull()
   expect(screen.queryByText('Internal database detail')).toBeNull()
+  expect(screen.queryByText('rider@example.com')).toBeNull()
 })
 
 it('retries the list after a connection error', async () => {
@@ -98,6 +119,7 @@ it.each([
   await act(async () => { complete(null) })
   expect(await screen.findByText(`@${username} now has the ${newLabel} role for future logins. Existing sessions are unchanged.`)).toBeTruthy()
   expect(within(screen.getByRole('row', { name: new RegExp(username) })).getByRole('cell', { name: newLabel, exact: true })).toBeTruthy()
+  expect(screen.getByText(`${username}@example.com`)).toBeTruthy()
   expect(screen.queryByRole('combobox')).toBeNull()
 })
 
@@ -141,6 +163,7 @@ it.each([401, 403])('hides the list if the server denies a role change (%s)', as
   expect((await screen.findByRole('alert')).textContent).toContain(status === 401 ? 'Log in' : 'does not have permission')
   expect(screen.queryByRole('table')).toBeNull()
   expect(screen.queryByRole('combobox')).toBeNull()
+  expect(screen.queryByText('rider@example.com')).toBeNull()
 })
 
 it.each([{ kind: 'network' }, { kind: 'timeout' }, { status: 500 }])('requires a refresh after an uncertain update (%s)', async (error) => {
@@ -164,5 +187,6 @@ it('ignores a late response after losing access', async () => {
   rerender(<AdminPage session={null} />)
   await act(async () => { complete(users) })
   expect(screen.queryByRole('table')).toBeNull()
+  expect(screen.queryByText('rider@example.com')).toBeNull()
   expect(screen.getByRole('alert').textContent).toContain('Log in')
 })

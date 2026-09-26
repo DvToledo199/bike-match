@@ -11,7 +11,7 @@ beforeEach(() => { save.mockReset() })
 it('offers account links to a guest without sending the photo or generating an explanation', () => {
   render(<SaveAnalysisPanel session={null} />)
   expect(screen.getByRole('link', { name: 'Already have an account? Log in' }).getAttribute('href')).toBe('#/login')
-  expect(screen.getByRole('link', { name: 'Sign up to save your bike' }).getAttribute('href')).toBe('#/register')
+  expect(screen.getByRole('link', { name: 'Sign up free and save your bike' }).getAttribute('href')).toBe('#/register')
   expect(screen.getByText(/Your photo, marks and measurements will stay here/)).toBeTruthy()
   expect(save).not.toHaveBeenCalled()
 })

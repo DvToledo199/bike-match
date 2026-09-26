@@ -320,7 +320,7 @@
       "suspensionLayouts": {
         "singlePivot": "Monopivote",
         "horstLink": "Cuatro barras (Horst link)",
-        "horstLinkYoke": "Cuatro barras (Horst link con extensión rígida)",
+        "horstLinkYoke": "Cuatro barras (Horst link con extensión del amortiguador)",
         "dualLink": "Doble bieleta / punto de giro virtual"
       },
       "comingSoon": "Próximamente",

@@ -64,11 +64,19 @@ it('shows the saved bike photo, specifications and charts', async () => {
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Orange Stage 6' })).toBeTruthy())
   expect(screen.getByRole('img', { name: 'Photo of Orange Stage 6' })).toBeTruthy()
   expect(screen.getByText('Bike specifications')).toBeTruthy()
+  // Stored codes are shown with their names, never as ENDURO or SINGLE_PIVOT.
+  expect(screen.getByText('Single pivot')).toBeTruthy()
+  expect(screen.getByText('Full 29″ — both wheels')).toBeTruthy()
+  expect(screen.queryByText('SINGLE_PIVOT')).toBeNull()
+  expect(screen.queryByText('ENDURO')).toBeNull()
   await waitFor(() => expect(screen.getByText('This analysis shows a progressive response.')).toBeTruthy())
   expect(screen.getByText('Useful progression')).toBeTruthy()
+  // Where the text comes from heads the card, and the note about its limits is said once.
+  expect(screen.getByText('Rules-based summary')).toBeTruthy()
+  expect(screen.getByText('Note:')).toBeTruthy()
   expect(screen.getByRole('region', { name: 'Saved kinematics charts' })).toBeTruthy()
   expect(getBikeDetail).toHaveBeenCalledWith(7)
-  expect(getBikeInterpretation).toHaveBeenCalledWith(7)
+  expect(getBikeInterpretation).toHaveBeenCalledWith(7, 'en')
 })
 
 it('names every figure the explanation cites', async () => {
@@ -107,7 +115,29 @@ it('lets the owner generate the explanation when it is missing', async () => {
   screen.getByRole('button', { name: 'Generate explanation' }).click()
 
   await waitFor(() => expect(screen.getByText('This analysis shows a progressive response.')).toBeTruthy())
-  expect(generateBikeInterpretation).toHaveBeenCalledWith(7)
+  expect(generateBikeInterpretation).toHaveBeenCalledWith(7, 'en')
+})
+
+it('says when the AI did not answer, shows the rules text as a stand-in and offers to try again', async () => {
+  sessionStorage.setItem('bikematch.session', JSON.stringify({
+    accessToken: 'token',
+    tokenType: 'Bearer',
+    username: 'david',
+  }))
+  getBikeDetail.mockResolvedValue(bike)
+  getBikeInterpretation.mockResolvedValue({ ...explanation, fallback: true })
+  generateBikeInterpretation.mockResolvedValue({ ...explanation, source: 'AI', fallback: false })
+
+  render(<BikeDetailPage bikeId={7} onBack={vi.fn()} />)
+
+  await waitFor(() => expect(screen.getByText(/The AI could not answer right now/)).toBeTruthy())
+  expect(screen.getByRole('heading', { name: 'For now, an approximate description' })).toBeTruthy()
+  expect(screen.getByText('This analysis shows a progressive response.')).toBeTruthy()
+  screen.getByRole('button', { name: 'Try again with AI' }).click()
+
+  await waitFor(() => expect(screen.getByRole('heading', { name: 'What this analysis suggests' })).toBeTruthy())
+  expect(screen.getByText('AI-generated summary')).toBeTruthy()
+  expect(generateBikeInterpretation).toHaveBeenCalledWith(7, 'en')
 })
 
 it('explains when the bike cannot be accessed and allows going back', async () => {

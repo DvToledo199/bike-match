@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,7 +62,7 @@ public class InterpretationService {
         var cached = findCachedForProvider(
                 result, context, provider.providerVersion(), provider.promptVersion());
         if (cached.isPresent()) {
-            return toView(cached.get());
+            return toView(cached.get(), false);
         }
         if (!generationLimiter.tryAcquire(ownerId, bikeId)) {
             throw new InterpretationRateLimitException();
@@ -72,20 +73,19 @@ public class InterpretationService {
         try {
             interpretation = provider.generate(context);
         } catch (InterpretationProviderException exception) {
-            // The wrapper message says little on its own: the cause carries the provider's own
-            // answer, such as a rejected model or a busy service.
-            log.warn("Provider {} did not explain bike {}: {}",
-                    provider.providerVersion(), bikeId,
-                    exception.getCause() == null
-                            ? exception.getMessage()
-                            : exception.getMessage() + " (" + exception.getCause() + ")");
+            // The provider's own answer, such as a busy model or a rejected key, sits at the end
+            // of the cause chain: Spring AI wraps it in a generic "Failed to generate content".
+            Throwable rootCause = NestedExceptionUtils.getMostSpecificCause(exception);
+            log.warn("Provider {} did not explain bike {}: {}{}",
+                    provider.providerVersion(), bikeId, exception.getMessage(),
+                    rootCause == exception ? "" : " (" + rootCause + ")");
             usedProvider = providerSelector.fallback();
             // The fallback may already have an explanation for this context: reuse it instead of
             // storing a second one, which the unique key would reject.
             var storedFallback = findCachedForProvider(
                     result, context, usedProvider.providerVersion(), usedProvider.promptVersion());
             if (storedFallback.isPresent()) {
-                return toView(storedFallback.get());
+                return toView(storedFallback.get(), true);
             }
             interpretation = usedProvider.generate(context);
         }
@@ -94,7 +94,7 @@ public class InterpretationService {
                 new KinematicsInterpretation(
                         result, context, interpretation, usedProvider.promptVersion(),
                         toJson(interpretation.evidence())));
-        return toView(saved);
+        return toView(saved, !sameProvider(provider, usedProvider));
     }
 
     @Transactional(readOnly = true)
@@ -105,24 +105,20 @@ public class InterpretationService {
         KinematicsResult result = resultFor(bike.getId());
         InterpretationContext context = contextFactory.create(result, language, bike.getCategory());
 
-        return findCached(result, context, providerSelector.current())
-                .map(this::toView)
-                .orElseThrow(InterpretationNotAvailableException::new);
-    }
-
-    /** Reading shows whatever is stored: the selected provider's explanation or the fallback's. */
-    private java.util.Optional<KinematicsInterpretation> findCached(
-            KinematicsResult result,
-            InterpretationContext context,
-            InterpretationProvider preferredProvider
-    ) {
-        var cached = findCachedForProvider(
-                result, context, preferredProvider.providerVersion(), preferredProvider.promptVersion());
-        InterpretationProvider fallback = providerSelector.fallback();
-        if (cached.isPresent() || sameProvider(preferredProvider, fallback)) {
-            return cached;
+        // Reading shows whatever is stored: the selected provider's explanation or, standing in
+        // for it, the fallback's.
+        InterpretationProvider selected = providerSelector.current();
+        var own = findCachedForProvider(result, context, selected.providerVersion(), selected.promptVersion());
+        if (own.isPresent()) {
+            return toView(own.get(), false);
         }
-        return findCachedForProvider(result, context, fallback.providerVersion(), fallback.promptVersion());
+        InterpretationProvider fallback = providerSelector.fallback();
+        if (sameProvider(selected, fallback)) {
+            throw new InterpretationNotAvailableException();
+        }
+        return findCachedForProvider(result, context, fallback.providerVersion(), fallback.promptVersion())
+                .map(stored -> toView(stored, true))
+                .orElseThrow(InterpretationNotAvailableException::new);
     }
 
     private boolean sameProvider(InterpretationProvider first, InterpretationProvider second) {
@@ -147,7 +143,7 @@ public class InterpretationService {
                 .orElseThrow(InterpretationNotAvailableException::new);
     }
 
-    private InterpretationView toView(KinematicsInterpretation interpretation) {
+    private InterpretationView toView(KinematicsInterpretation interpretation, boolean fallback) {
         try {
             JsonNode evidence = objectMapper.readTree(interpretation.getEvidence());
             return new InterpretationView(
@@ -159,7 +155,8 @@ public class InterpretationService {
                     interpretation.getProviderVersion(),
                     interpretation.getSummary(),
                     evidence,
-                    interpretation.getGeneratedAt());
+                    interpretation.getGeneratedAt(),
+                    fallback);
         } catch (JsonProcessingException exception) {
             throw new IllegalStateException("Stored interpretation evidence is not valid JSON", exception);
         }
@@ -173,6 +170,10 @@ public class InterpretationService {
         }
     }
 
+    /**
+     * {@code fallback} is true when the selected provider has not explained this context, for
+     * example because Gemini did not answer in time, and the rules text stands in for it.
+     */
     public record InterpretationView(
             int resultVersion,
             int interpretationContextVersion,
@@ -182,7 +183,8 @@ public class InterpretationService {
             String providerVersion,
             String summary,
             JsonNode evidence,
-            Instant generatedAt
+            Instant generatedAt,
+            boolean fallback
     ) {
     }
 }

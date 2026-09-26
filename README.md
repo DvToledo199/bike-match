@@ -157,6 +157,58 @@ Para probar una operación protegida:
 La moderación exige una cuenta con rol `MODERATOR` o `ADMIN`, y las rutas de
 administración exigen `ADMIN` (ver el apartado anterior).
 
+## Despliegue
+
+La versión publicada usa dos servicios con plan gratuito sin fecha de caducidad:
+
+| Pieza | Servicio | Cómo se construye |
+|---|---|---|
+| Web (React) | Render, sitio estático | `npm ci && npm run build` en `frontend/` |
+| API (Spring Boot) | Render, contenedor | [`backend/Dockerfile`](backend/Dockerfile) |
+| Base de datos | Neon, PostgreSQL | Flyway crea el esquema al arrancar la API |
+
+| Enlace | Dirección |
+|---|---|
+| Web | https://bikematch.onrender.com |
+| API | https://bikematch-api.onrender.com |
+| Swagger desplegado | https://bikematch-api.onrender.com/swagger-ui.html |
+
+[`render.yaml`](render.yaml) describe los dos servicios de Render (un *Blueprint*): al
+conectarlo, Render crea la API y la web y pide los valores secretos, que no están en el
+repositorio.
+
+**El Dockerfile** tiene dos etapas. La primera compila el jar con el Maven del proyecto;
+la segunda solo lleva Java y ese jar, sin Maven ni el código fuente, y lo ejecuta con un
+usuario sin privilegios. La imagen no ejecuta los tests porque necesitan PostgreSQL, y ya
+corren en CI en cada pull request.
+
+**Variables de la API**
+
+| Variable | Contenido |
+|---|---|
+| `SPRING_DATASOURCE_URL` | `jdbc:postgresql://<host de Neon>/<base>?sslmode=require`, sin usuario ni contraseña |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD` | Credenciales de Neon |
+| `JWT_SECRET_BASE64` | La genera Render: clave aleatoria de 256 bits en base64 |
+| `CORS_ALLOWED_ORIGINS` | Dirección de la web publicada |
+| `CLOUDINARY_URL` | Credenciales de Cloudinary para las fotos |
+| `INTERPRETATION_PROVIDER`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Explicación con Gemini |
+| `INITIAL_ADMIN_EMAIL`, `INITIAL_ADMIN_USERNAME`, `INITIAL_ADMIN_PASSWORD_HASH` | Primer administrador; la contraseña solo como hash BCrypt (ver *Cuentas iniciales locales*) |
+
+La web solo necesita `VITE_API_URL`, la dirección de la API. Vite la incorpora al compilar:
+si cambia, hay que volver a desplegar la web.
+
+**Límites del plan gratuito y decisiones**
+
+- La API se duerme tras 15 minutos sin visitas. La primera petición después tarda cerca de
+  un minuto en despertarla; las siguientes van a velocidad normal.
+- El contenedor tiene 512 MB. La máquina virtual de Java limita su memoria al 75 % y usa el
+  recolector más ligero; en local, con ese mismo límite, la API arranca usando unos 350 MB.
+- La base de datos de Neon es accesible desde internet, con conexión cifrada obligatoria y
+  contraseña. La alternativa privada dentro de Render caduca a los 30 días en el plan
+  gratuito, así que se descartó.
+- Dentro del contenedor la API escucha en todas las interfaces (`SERVER_ADDRESS=0.0.0.0`) y
+  en el puerto que asigna Render (`PORT`). En local sigue escuchando solo en `127.0.0.1`.
+
 ## Pruebas
 
 ```bash
@@ -224,10 +276,14 @@ La explicación básica se genera y se reutiliza desde el backend. `POST
 bici y devuelve un resumen junto con 2–4 cifras que lo respaldan. `GET
 /api/bikes/{id}/interpretation?language=en` permite leer una explicación ya guardada
 si la bici es pública o si quien consulta es su propietario; una visita pública no
-genera una llamada al proveedor. El modo predeterminado es `rules`, determinista y sin
-coste externo. Gemini se activa únicamente con `INTERPRETATION_PROVIDER=gemini`,
-`GEMINI_API_KEY` y `GEMINI_MODEL` en el entorno del backend; si falla, se guarda una
-explicación por reglas identificada como `source=RULES`. No se envían foto, puntos,
+genera una llamada al proveedor. `language` admite `en` y `es`, y la web envía el idioma
+elegido en la interfaz. El modo predeterminado es `rules`, determinista y sin
+coste externo. Gemini se activa únicamente con `INTERPRETATION_PROVIDER=google-genai`,
+`GEMINI_API_KEY` y `GEMINI_MODEL` en el entorno del backend, y se llama mediante Spring AI
+(`ChatClient` con el módulo de Google GenAI); si falla, se guarda una
+explicación por reglas identificada como `source=RULES` y la respuesta lleva
+`fallback=true`: la web avisa de que la IA no ha respondido, muestra ese texto como
+descripción aproximada y permite volver a intentarlo. No se envían foto, puntos,
 correo, contraseña ni perfil personal al proveedor. Los modelos `gemini-2.5-*` ya no
 están disponibles para cuentas nuevas: usa el identificador que devuelva la lista de
 modelos de tu clave, por ejemplo `gemini-3.6-flash`.
@@ -236,17 +292,19 @@ El contexto que recibe el proveedor lleva, además de las cifras, la forma de la
 palanca (banda de progresión, tendencia de cada tercio y LR inicial, en sag y final) y
 las condiciones del cálculo (categoría, sag y desarrollo). Con eso, el texto sigue la
 estructura de la [base de conocimiento](docs/base-conocimiento-cinematica.md): carácter
-de la bici, cifras que lo sostienen, compromisos, qué tipo de resorte le casa, para quién
-encaja y un cierre honesto. Puede hablar de muelle o aire y de espaciadores en términos
-generales; siguen prohibidas las marcas, las presiones, los clics, las garantías y
-cualquier suposición sobre el peso o el reglaje de quien consulta.
+de la bici, cifras que lo sostienen, pedaleo, frenada y para quién encaja. No recomienda
+amortiguador, muelle, aire ni espaciadores, y están prohibidas las marcas, las presiones,
+los clics, las garantías y cualquier suposición sobre el peso o el reglaje de quien
+consulta. La advertencia sobre el alcance del análisis no forma parte del texto: la web
+la muestra una sola vez, al pie de cada explicación.
 
 La caché se versiona por resultado, contexto, reglas, idioma, proveedor y prompt.
 Generar solo reutiliza la explicación del proveedor configurado: con Gemini activo, una
 bici que solo tiene texto por reglas vuelve a pedírsela a Gemini. Leer devuelve la que
 haya guardada, sea del proveedor elegido o del respaldo. Al generar, el navegador espera
-hasta 45 segundos, por encima del máximo del proveedor (`GEMINI_TIMEOUT`: 15 segundos
-para conectar y otros 15 para leer). Las
+hasta 75 segundos, por encima del máximo del proveedor (`GEMINI_TIMEOUT`: 60 segundos
+en total y un solo intento, sin los reintentos que Spring AI y el cliente de Google harían
+por defecto). Las
 peticiones que tendrían que llamar al proveedor tienen además un enfriamiento local
 configurable (`INTERPRETATION_GENERATION_COOLDOWN`, 30 segundos por defecto); el
 resumen y el contexto tienen límites de tamaño y la respuesta externa se valida como

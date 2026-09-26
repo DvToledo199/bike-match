@@ -109,6 +109,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [x] Servicio de explicación básica sin cuestionario: reutilización, límites, privacidad y recuperación de errores (#104)
   - [x] Proveedor determinista por reglas como modo local y fallback
   - [x] Adaptador opcional de Gemini sin dependencia nueva, con clave solo en servidor
+  - [x] Adaptador de Gemini sobre Spring AI en lugar del cliente HTTP escrito a mano (#258)
   - [x] Caché versionada, permisos de lectura/generación y límite de peticiones MVP
 - [x] Texto sencillo junto a las gráficas del detalle (#105)
 - [x] Guardado desde el asistente sin perder el análisis al iniciar sesión (#161)
@@ -120,6 +121,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
   - [x] Frontend: foto al guardar y sesión iniciada tras registrarse (#180)
   - [x] Borrar una bici: el dueño (#181, #182) y el moderador, con aviso al dueño (#183, #184)
   - [x] README y limitaciones: Cloudinary, moderador inicial y traducción automática (#185)
+  - [x] Interfaz y explicación en español, con selector de idioma (#210)
   - [ ] Decidir si el registro pide repetir correo y contraseña
   - [ ] Recuperar la contraseña, pendiente de elegir cómo enviar correos (#186)
   - [ ] Botón «Denunciar foto»: opciones y decisión en #167

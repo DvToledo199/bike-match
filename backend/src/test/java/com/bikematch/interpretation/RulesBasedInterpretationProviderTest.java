@@ -4,21 +4,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 class RulesBasedInterpretationProviderTest {
 
-    private final RulesBasedInterpretationProvider provider = new RulesBasedInterpretationProvider();
+    private final RulesBasedInterpretationProvider provider = new RulesBasedInterpretationProvider(messages());
+
+    /** The same sentences Spring Boot loads from messages.properties and messages_es.properties. */
+    static ResourceBundleMessageSource messages() {
+        var messages = new ResourceBundleMessageSource();
+        messages.setBasename("messages");
+        messages.setDefaultEncoding("UTF-8");
+        messages.setFallbackToSystemLocale(false);
+        return messages;
+    }
 
     @Test
     void readsTheBikeWithoutInventingPersonalRecommendations() {
         Interpretation result = provider.generate(referenceContext(true, true));
 
         assertThat(result.source()).isEqualTo(Interpretation.Source.RULES);
-        assertThat(result.providerVersion()).isEqualTo("rules-4");
+        assertThat(result.providerVersion()).isEqualTo("rules-5");
         assertThat(result.summary())
                 .contains("progressive leverage response")
                 .contains("22%")
-                .contains("These are geometric tendencies")
+                .doesNotContain("geometric tendencies")
                 .doesNotContain("pressure")
                 .doesNotContain("clicks");
         assertThat(result.evidence()).hasSize(3);
@@ -109,6 +119,29 @@ class RulesBasedInterpretationProviderTest {
                 .doesNotContain("leverage response");
     }
 
+    @Test
+    void writesTheSameReadingInSpanish() {
+        Interpretation result = provider.generate(context("LINEAR", "BALANCED", "SQUATS_UNDER_BRAKING", "es"));
+
+        assertThat(result.summary())
+                .startsWith("Este análisis guardado muestra una respuesta de palanca lineal")
+                .contains("(progresión: 3.3%)")
+                .contains("se comporta de forma predecible")
+                .contains("Pedalea con equilibrio")
+                .endsWith("como consecuencia de no copiar el terreno con tanta precisión.")
+                .doesNotContain("tendencias geométricas")
+                .doesNotContain("This saved analysis");
+        assertThat(result.providerVersion()).isEqualTo("rules-5");
+    }
+
+    @Test
+    void warnsInSpanishBeforeInterpretingWhenTravelCheckFails() {
+        Interpretation result = provider.generate(referenceContext(false, true, "es"));
+
+        assertThat(result.summary())
+                .startsWith("El recorrido calculado no coincide con el declarado");
+    }
+
     /** The context offers the whole menu of figures; a stored explanation may cite four. */
     private InterpretationContext contextWithEightFigures() {
         return context("LINEAR", "BALANCED", "SQUATS_UNDER_BRAKING");
@@ -119,12 +152,16 @@ class RulesBasedInterpretationProviderTest {
     }
 
     private InterpretationContext context(String progression, String antiSquat, String antiRise) {
+        return context(progression, antiSquat, antiRise, "en");
+    }
+
+    private InterpretationContext context(String progression, String antiSquat, String antiRise, String language) {
         return new InterpretationContext(
                 4,
                 1,
                 "monopivot-reference-v2",
                 "kinematics-rules-1",
-                "en",
+                language,
                 new InterpretationContext.DataQuality(true, null),
                 new InterpretationContext.Capabilities(true, true, true, true),
                 new InterpretationContext.Conditions("ENDURO", 30.0, 32, 52),
@@ -151,12 +188,17 @@ class RulesBasedInterpretationProviderTest {
     }
 
     private InterpretationContext referenceContext(boolean travelCheckPassed, boolean referenceMetrics) {
+        return referenceContext(travelCheckPassed, referenceMetrics, "en");
+    }
+
+    private InterpretationContext referenceContext(
+            boolean travelCheckPassed, boolean referenceMetrics, String language) {
         return new InterpretationContext(
                 4,
                 1,
                 "monopivot-reference-v2",
                 "kinematics-rules-1",
-                "en",
+                language,
                 new InterpretationContext.DataQuality(
                         travelCheckPassed,
                         travelCheckPassed ? null : "Calculated travel differs from declared travel by 14%"

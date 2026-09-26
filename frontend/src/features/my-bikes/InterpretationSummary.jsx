@@ -30,9 +30,10 @@ function InterpretationSummary({
   if (loading || generating) {
     return (
       <section className={styles.card} aria-labelledby="interpretation-title" aria-busy="true">
-        <p className={styles.eyebrow}>{t('bikeDetail.interpretation.eyebrow')}</p>
         <h2 id="interpretation-title">{t('bikeDetail.interpretation.title')}</h2>
-        <p className={styles.muted}>{t('bikeDetail.interpretation.loading')}</p>
+        <p className={styles.muted}>
+          {t(generating ? 'bikeDetail.interpretation.generating' : 'bikeDetail.interpretation.loading')}
+        </p>
       </section>
     )
   }
@@ -41,7 +42,6 @@ function InterpretationSummary({
     const isMissing = error?.status === 404
     return (
       <section className={styles.card} aria-labelledby="interpretation-title">
-        <p className={styles.eyebrow}>{t('bikeDetail.interpretation.eyebrow')}</p>
         <h2 id="interpretation-title">{t('bikeDetail.interpretation.title')}</h2>
         <p className={styles.muted}>
           {isMissing
@@ -55,22 +55,39 @@ function InterpretationSummary({
             {t(canGenerate ? 'bikeDetail.interpretation.generate' : 'bikeDetail.interpretation.retry')}
           </button>
         )}
+        {canGenerate && <p className={styles.hint}>{t('bikeDetail.interpretation.generateHint')}</p>}
       </section>
     )
   }
 
   return (
     <section className={styles.card} aria-labelledby="interpretation-title">
-      <div className={styles.heading}>
-        <div>
-          <p className={styles.eyebrow}>{t('bikeDetail.interpretation.eyebrow')}</p>
-          <h2 id="interpretation-title">{t('bikeDetail.interpretation.title')}</h2>
+      {/* The AI did not answer: say so, offer to try again, and show the rules text as a stand-in. */}
+      {interpretation.fallback && canGenerate && (
+        <div className={styles.notice} role="status">
+          <p>{t('bikeDetail.interpretation.fallbackNotice')}</p>
+          {error && (
+            <p>{t(error.status === 429
+              ? 'bikeDetail.interpretation.rateLimited'
+              : 'bikeDetail.interpretation.unavailable')}</p>
+          )}
+          <button type="button" className={styles.actionButton} onClick={onGenerate}>
+            {t('bikeDetail.interpretation.retryAi')}
+          </button>
+          <p className={styles.hint}>{t('bikeDetail.interpretation.generateHint')}</p>
         </div>
-        <span className={styles.sourceBadge}>
+      )}
+      <div className={styles.heading}>
+        <p className={styles.eyebrow}>
           {t(interpretation.source === 'AI'
             ? 'bikeDetail.interpretation.aiSource'
             : 'bikeDetail.interpretation.rulesSource')}
-        </span>
+        </p>
+        <h2 id="interpretation-title">
+          {t(interpretation.fallback
+            ? 'bikeDetail.interpretation.fallbackTitle'
+            : 'bikeDetail.interpretation.title')}
+        </h2>
       </div>
       <p className={styles.summary}>{interpretation.summary}</p>
       <dl className={styles.evidence}>
@@ -81,7 +98,9 @@ function InterpretationSummary({
           </div>
         ))}
       </dl>
-      <p className={styles.limit}>{t('bikeDetail.interpretation.limit')}</p>
+      <p className={styles.limit}>
+        <strong>{t('bikeDetail.interpretation.limitLabel')}</strong> {t('bikeDetail.interpretation.limit')}
+      </p>
     </section>
   )
 }

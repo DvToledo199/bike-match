@@ -13,7 +13,8 @@ public record InterpretationResponse(
         String providerVersion,
         String summary,
         JsonNode evidence,
-        Instant generatedAt
+        Instant generatedAt,
+        boolean fallback
 ) {
 
     public static InterpretationResponse from(InterpretationView view) {
@@ -26,6 +27,7 @@ public record InterpretationResponse(
                 view.providerVersion(),
                 view.summary(),
                 view.evidence(),
-                view.generatedAt());
+                view.generatedAt(),
+                view.fallback());
     }
 }

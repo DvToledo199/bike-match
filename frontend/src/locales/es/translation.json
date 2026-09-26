@@ -1,0 +1,609 @@
+{
+  "app": {
+    "title": "BikeMatch",
+    "homeLabel": "Inicio de BikeMatch",
+    "navigation": "Navegación principal",
+    "analyze": "Analiza tu bici",
+    "footer": "Entiende tu suspensión. Disfruta rodando.",
+    "tagline": "La cinemática de la suspensión de tu bici de montaña, explicada",
+    "skipToContent": "Saltar al contenido principal"
+  },
+  "language": {
+    "label": "Idioma"
+  },
+  "auth": {
+    "openRegister": "Registrarse",
+    "openLogin": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "continueAsGuest": "Continuar sin cuenta",
+    "register": {
+      "eyebrow": "Tu cuenta de BikeMatch",
+      "title": "Crea una cuenta",
+      "description": "Guarda los análisis de tus bicis y mantenlos privados hasta que decidas compartirlos.",
+      "emailLabel": "Correo electrónico",
+      "usernameLabel": "Nombre de usuario",
+      "passwordLabel": "Contraseña",
+      "submit": "Crear cuenta",
+      "submitting": "Creando la cuenta…",
+      "success": "Tu cuenta se ha creado. Inicia sesión para continuar.",
+      "duplicate": "Ese correo o nombre de usuario ya está en uso. Elige otro.",
+      "unavailable": "No hemos podido crear la cuenta ahora mismo. Vuelve a intentarlo en unos momentos.",
+      "errors": {
+        "required": "{{field}}: este campo es obligatorio.",
+        "email": "Introduce un correo electrónico válido.",
+        "usernameLength": "El nombre de usuario debe tener entre 3 y 30 caracteres.",
+        "usernameCharacters": "El nombre de usuario solo puede contener letras, números y guiones bajos.",
+        "passwordLength": "La contraseña debe tener entre 8 y 72 caracteres."
+      }
+    },
+    "login": {
+      "eyebrow": "Tu cuenta de BikeMatch",
+      "title": "Iniciar sesión",
+      "description": "Accede a tus bicis guardadas y a tus análisis privados.",
+      "emailLabel": "Correo electrónico",
+      "passwordLabel": "Contraseña",
+      "submit": "Iniciar sesión",
+      "submitting": "Iniciando sesión…",
+      "invalidCredentials": "El correo o la contraseña no son correctos.",
+      "unavailable": "No hemos podido iniciar tu sesión ahora mismo. Vuelve a intentarlo en unos momentos.",
+      "errors": {
+        "required": "{{field}}: este campo es obligatorio.",
+        "email": "Introduce un correo electrónico válido."
+      }
+    }
+  },
+  "admin": {
+    "navLabel": "Administración",
+    "title": "Administración de cuentas",
+    "description": "Revisa las cuentas y concede o retira el rol de moderador.",
+    "accounts": "Cuentas de usuario",
+    "username": "Nombre de usuario",
+    "role": "Rol",
+    "createdAt": "Alta",
+    "actions": "Acciones",
+    "yourAccount": "Tu cuenta — su rol no se puede cambiar aquí",
+    "adminReadOnly": "Administrador — solo lectura",
+    "changeRole": "Cambiar rol",
+    "changeRoleFor": "Cambiar el rol de @{{username}}",
+    "newRole": "Nuevo rol",
+    "chooseDifferentRole": "Elige un rol distinto para poder confirmar.",
+    "confirmation": "Confirma el cambio de @{{username}} de {{previousRole}} a {{nextRole}}.",
+    "existingSessions": "El nuevo rol se aplica la próxima vez que la cuenta inicie sesión. Las sesiones abiertas conservan sus permisos actuales hasta que caduquen.",
+    "confirm": "Confirmar el cambio de rol",
+    "cancel": "Cancelar",
+    "saving": "Guardando…",
+    "success": "@{{username}} tendrá el rol {{role}} a partir de su próximo inicio de sesión. Las sesiones abiertas no cambian.",
+    "refresh": "Actualizar cuentas",
+    "retry": "Reintentar",
+    "home": "Volver al inicio",
+    "loading": "Cargando cuentas…",
+    "empty": "No hay cuentas que mostrar.",
+    "roles": { "USER": "Usuario", "MODERATOR": "Moderador", "ADMIN": "Administrador" },
+    "errors": {
+      "invalid": "No se ha aceptado el cambio de rol. Revisa el rol elegido y vuelve a intentarlo.",
+      "unauthenticated": "Inicia sesión con una cuenta de administrador. Si ya habías iniciado sesión, puede que haya caducado.",
+      "forbidden": "Tu cuenta no tiene permiso para gestionar usuarios.",
+      "notFound": "Esta cuenta ya no existe. Actualiza las cuentas antes de volver a intentarlo.",
+      "ownRole": "No puedes cambiar tu propio rol. Actualiza las cuentas y elige otro usuario.",
+      "connection": "No hemos podido confirmar la petición. Revisa tu conexión y actualiza las cuentas antes de volver a intentarlo.",
+      "unavailable": "No se ha podido confirmar la petición de administración. Actualiza las cuentas y vuelve a intentarlo."
+    }
+  },
+  "moderation": {
+    "navLabel": "Moderación",
+    "title": "Moderación de bicis",
+    "description": "Revisa las solicitudes de publicación y gestiona las bicis compartidas con la comunidad.",
+    "views": "Vistas de moderación",
+    "pending": "Pendientes",
+    "published": "Publicadas",
+    "pendingHelp": "Aprueba una bici para publicarla. Recházala para dejarla fuera del catálogo sin borrarla.",
+    "publishedHelp": "Revisa las bicis que se ven ahora en el catálogo público.",
+    "refresh": "Actualizar la lista",
+    "retry": "Reintentar",
+    "home": "Volver al inicio",
+    "loading": "Cargando bicis…",
+    "emptyPending": "No hay bicis pendientes de revisión.",
+    "emptyPublished": "No hay bicis publicadas.",
+    "owner": "Enviada por @{{username}}",
+    "requestedAt": "Solicitada el",
+    "createdAt": "Creada el",
+    "approve": "Aprobar",
+    "approving": "Aprobando…",
+    "reject": "Rechazar",
+    "rejecting": "Rechazando…",
+    "removing": "Retirando…",
+    "remove": {
+      "open": "Retirar bici",
+      "title": "Retirar {{name}}",
+      "warning": "Esto borra para siempre la bici, su foto y su análisis. No se puede deshacer. Su propietario recibirá un aviso con tu motivo.",
+      "reason": "Motivo de la retirada",
+      "limit": "{{count}} / 500 caracteres",
+      "invalidReason": "Escribe un motivo de entre 1 y 500 caracteres, no solo espacios.",
+      "confirm": "Confirmar la retirada definitiva",
+      "cancel": "Cancelar"
+    },
+    "success": {
+      "approve": "{{name}} se ha aprobado y ya es pública.",
+      "reject": "{{name}} se ha rechazado y sigue fuera del catálogo público.",
+      "remove": "{{name}} se ha retirado definitivamente. Su propietario ha recibido un aviso."
+    },
+    "errors": {
+      "invalid": "No se ha aceptado la petición. Revisa los datos y vuelve a intentarlo.",
+      "unauthenticated": "Inicia sesión con una cuenta de moderador o administrador. Si ya habías iniciado sesión, puede que haya caducado.",
+      "forbidden": "Tu cuenta no tiene permiso para moderar bicis.",
+      "notFound": "Esta bici ya no existe o no está disponible para moderación. Actualiza la lista.",
+      "conflict": "Esta bici ya no está pendiente de esta decisión. Puede que otro moderador ya la haya revisado. Actualiza la lista.",
+      "connection": "No hemos podido confirmar la petición. Revisa tu conexión y actualiza la lista antes de volver a intentarlo.",
+      "unavailable": "No se ha podido confirmar la petición de moderación. Actualiza la lista y vuelve a intentarlo."
+    }
+  },
+  "myBikes": {
+    "navLabel": "Mis bicis",
+    "eyebrow": "Mi garaje",
+    "title": "Mis bicis",
+    "description": "Tus análisis guardados y su visibilidad actual.",
+    "loading": "Cargando tus bicis…",
+    "empty": "Aún no has guardado ninguna bici. Empieza un análisis para crear una.",
+    "retry": "Reintentar",
+    "photoAlt": "Foto de {{name}}",
+    "noPhoto": "Sin foto",
+    "unnamed": "Bici sin nombre",
+    "notAvailable": "No disponible",
+    "analysisReady": "Análisis listo",
+    "analysisPending": "Análisis sin terminar",
+    "openDetail": "Ver la ficha de la bici",
+    "publish": {
+      "request": "Solicitar publicación",
+      "confirmation": "¿Enviar esta bici a moderación? La comunidad solo la verá cuando se apruebe.",
+      "photoRights": "Publícala solo si la foto es tuya o tienes permiso de su autor.",
+      "cancel": "Mantener privada",
+      "confirm": "Confirmar la publicación",
+      "submitting": "Enviando…",
+      "errors": {
+        "sessionExpired": "Tu sesión ha caducado. Vuelve a iniciar sesión antes de publicar.",
+        "forbidden": "Solo el propietario de la bici puede solicitar su publicación.",
+        "unavailable": "No hemos podido solicitar la publicación ahora mismo. Vuelve a intentarlo."
+      }
+    },
+    "delete": {
+      "request": "Borrar bici",
+      "confirmation": "¿Borrar esta bici para siempre? Se eliminarán su foto, los puntos marcados, las curvas y la explicación, también de la comunidad si es pública. No se puede deshacer.",
+      "cancel": "Conservar la bici",
+      "confirm": "Borrar para siempre",
+      "submitting": "Borrando…",
+      "errors": {
+        "sessionExpired": "Tu sesión ha caducado. Vuelve a iniciar sesión antes de borrar.",
+        "unavailable": "No hemos podido borrar esta bici ahora mismo. Vuelve a intentarlo."
+      }
+    },
+    "notices": {
+      "title": "Retiradas por moderación",
+      "description": "Un moderador borró estas bicis junto con sus fotos y análisis.",
+      "bikeRemoved": "{{name}} se ha retirado",
+      "reason": "Motivo: {{reason}}",
+      "removedAt": "Retirada el {{date}}",
+      "dismiss": "Descartar",
+      "dismissing": "Descartando…",
+      "errors": {
+        "load": "No hemos podido cargar tus avisos ahora mismo.",
+        "sessionExpired": "Tu sesión ha caducado. Vuelve a iniciar sesión antes de descartar este aviso.",
+        "unavailable": "No hemos podido descartar este aviso ahora mismo. Vuelve a intentarlo."
+      }
+    },
+    "fields": {
+      "year": "Año",
+      "category": "Categoría",
+      "analysis": "Análisis"
+    },
+    "status": {
+      "private": "Privada",
+      "pending": "Pendiente de revisión",
+      "public": "Pública",
+      "rejected": "Rechazada",
+      "unknown": "Desconocido"
+    },
+    "errors": {
+      "sessionExpired": "Tu sesión ha caducado. Vuelve a iniciar sesión para ver tus bicis.",
+      "unavailable": "No hemos podido cargar tus bicis ahora mismo. Vuelve a intentarlo en unos momentos."
+    }
+  },
+  "bikeDetail": {
+    "eyebrow": "Análisis de la bici",
+    "back": "Volver a mis bicis",
+    "loading": "Cargando esta bici…",
+    "retry": "Reintentar",
+    "owner": "Análisis de @{{username}}",
+    "specifications": "Datos de la bici",
+    "noResult": "Esta bici aún no tiene un resultado cinemático guardado.",
+    "interpretation": {
+      "title": "Qué sugiere este análisis",
+      "loading": "Cargando la explicación…",
+      "ownerMissing": "Este análisis guardado aún no tiene explicación. Genérala a partir de su resultado verificado.",
+      "publicMissing": "Todavía no se ha publicado una explicación de este análisis. Las curvas siguen disponibles más abajo.",
+      "unavailable": "La explicación no está disponible ahora mismo. Las curvas guardadas siguen disponibles más abajo.",
+      "rateLimited": "Espera un momento antes de pedir otra explicación.",
+      "generate": "Generar explicación",
+      "generating": "Generando la explicación… Puede tardar hasta un minuto.",
+      "generateHint": "Puede tardar hasta un minuto.",
+      "fallbackTitle": "Por ahora, una descripción aproximada",
+      "fallbackNotice": "La IA no ha podido responder ahora mismo: algo está fallando. Inténtalo más tarde.",
+      "retryAi": "Volver a intentarlo con IA",
+      "retry": "Reintentar",
+      "rulesSource": "Resumen basado en reglas",
+      "aiSource": "Resumen generado con IA",
+      "limitLabel": "Advertencia:",
+      "limit": "son tendencias geométricas a partir de una foto marcada, no una recomendación de reglaje personal ni una medición de laboratorio.",
+      "evidence": {
+        "usefulProgression": "Progresión útil",
+        "totalProgression": "Progresión total",
+        "maxRearward": "Retroceso máximo del eje",
+        "maxKickback": "Kickback máximo",
+        "antiSquatAtSag": "Anti-squat en el sag",
+        "antiRiseAtSag": "Anti-rise en el sag",
+        "calculatedTravel": "Recorrido calculado",
+        "leverageAtSag": "Relación de palanca en el sag",
+        "unknown": "Dato de apoyo"
+      }
+    },
+    "fields": {
+      "layout": "Tipo de suspensión",
+      "travel": "Recorrido trasero declarado",
+      "wheelConfiguration": "Configuración de ruedas",
+      "sag": "Sag"
+    },
+    "errors": {
+      "title": "No hemos podido abrir esta bici",
+      "notFound": "Esta bici es privada, ya no está disponible o no existe.",
+      "sessionExpired": "Tu sesión ha caducado. Vuelve a iniciar sesión para abrir esta bici.",
+      "unavailable": "No hemos podido cargar esta bici ahora mismo. Vuelve a intentarlo en unos momentos."
+    },
+    "backHome": "Volver a la comunidad",
+    "backCatalog": "Volver al catálogo"
+  },
+  "catalog": {
+    "navLabel": "Catálogo",
+    "eyebrow": "Bicis de la comunidad",
+    "title": "Explora bicis analizadas",
+    "description": "Descubre los análisis de suspensión públicos que comparte la comunidad de BikeMatch.",
+    "filterLabel": "Categoría de bici",
+    "loading": "Cargando el catálogo público…",
+    "waking": "Despertando el servidor… Tras un rato sin visitas, la primera puede tardar hasta un minuto.",
+    "retry": "Reintentar",
+    "empty": "Aún no se ha publicado ninguna bici. Analiza la tuya, guárdala y solicita su publicación para compartirla aquí.",
+    "openDetail": "Ver análisis",
+    "photoAlt": "Foto de {{name}}",
+    "noPhoto": "Sin foto",
+    "unnamed": "Bici sin nombre",
+    "filters": {
+      "all": "Todas las categorías",
+      "enduro": "Enduro",
+      "eEnduro": "E-Enduro",
+      "downhill": "Descenso"
+    },
+    "pagination": {
+      "label": "Páginas del catálogo",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "page": "Página {{page}} de {{total}}"
+    },
+    "errors": {
+      "unavailable": "No hemos podido cargar el catálogo público ahora mismo. Vuelve a intentarlo en unos momentos.",
+      "title": "No se han podido cargar las bicis."
+    },
+    "openBike": "Ver el análisis de {{name}}",
+    "emptyTitle": "La comunidad empieza aquí.",
+    "emptyCategoryTitle": "Aún no hay bicis en esta categoría.",
+    "emptyCategory": "Prueba otra categoría o explora todas las bicis compartidas.",
+    "showAll": "Ver todas las bicis",
+    "addFirst": "Analiza tu bici"
+  },
+  "wizard": {
+    "progressLabel": "Progreso del análisis",
+    "stepCount": "Paso {{current}} de {{total}}",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "calculate": "Calcular la cinemática",
+    "photo": {
+      "label": "Foto y suspensión",
+      "title": "Empieza con una foto lateral de tu bici",
+      "description": "Usa una foto lateral nítida y a nivel, con la suspensión totalmente extendida. Puede mirar hacia cualquier lado; evita las fotos en perspectiva o inclinadas.",
+      "eyebrow": "Paso 1 de 4",
+      "inputLabel": "Foto de la bici",
+      "changeInputLabel": "Elegir otra foto",
+      "inputHelp": "JPG, PNG o WebP. Tamaño máximo: 10 MB.",
+      "rightsNotice": "Para publicar tu bici más adelante, usa una foto tuya o que tengas permiso para compartir. Las fotos de otras webs solo sirven para un análisis privado.",
+      "previewAlt": "Vista previa de {{fileName}}",
+      "dimensions": "{{width}} × {{height}} px",
+      "lowResolutionWarning": "Esta imagen mide menos de {{minimumPixels}} px en su lado más largo. Si puedes, usa una foto más grande: con imágenes pequeñas el marcado es menos fiable.",
+      "suspensionLegend": "Tipo de suspensión",
+      "suspensionHelp": "Elige el sistema de suspensión que se ve en tu foto lateral. Las roldanas, los frenos flotantes y otros sistemas aún no están disponibles.",
+      "suspensionLayouts": {
+        "singlePivot": "Monopivote",
+        "horstLink": "Cuatro barras (Horst link)",
+        "horstLinkYoke": "Cuatro barras (Horst link con extensión del amortiguador)",
+        "dualLink": "Doble bieleta / punto de giro virtual"
+      },
+      "comingSoon": "Próximamente",
+      "errors": {
+        "invalidFormat": "Elige una imagen JPG, PNG o WebP. Los archivos SVG no sirven como foto.",
+        "fileTooLarge": "Elige una imagen de menos de {{maximumSize}} MB.",
+        "unreadable": "No se ha podido leer esta imagen. Elige otro archivo."
+      }
+    },
+    "marking": {
+      "mouseHint": "Clic izquierdo para marcar · Rueda para hacer zoom · Arrastra con el botón derecho para mover",
+      "keyboardLabel": "Controles de teclado",
+      "label": "Marcar puntos",
+      "title": "Marca los puntos clave",
+      "description": "Sigue la guía y haz clic en el centro exacto de cada pieza en la foto.",
+      "eyebrow": "Paso 2 de 4",
+      "progress": "{{marked}} de {{total}} puntos marcados",
+      "nowMarking": "Ahora marcas: {{point}}",
+      "instructions": "Haz clic en el centro exacto de este punto en la foto. Puedes elegir cualquier punto de abajo para volver a moverlo.",
+      "allPointsMarked": "Todos los puntos están marcados. Elige cualquier punto de abajo y haz clic en la foto para moverlo.",
+      "keyboardHint": "Lleva el foco a la foto con Tab. Usa las flechas para situar un punto nuevo (medio píxel; con Mayús va más rápido) y pulsa Intro para marcarlo. Elige abajo un punto ya marcado para ajustarlo con las flechas. «Deshacer punto» quita su cruz y sus coordenadas al instante.",
+      "canvasLabel": "Foto de la bici donde se marcan los puntos de la suspensión",
+      "pointListLabel": "Puntos que marcar",
+      "marked": "Marcado",
+      "toMark": "Por marcar",
+      "precisionControls": "Controles de precisión",
+      "correctionLabel": "Corrección",
+      "previousPoint": "Deshacer punto",
+      "zoomLabel": "Zoom",
+      "zoomIn": "Acercar",
+      "zoomOut": "Alejar",
+      "zoomValue": "{{zoom}}%",
+      "resetView": "Restablecer la vista",
+      "panLabel": "Mover la vista",
+      "panUp": "Mover la vista hacia arriba",
+      "panDown": "Mover la vista hacia abajo",
+      "panLeft": "Mover la vista a la izquierda",
+      "panRight": "Mover la vista a la derecha",
+      "points": {
+        "mainPivot": {
+          "label": "Pivote principal",
+          "description": "El centro del pivote sobre el que gira el basculante."
+        },
+        "shockFrame": {
+          "label": "Anclaje del amortiguador al cuadro",
+          "description": "El centro del tornillo del amortiguador fijado al cuadro."
+        },
+        "shockSwingarm": {
+          "label": "Anclaje del amortiguador al basculante",
+          "description": "El centro del tornillo del amortiguador unido al basculante."
+        },
+        "horstPivot": {
+          "label": "Pivote Horst",
+          "description": "El pivote entre la vaina y el tirante, normalmente cerca del eje trasero."
+        },
+        "rockerFramePivot": {
+          "label": "Pivote bieleta-cuadro",
+          "description": "El pivote fijo sobre el que gira la bieleta en el cuadro."
+        },
+        "rockerSeatstayPivot": {
+          "label": "Pivote bieleta-tirante",
+          "description": "El centro donde la bieleta se une al tirante."
+        },
+        "shockRocker": {
+          "label": "Anclaje del amortiguador a la bieleta",
+          "description": "El centro del tornillo del amortiguador unido a la bieleta."
+        },
+        "yokeRockerPivot": {
+          "label": "Pivote extensión-bieleta",
+          "description": "El pivote donde la extensión del amortiguador gira respecto a la bieleta."
+        },
+        "shockYokeEye": {
+          "label": "Ojo del amortiguador en la extensión",
+          "description": "El tornillo real de anclaje del amortiguador en la extensión. No marques aquí el pivote extensión-bieleta."
+        },
+        "bottomBracket": {
+          "label": "Eje del pedalier",
+          "description": "El centro del eje de las bielas."
+        },
+        "rearAxle": {
+          "label": "Eje trasero",
+          "description": "El centro del eje de la rueda trasera."
+        },
+        "frontAxle": {
+          "label": "Eje delantero",
+          "description": "El centro del eje de la rueda delantera."
+        }
+      }
+    },
+    "parameters": {
+      "label": "Parámetros",
+      "title": "Datos de la bici",
+      "description": "Añade las medidas de tu bici.",
+      "eyebrow": "Paso 3 de 4",
+      "calibration": {
+        "invalidReference": "Los dos anclajes del amortiguador están en el mismo sitio. Vuelve atrás y corrige una de esas marcas.",
+        "highScaleWarning": "Puede que esta foto sea demasiado pequeña para marcar con fiabilidad. Una foto lateral más grande daría un resultado más fiable."
+      },
+      "wheels": {
+        "label": "Configuración de ruedas",
+        "help": "Elige el tamaño de la rueda delantera y el de la trasera.",
+        "placeholder": "Elige la configuración de ruedas",
+        "options": {
+          "FULL_29": "29″ — las dos ruedas",
+          "MULLET": "Mullet — 29″ delante / 27,5″ detrás",
+          "FULL_27_5": "27,5″ — las dos ruedas"
+        }
+      },
+      "fields": {
+        "eyeToEye": {
+          "label": "Ojo a ojo del amortiguador",
+          "help": "De centro a centro entre los tornillos de anclaje del amortiguador.",
+          "unit": "mm"
+        },
+        "shockStroke": {
+          "label": "Carrera del amortiguador",
+          "help": "Cuánto se comprime el amortiguador, en milímetros.",
+          "unit": "mm"
+        },
+        "chainring": {
+          "label": "Dientes del plato",
+          "help": "Número de dientes del plato delantero.",
+          "unit": "dientes"
+        },
+        "sprocket": {
+          "label": "Piñón más grande del cassette (dientes)",
+          "help": "Dientes del piñón más grande de tu cassette trasero.",
+          "unit": "dientes"
+        },
+        "declaredTravel": {
+          "label": "Recorrido de la rueda trasera",
+          "help": "Recorrido de la suspensión trasera según el fabricante.",
+          "unit": "mm"
+        },
+        "sag": {
+          "label": "Sag",
+          "help": "Cuánto se comprime la suspensión con tu peso encima, en porcentaje.",
+          "unit": "%"
+        }
+      },
+      "errors": {
+        "wheelConfiguration": "Elige la configuración de ruedas que lleva esta bici.",
+        "required": "{{field}}: introduce un valor.",
+        "integer": "{{field}}: debe ser un número entero.",
+        "range": "{{field}}: debe estar entre {{minimum}} y {{maximum}}."
+      }
+    },
+    "results": {
+      "label": "Resultados",
+      "title": "Tus resultados cinemáticos",
+      "description": "Aquí aparecerán las curvas y sus explicaciones."
+    },
+    "charts": {
+      "title": "Tus curvas cinemáticas",
+      "description": "Lee cada curva con sus unidades, consulta un valor exacto con el puntero o revisa abajo sus valores inicial y final.",
+      "curveLabel": "Curva cinemática",
+      "referenceSetup": "Configuración de referencia: {{wheels}} · {{chainring}}/{{sprocket}}T · altura del centro de gravedad {{height}} m.",
+      "referenceLimit": "Estimaciones con neumáticos nominales y una posición de referencia del piloto; no es una predicción personalizada ni una medición de laboratorio. La validación externa del kickback, el anti-squat y el anti-rise sigue en curso. Solo monopivotes con transmisión directa.",
+      "percentageAxis": "Respuesta de referencia (%)",
+      "percentageSummary": "Empieza en {{start}}% y termina en {{end}}%. Línea discontinua: referencia del 100%, no es una nota.",
+      "antiSquat": {
+        "title": "Anti-squat — respuesta al pedalear",
+        "description": "Cuánto contrarrestan las fuerzas de la transmisión la tendencia de la suspensión trasera a comprimirse al acelerar, en este modelo de referencia. No es un porcentaje de eficiencia."
+      },
+      "antiRise": {
+        "title": "Anti-rise — respuesta al frenar",
+        "description": "Cuánto contrarresta el freno trasero la tendencia de la suspensión a extenderse cuando el peso se desplaza hacia delante. Supone un freno fijado al basculante; más alto no es necesariamente mejor."
+      },
+      "axes": "Horizontal: {{x}} · Vertical: {{y}}",
+      "wheelTravelAxis": "Recorrido de la rueda (mm)",
+      "tooltip": {
+        "wheelTravel": "Recorrido de la rueda: {{value}} mm",
+        "leverage": "Relación de palanca: {{value}}",
+        "kickback": "Pedal kickback: {{value}}°",
+        "percent": "Respuesta de referencia: {{value}}%",
+        "axleX": "Posición horizontal: {{value}} mm",
+        "axleY": "Posición vertical: {{value}} mm"
+      },
+      "leverage": {
+        "title": "Relación de palanca",
+        "description": "Cuánto movimiento de la rueda llega al amortiguador a lo largo del recorrido.",
+        "axis": "Relación de palanca",
+        "summary": "Empieza en {{start}} y termina en {{end}}.",
+        "highlight": "Progresión total: {{total}}%"
+      },
+      "kickback": {
+        "title": "Pedal kickback",
+        "description": "Giro estimado del pedal por el crecimiento de la cadena, su enrollamiento en el piñón y el retroceso de la rueda con la transmisión engranada. Lo que se nota al rodar depende también de la velocidad y del núcleo de la rueda libre.",
+        "axis": "Pedal kickback (°)",
+        "summary": "Empieza en {{start}}° y termina en {{end}}°."
+      },
+      "axle": {
+        "title": "Trayectoria del eje",
+        "description": "Movimiento desde la posición inicial (0, 0), con la misma escala en los dos ejes. La izquierda es hacia atrás, la derecha hacia delante y arriba es compresión.",
+        "xAxis": "Desplazamiento hacia delante (mm)",
+        "yAxis": "Desplazamiento hacia arriba (mm)",
+        "summary": "Empieza en X {{startX}} mm, Y {{startY}} mm y termina en X {{endX}} mm, Y {{endY}} mm.",
+        "highlight": "Retroceso máximo: {{rearward}} mm, al {{travel}}% del recorrido."
+      },
+      "travelCheck": {
+        "withinTolerance": "El recorrido calculado es de {{calculated}} mm, cercano a los {{declared}} mm declarados ({{deviation}}% de diferencia).",
+        "outsideTolerance": "El recorrido calculado es de {{calculated}} mm y el declarado, de {{declared}} mm ({{deviation}}% de diferencia). Revisa las marcas y la medida del amortiguador antes de fiarte de este resultado."
+      }
+    },
+    "preview": {
+      "loadingTitle": "Calculando tu bici",
+      "loadingDescription": "Estamos enviando las marcas y las medidas al motor cinemático.",
+      "loadingChartsTitle": "Preparando tus curvas",
+      "loadingChartsDescription": "El cálculo está listo. Ahora cargamos la vista gráfica.",
+      "chartErrorTitle": "No hemos podido mostrar las curvas",
+      "chartErrorDescription": "El cálculo sigue disponible. Vuelve a intentar cargar la vista gráfica.",
+      "errorTitle": "No hemos podido calcular esta bici",
+      "retry": "Volver a calcular",
+      "errors": {
+        "timeout": "El cálculo ha tardado demasiado. Vuelve a intentarlo; tus marcas y medidas siguen aquí.",
+        "invalidResponse": "El servicio ha devuelto resultados incompletos o no válidos. Tus marcas están a salvo; vuelve a intentarlo.",
+        "invalidRequest": "Con estas marcas y medidas no sale un movimiento de suspensión válido. Revisa el tipo de suspensión elegido, la posición de los pivotes y las medidas del amortiguador. Si lleva extensión, marca el ojo real del amortiguador por separado del pivote que une la extensión con la bieleta.",
+        "network": "No hemos podido conectar con el servicio de cálculo. Comprueba tu conexión y vuelve a intentarlo en unos momentos.",
+        "rateLimited": "Espera un momento antes de pedir otra explicación.",
+        "server": "El servicio de cálculo ha tenido un problema. Vuelve a intentarlo en un momento.",
+        "unavailable": "El servicio de cálculo no está disponible ahora mismo. Vuelve a intentarlo en un momento.",
+        "unexpected": "Ha pasado algo inesperado al preparar el cálculo. Vuelve a intentarlo."
+      }
+    },
+    "placeholder": "Este paso está listo para su siguiente tarea de implementación."
+  },
+  "home": {
+    "eyebrow": "La comunidad BikeMatch",
+    "title": "Encuentra tu bike match.",
+    "description": "Descubre cómo trabaja la suspensión de cada bici y encuentra la que encaja con tu forma de rodar.",
+    "guest": "Prueba el análisis. No necesitas cuenta."
+  },
+  "saveAnalysis": {
+    "eyebrow": "Guarda tu análisis",
+    "title": "Guarda tu bici",
+    "description": "Guárdala en privado y tendrás un resumen en palabras sencillas junto a tus curvas. Más adelante puedes decidir compartirla.",
+    "guest": "Conserva tus curvas y obtén una explicación sencilla de tu bici. Regístrate para guardar este análisis en privado. Tu foto, tus marcas y tus medidas seguirán aquí mientras te registras o inicias sesión.",
+    "details": "Sobre tu bici",
+    "fields": {
+      "brand": "Marca",
+      "model": "Modelo",
+      "modelYear": "Año del modelo (opcional)",
+      "category": "Categoría",
+      "cassetteType": "Cassette"
+    },
+    "categories": {
+      "ENDURO": "Enduro",
+      "E_ENDURO": "E-Enduro",
+      "DOWNHILL": "Descenso"
+    },
+    "cassettes": {
+      "twelve": "12 velocidades",
+      "dh": "Descenso · 7 u 8 velocidades"
+    },
+    "choose": "Elige una opción",
+    "photoAlt": "Foto de la bici que estás guardando",
+    "photoNotice": "Tu bici es privada hasta que solicites su publicación. La foto y las marcas quedan fijas al guardar; marcar de nuevo crea otro análisis.",
+    "save": "Guardar bici",
+    "retry": "Reanudar el guardado",
+    "working": "Guardando…",
+    "saved": "Tu bici está guardada",
+    "ready": "Tu análisis y su resumen están listos en la ficha de tu bici.",
+    "explanationPending": "Tus curvas están guardadas. Puedes volver a intentar generar el resumen desde la ficha de tu bici.",
+    "open": "Abrir la bici guardada",
+    "startNew": "Analizar otra bici",
+    "stages": {
+      "creating": "Creando tu bici privada…",
+      "uploading": "Subiendo tu foto…",
+      "saving": "Guardando el análisis…",
+      "explaining": "Preparando tu resumen… Puede tardar hasta un minuto."
+    },
+    "errors": {
+      "uncertainCreate": "No hemos podido confirmar si la bici se ha creado. Revisa Mis bicis antes de empezar de nuevo para no duplicarla.",
+      "sessionExpired": "Vuelve a iniciar sesión con la misma cuenta y reanuda el guardado. Tu análisis sigue aquí.",
+      "differentOwner": "Este guardado pertenece a otra cuenta. Inicia sesión con la cuenta que lo empezó.",
+      "invalid": "Revisa los datos de la bici y las medidas antes de volver a intentarlo.",
+      "resume": "El guardado se detuvo antes de terminar. Tu bici privada se ha conservado; reanuda el guardado para seguir desde el último paso confirmado.",
+      "unavailable": "No hemos podido guardar tu bici. Vuelve a intentarlo."
+    },
+    "registerToSave": "Regístrate para guardar tu bici",
+    "loginToSave": "¿Ya tienes cuenta? Inicia sesión",
+    "reminder": "¿Quieres conservar estos resultados?",
+    "resultsActionLabel": "Guarda tus resultados",
+    "reviewSave": "Ver el estado del guardado"
+  }
+}

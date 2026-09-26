@@ -117,7 +117,7 @@ reintentos, errores de autenticación, subida y explicación, usando servicios s
 Prueba manual pendiente (#170) con servicios externos configurados: `CLOUDINARY_URL` solo
 en el entorno del backend para subir fotos; `INTERPRETATION_PROVIDER=rules` permite
 probar el texto sin proveedor externo. Para probar Gemini hacen falta además
-`INTERPRETATION_PROVIDER=gemini`, `GEMINI_API_KEY` y `GEMINI_MODEL`. No copiar claves
+`INTERPRETATION_PROVIDER=google-genai`, `GEMINI_API_KEY` y `GEMINI_MODEL`. No copiar claves
 al frontend ni al repositorio. Verificar por separado guardado real, fuente del
 texto (`RULES`/`AI`) y comprensión del resultado; no afirmar llamadas reales por pasar CI.
 

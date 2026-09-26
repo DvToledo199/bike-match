@@ -8,6 +8,9 @@
     "tagline": "Mountain bike suspension kinematics, explained",
     "skipToContent": "Skip to main content"
   },
+  "language": {
+    "label": "Language"
+  },
   "auth": {
     "openRegister": "Sign up",
     "openLogin": "Log in",
@@ -24,7 +27,7 @@
       "submitting": "Creating account…",
       "success": "Your account was created. Log in to continue.",
       "duplicate": "That email or username is already in use. Choose another one.",
-      "unavailable": "We could not create the account right now. Check that the BikeMatch backend is running and try again.",
+      "unavailable": "We could not create the account right now. Please try again in a moment.",
       "errors": {
         "required": "{{field}} is required.",
         "email": "Enter a valid email address.",
@@ -42,7 +45,7 @@
       "submit": "Log in",
       "submitting": "Logging in…",
       "invalidCredentials": "The email or password is incorrect.",
-      "unavailable": "We could not log you in right now. Check that the BikeMatch backend is running and try again.",
+      "unavailable": "We could not log you in right now. Please try again in a moment.",
       "errors": {
         "required": "{{field}} is required.",
         "email": "Enter a valid email address."
@@ -136,7 +139,7 @@
   },
   "myBikes": {
     "navLabel": "My bikes",
-    "eyebrow": "Your garage",
+    "eyebrow": "My garage",
     "title": "My bikes",
     "description": "Your saved analyses and their current visibility status.",
     "loading": "Loading your bikes…",
@@ -201,7 +204,7 @@
     },
     "errors": {
       "sessionExpired": "Your session has expired. Log in again to see your bikes.",
-      "unavailable": "We could not load your bikes right now. Check that the BikeMatch backend is running."
+      "unavailable": "We could not load your bikes right now. Please try again in a moment."
     }
   },
   "bikeDetail": {
@@ -213,7 +216,6 @@
     "specifications": "Bike specifications",
     "noResult": "This bike has no saved kinematics result yet.",
     "interpretation": {
-      "eyebrow": "In plain language",
       "title": "What this analysis suggests",
       "loading": "Loading the explanation…",
       "ownerMissing": "This saved analysis does not have an explanation yet. Generate one from its verified result.",
@@ -221,10 +223,16 @@
       "unavailable": "The explanation is unavailable right now. The saved curves are still available below.",
       "rateLimited": "Please wait a moment before requesting another explanation.",
       "generate": "Generate explanation",
+      "generating": "Generating the explanation… It can take up to a minute.",
+      "generateHint": "It can take up to a minute.",
+      "fallbackTitle": "For now, an approximate description",
+      "fallbackNotice": "The AI could not answer right now; something is not working. Try again later.",
+      "retryAi": "Try again with AI",
       "retry": "Try again",
       "rulesSource": "Rules-based summary",
       "aiSource": "AI-generated summary",
-      "limit": "This is a reference explanation of the geometry. It is not a personal setup recommendation or a laboratory measurement.",
+      "limitLabel": "Note:",
+      "limit": "these are geometric tendencies from a marked photo, not a personal setup recommendation or a laboratory measurement.",
       "evidence": {
         "usefulProgression": "Useful progression",
         "totalProgression": "Total progression",
@@ -247,7 +255,7 @@
       "title": "We could not open this bike",
       "notFound": "This bike is private, no longer available, or does not exist.",
       "sessionExpired": "Your session has expired. Log in again to open this bike.",
-      "unavailable": "We could not load this bike right now. Check that the BikeMatch backend is running."
+      "unavailable": "We could not load this bike right now. Please try again in a moment."
     },
     "backHome": "Back to the community",
     "backCatalog": "Back to the catalog"
@@ -259,6 +267,7 @@
     "description": "Browse public suspension analyses shared by the BikeMatch community.",
     "filterLabel": "Bike category",
     "loading": "Loading the public catalog…",
+    "waking": "Waking up the server… After a quiet spell, the first visit can take up to a minute.",
     "retry": "Try again",
     "empty": "No bikes have been published yet. Analyze yours, save it and request publication to share it here.",
     "openDetail": "View analysis",
@@ -278,7 +287,7 @@
       "page": "Page {{page}} of {{total}}"
     },
     "errors": {
-      "unavailable": "We could not load the public catalog right now. Check that the BikeMatch backend is running.",
+      "unavailable": "We could not load the public catalog right now. Please try again in a moment.",
       "title": "The bikes could not be loaded."
     },
     "openBike": "View analysis of {{name}}",
@@ -494,7 +503,8 @@
         "title": "Leverage ratio",
         "description": "How much wheel movement acts on the shock through the suspension travel.",
         "axis": "Leverage ratio",
-        "summary": "Starts at {{start}} and ends at {{end}}."
+        "summary": "Starts at {{start}} and ends at {{end}}.",
+        "highlight": "Total progression: {{total}}%"
       },
       "kickback": {
         "title": "Pedal kickback",
@@ -507,64 +517,10 @@
         "description": "Movement from the starting position (0, 0), with equal scales. Left is rearward, right is forward, and up is compression.",
         "xAxis": "Forward displacement (mm)",
         "yAxis": "Upward displacement (mm)",
-        "summary": "Starts at X {{startX}} mm, Y {{startY}} mm and ends at X {{endX}} mm, Y {{endY}} mm."
-      }
-    },
-    "descriptors": {
-      "eyebrow": "At a glance",
-      "title": "What these curves mean",
-      "description": "These highlights are calculated from the curves above. They describe tendencies, not laboratory measurements.",
-      "leverage": {
-        "title": "Leverage and progression",
-        "description": "The leverage ratio shows how wheel movement acts on the shock. Useful progression focuses on the part of the travel after sag.",
-        "initial": "Initial ratio",
-        "atSag": "Ratio at sag",
-        "final": "Final ratio",
-        "average": "Average ratio",
-        "totalProgression": "Total progression",
-        "usefulProgression": "Useful progression"
+        "summary": "Starts at X {{startX}} mm, Y {{startY}} mm and ends at X {{endX}} mm, Y {{endY}} mm.",
+        "highlight": "Maximum rearward movement: {{rearward}} mm, at {{travel}}% of the travel."
       },
-      "progressionBands": {
-        "REGRESSIVE": "Regressive progression",
-        "LINEAR": "Linear progression",
-        "SLIGHTLY_PROGRESSIVE": "Slightly progressive",
-        "MEDIUM": "Medium progression",
-        "HIGH": "High progression",
-        "VERY_HIGH": "Very high progression"
-      },
-      "shape": {
-        "title": "Suspension shape",
-        "description": "Each third of the travel is read separately. The final third is the bottom-out zone.",
-        "phases": {
-          "initial": "Initial third",
-          "middle": "Middle third",
-          "final": "Final third"
-        }
-      },
-      "trends": {
-        "PROGRESSIVE": "Progressive",
-        "LINEAR": "Linear",
-        "REGRESSIVE": "Regressive"
-      },
-      "axle": {
-        "title": "Rear axle movement",
-        "description": "How far the rear axle moves backwards as the suspension compresses.",
-        "maxRearward": "Maximum rearward movement",
-        "atTravel": "At wheel travel"
-      },
-      "kickback": {
-        "title": "Pedal kickback level",
-        "description": "A level based on the strongest pedal rotation estimated across the suspension travel.",
-        "conditions": "Estimated across the full travel at {{chainring}}/{{sprocket}}T with the drivetrain engaged. Compare levels in the same gear. Sag ({{sag}}%) is used for leverage descriptors, not kickback.",
-        "levels": {
-          "low": "Low",
-          "medium": "Medium",
-          "high": "High",
-          "veryHigh": "Very high"
-        }
-      },
-      "travel": {
-        "title": "Travel check",
+      "travelCheck": {
         "withinTolerance": "The calculated travel is {{calculated}} mm, close to the declared {{declared}} mm ({{deviation}}% difference).",
         "outsideTolerance": "The calculated travel is {{calculated}} mm while the declared travel is {{declared}} mm ({{deviation}}% difference). Review the marks and shock measurement before trusting this result."
       }
@@ -582,7 +538,7 @@
         "timeout": "The calculation took too long. Try again; your marks and measurements are still here.",
         "invalidResponse": "The service returned incomplete or invalid results. Your marks are safe; try again.",
         "invalidRequest": "The marks and measurements could not produce a valid suspension movement. Check the selected suspension layout, pivot positions and shock measurements. For a yoke, mark the actual shock eye separately from the pivot joining the extension to the rocker.",
-        "network": "We could not reach the calculation service. Check that the BikeMatch backend is running, then try again.",
+        "network": "We could not reach the calculation service. Check your connection and try again in a moment.",
         "rateLimited": "Please wait a moment before requesting another explanation.",
         "server": "The calculation service had a problem. Try again in a moment.",
         "unavailable": "The calculation service is not available right now. Try again in a moment.",
@@ -593,8 +549,8 @@
   },
   "home": {
     "eyebrow": "The BikeMatch community",
-    "title": "Bikes worth a closer look.",
-    "description": "Explore shared bikes and discover how their suspension works.",
+    "title": "Find your bike match.",
+    "description": "See how each bike's suspension works and find the one that suits the way you ride.",
     "guest": "Try the analysis. No account needed."
   },
   "saveAnalysis": {
@@ -634,7 +590,7 @@
       "creating": "Creating your private bike…",
       "uploading": "Uploading your photo…",
       "saving": "Saving the analysis…",
-      "explaining": "Preparing your summary…"
+      "explaining": "Preparing your summary… It can take up to a minute."
     },
     "errors": {
       "uncertainCreate": "We could not confirm whether the bike was created. Check My bikes before starting again to avoid a duplicate.",

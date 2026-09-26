@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -64,7 +65,8 @@ class InterpretationServiceTest {
                         new InterpretationContext.Evidence("maxRearwardMm", 12, "mm")),
                 java.util.List.of("reference"), java.util.List.of("leverage"), java.util.List.of("pressure"));
         given(bikeRepository.findById(7L)).willReturn(Optional.of(bike));
-        given(bike.isOwnedBy(42L)).willReturn(true);
+        // Only generating asks for the owner; reading asks whether the viewer may see the bike.
+        lenient().when(bike.isOwnedBy(42L)).thenReturn(true);
         given(resultRepository.findByBikeId(7L)).willReturn(Optional.of(result));
         given(result.getId()).willReturn(9L);
         given(contextFactory.create(result, "en", null)).willReturn(context);
@@ -86,6 +88,7 @@ class InterpretationServiceTest {
 
         assertThat(view.source()).isEqualTo("AI");
         assertThat(view.summary()).isEqualTo("A concise explanation.");
+        assertThat(view.fallback()).isFalse();
         verify(provider).generate(context);
         verify(fallback, never()).generate(any());
         // A bike whose only explanation comes from the fallback must still reach the selected provider.
@@ -101,6 +104,7 @@ class InterpretationServiceTest {
         InterpretationService.InterpretationView view = service.generate(7L, 42L, "en");
 
         assertThat(view.source()).isEqualTo("AI");
+        assertThat(view.fallback()).isFalse();
         verify(provider, never()).generate(any());
         verify(generationLimiter, never()).tryAcquire(anyLong(), anyLong());
     }
@@ -122,6 +126,8 @@ class InterpretationServiceTest {
         InterpretationService.InterpretationView view = service.generate(7L, 42L, "en");
 
         assertThat(view.source()).isEqualTo("RULES");
+        // The page has to tell the reader that the AI did not answer and this text stands in.
+        assertThat(view.fallback()).isTrue();
         verify(fallback).generate(context);
     }
 
@@ -129,9 +135,11 @@ class InterpretationServiceTest {
     void reusesTheStoredRulesExplanationAndLogsWhyTheProviderFailed(CapturedOutput output) {
         allowGeneration();
         storedFor("gemini-test", Optional.empty());
+        // As Spring AI reports it: a generic wrapper around the provider's own answer.
         given(provider.generate(context)).willThrow(new InterpretationProviderException(
                 "Gemini did not return a valid explanation",
-                new IllegalStateException("503 model is busy")));
+                new RuntimeException("Failed to generate content",
+                        new IllegalStateException("503 model is busy"))));
         given(providerSelector.fallback()).willReturn(fallback);
         given(fallback.providerVersion()).willReturn("rules-1");
         given(fallback.promptVersion()).willReturn(PROMPT_VERSION);
@@ -140,6 +148,7 @@ class InterpretationServiceTest {
         InterpretationService.InterpretationView view = service.generate(7L, 42L, "en");
 
         assertThat(view.source()).isEqualTo("RULES");
+        assertThat(view.fallback()).isTrue();
         // Storing a second rules explanation for the same context would break the unique key.
         verify(fallback, never()).generate(any());
         verify(interpretationRepository, never()).saveAndFlush(any(KinematicsInterpretation.class));
@@ -147,6 +156,22 @@ class InterpretationServiceTest {
         assertThat(output.getAll())
                 .contains("Gemini did not return a valid explanation")
                 .contains("503 model is busy");
+    }
+
+    @Test
+    void readingMarksTheRulesTextAsStandingInWhileTheSelectedProviderHasNone() {
+        given(bike.canBeViewedBy(42L)).willReturn(true);
+        given(bike.getId()).willReturn(7L);
+        storedFor("gemini-test", Optional.empty());
+        given(providerSelector.fallback()).willReturn(fallback);
+        given(fallback.providerVersion()).willReturn("rules-1");
+        given(fallback.promptVersion()).willReturn(PROMPT_VERSION);
+        storedFor("rules-1", Optional.of(stored(rulesInterpretation(), RULES_EVIDENCE)));
+
+        InterpretationService.InterpretationView view = service.get(7L, 42L, "en");
+
+        assertThat(view.source()).isEqualTo("RULES");
+        assertThat(view.fallback()).isTrue();
     }
 
     private void allowGeneration() {

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import LanguageSwitcher from './LanguageSwitcher.jsx'
 import styles from './Layout.module.css'
 
 function Layout({ children, session, screen, onLogout }) {
@@ -8,7 +9,8 @@ function Layout({ children, session, screen, onLogout }) {
       <a className={styles.skipLink} href="#main-content" onClick={(event) => { event.preventDefault(); document.getElementById('main-content')?.focus() }}>{t('app.skipToContent')}</a>
       <header className={styles.header}>
         <a className={styles.logo} href="#/" aria-label={t('app.homeLabel')}>
-          <span className={styles.logoMark} aria-hidden="true">/</span>{t('app.title')}
+          <img className={styles.logoMark} src="/bikematch-logo.svg" alt="" aria-hidden="true" />
+          <span><span className={styles.logoBike}>Bike</span><span className={styles.logoMatch}>Match</span></span>
         </a>
         <nav className={styles.accountActions} aria-label={t('app.navigation')}>
           <a href="#/catalog" aria-current={screen === 'catalog' ? 'page' : undefined}>{t('catalog.navLabel')}</a>
@@ -20,6 +22,7 @@ function Layout({ children, session, screen, onLogout }) {
             {session.role === 'ADMIN' && (
               <a href="#/admin" aria-current={screen === 'admin' ? 'page' : undefined}>{t('admin.navLabel')}</a>
             )}
+            {session.username && <span className={styles.username}>@{session.username}</span>}
             <button type="button" onClick={onLogout}>{t('auth.logout')}</button>
           </> : <>
             <a href="#/login" aria-current={screen === 'login' ? 'page' : undefined}>{t('auth.openLogin')}</a>
@@ -27,6 +30,7 @@ function Layout({ children, session, screen, onLogout }) {
           </>}
           <a href="#/analyze" className={styles.analyzeLink} aria-current={screen === 'analysis' ? 'page' : undefined}>{t('app.analyze')}</a>
         </nav>
+        <div className={styles.language}><LanguageSwitcher /></div>
       </header>
       <main id="main-content" className={styles.main} data-screen={screen} tabIndex="-1">{children}</main>
       <footer className={styles.footer}><span>{t('app.title')}</span><span>{t('app.footer')}</span></footer>

@@ -181,7 +181,10 @@ GitHub cuando aplica).
   parecidos.
 - **Mejora futura:** la solución de fondo es ofrecer la interfaz en español; los textos
   ya están centralizados en los ficheros de traducción de react-i18next.
-- **Dónde:** #170, #185.
+- **Estado:** resuelto en #210. La interfaz y la explicación están en inglés y en español,
+  con un selector de idioma en la cabecera; la web se abre en el idioma del navegador y
+  recuerda la elección.
+- **Dónde:** #170, #185, #210.
 
 ---
 

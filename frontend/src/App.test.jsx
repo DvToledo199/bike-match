@@ -85,7 +85,7 @@ function signIn() {
 it('opens home, preserves the analysis across catalog and login, and returns home through the brand', async () => {
   vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
   render(<App />)
-  expect(screen.getByRole('heading', { name: 'Bikes worth a closer look.' })).toBeTruthy()
+  expect(screen.getByRole('heading', { name: 'Find your bike match.' })).toBeTruthy()
   await visit('/analyze')
   fireEvent.change(screen.getByRole('textbox', { name: 'Draft measurement' }), { target: { value: '230' } })
   await visit('/catalog')
@@ -99,7 +99,7 @@ it('opens home, preserves the analysis across catalog and login, and returns hom
   expect(screen.getByRole('textbox', { name: 'Draft measurement' }).value).toBe('230')
   expect(screen.getByRole('link', { name: 'BikeMatch home' }).getAttribute('href')).toBe('#/')
   await visit('/')
-  expect(screen.getByRole('heading', { name: 'Bikes worth a closer look.' })).toBeTruthy()
+  expect(screen.getByRole('heading', { name: 'Find your bike match.' })).toBeTruthy()
 })
 
 it('returns to the community after opening a photo from the home feed', async () => {
@@ -110,7 +110,7 @@ it('returns to the community after opening a photo from the home feed', async ()
   expect(await screen.findByRole('heading', { name: 'Saved bike detail' })).toBeTruthy()
   expect(window.location.hash).toBe('#/bikes/7')
   fireEvent.click(screen.getByRole('button', { name: 'bikeDetail.backHome' }))
-  expect(await screen.findByRole('heading', { name: 'Bikes worth a closer look.' })).toBeTruthy()
+  expect(await screen.findByRole('heading', { name: 'Find your bike match.' })).toBeTruthy()
   expect(window.location.hash).toBe('#/')
 })
 

@@ -88,11 +88,11 @@
   padding: var(--space-lg);
 }
 
+/* The status sits above the name, so a long name never squeezes it. */
 .cardHeading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-sm);
+  display: grid;
+  justify-items: start;
+  gap: var(--space-xs);
 }
 
 .cardHeading h2 {
@@ -101,8 +101,8 @@
 }
 
 .status {
-  flex: 0 0 auto;
   padding: var(--space-xs) var(--space-sm);
+  white-space: nowrap;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 700;

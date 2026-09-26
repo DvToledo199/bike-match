@@ -1,10 +1,14 @@
 .layout { min-height: 100vh; display: flex; flex-direction: column; }
 .skipLink { position: fixed; z-index: 10; top: 0.5rem; left: 0.5rem; padding: 0.75rem; transform: translateY(-150%); background: var(--color-primary); color: var(--color-on-primary); border-radius: var(--radius-sm); }
 .skipLink:focus-visible { transform: translateY(0); }
-.header { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 1.25rem max(1.25rem, calc((100vw - 76rem) / 2)); border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
-.logo { display: inline-flex; gap: 0.65rem; align-items: center; text-decoration: none; color: var(--color-text); font-size: 1.3rem; font-weight: 800; letter-spacing: -0.05em; white-space: nowrap; }
-.logoMark { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; background: var(--color-primary); color: var(--color-on-primary); font-weight: 900; }
-.accountActions { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 1rem; }
+.header { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 1.25rem max(1.25rem, calc((100vw - 76rem) / 2)); border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
+.logo { display: inline-flex; gap: 0.65rem; align-items: center; text-decoration: none; color: var(--color-text); font-size: 1.3rem; font-weight: 700; letter-spacing: -0.05em; white-space: nowrap; }
+.logoMark { display: block; height: 32px; width: auto; }
+.logoBike { color: var(--color-text); }
+.logoMatch { color: #2BD67B; }
+.accountActions { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 1rem; margin-left: auto; }
+.language { flex-shrink: 0; }
+.username { color: var(--color-text); font-weight: 700; font-size: 0.9rem; }
 .accountActions a, .accountActions button { text-decoration: none; color: var(--color-text-muted); background: none; border: none; padding: 0.55rem 0.25rem; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
 .accountActions a:not(.analyzeLink):hover, .accountActions button:hover, .accountActions a:not(.analyzeLink)[aria-current] { color: var(--color-primary); }
 .accountActions .analyzeLink { padding: 0.7rem 1.1rem; border-radius: var(--radius-sm); background: var(--color-primary); color: var(--color-on-primary); }
@@ -12,5 +16,5 @@
 .main { flex: 1; width: 100%; max-width: 76rem; margin: 0 auto; padding: clamp(1.25rem, 4vw, 3rem) 1.5rem; }
 .main[data-screen='login'], .main[data-screen='register'] { max-width: 36rem; }
 .main[data-screen='bikeDetail'] { max-width: 64rem; }
-.footer { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-top: 1px solid var(--color-border); color: var(--color-text-muted); font-size: 0.8rem; padding: 1.5rem max(1.25rem, calc((100vw - 73rem) / 2)); }
-@media (max-width: 46rem) { .header { flex-direction: column; align-items: flex-start; gap: 0.6rem; padding: 1rem; } .accountActions { width: 100%; gap: 0.25rem 0.75rem; } .main { padding: 1.5rem 1rem; } }
+.footer { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-top: 1px solid var(--color-border); color: var(--color-text-muted); font-size: 0.9rem; padding: 1.5rem max(1.25rem, calc((100vw - 73rem) / 2)); }
+@media (max-width: 46rem) { .header { flex-direction: column; align-items: flex-start; gap: 0.6rem; padding: 1rem; } .language { position: absolute; top: 1rem; right: 1rem; } .accountActions { width: 100%; gap: 0.25rem 0.75rem; } .main { padding: 1.5rem 1rem; } }

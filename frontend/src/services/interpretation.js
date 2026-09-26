@@ -1,17 +1,24 @@
+import i18n from '../i18n.js'
 import { ApiError, requestApi } from './apiClient.js'
 
 const validSources = ['RULES', 'AI']
 
 // Generating with an external provider takes longer than a normal request: the browser waits
-// past the backend's worst case instead of reporting a failure while the server is still working.
-const generateTimeoutMs = 45000
+// past the backend's worst case (GEMINI_TIMEOUT, 60 s) instead of reporting a failure while the
+// server is still working.
+const generateTimeoutMs = 75000
 
-export function getBikeInterpretation(bikeId, language = 'en') {
+// The explanation follows the interface language unless the caller asks for another one.
+function interfaceLanguage() {
+  return i18n.resolvedLanguage ?? 'en'
+}
+
+export function getBikeInterpretation(bikeId, language = interfaceLanguage()) {
   return requestApi(`/api/bikes/${bikeId}/interpretation?language=${encodeURIComponent(language)}`)
     .then(validateInterpretation)
 }
 
-export function generateBikeInterpretation(bikeId, language = 'en') {
+export function generateBikeInterpretation(bikeId, language = interfaceLanguage()) {
   return requestApi(`/api/bikes/${bikeId}/interpretation?language=${encodeURIComponent(language)}`, {
     method: 'POST',
     timeoutMs: generateTimeoutMs,
@@ -27,6 +34,7 @@ export function validateInterpretation(data) {
     || typeof data.language !== 'string'
     || !validSources.includes(data.source)
     || typeof data.providerVersion !== 'string'
+    || (data.fallback !== undefined && typeof data.fallback !== 'boolean')
     || typeof data.summary !== 'string'
     || data.summary.trim().length === 0
     || data.summary.length > 1200

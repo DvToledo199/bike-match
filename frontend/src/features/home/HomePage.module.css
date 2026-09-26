@@ -6,5 +6,5 @@
 .action { flex-shrink: 0; }
 .primary { display: inline-flex; align-items: center; gap: 1.5rem; padding: 0.8rem 1.1rem; border-radius: var(--radius-sm); color: var(--color-on-primary); background: var(--color-primary); text-decoration: none; font-weight: 700; }
 .primary:hover { filter: brightness(1.08); }
-.action p { margin: 0.6rem 0 0; color: var(--color-text-muted); font-size: 0.8rem; }
+.action p { margin: 0.6rem 0 0; color: var(--color-text-muted); font-size: 0.875rem; }
 @media (max-width: 46rem) { .heading { align-items: flex-start; flex-direction: column; }.page { gap: 1.5rem; } }

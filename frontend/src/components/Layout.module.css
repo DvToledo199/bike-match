@@ -16,5 +16,5 @@
 .main { flex: 1; width: 100%; max-width: 76rem; margin: 0 auto; padding: clamp(1.25rem, 4vw, 3rem) 1.5rem; }
 .main[data-screen='login'], .main[data-screen='register'] { max-width: 36rem; }
 .main[data-screen='bikeDetail'] { max-width: 64rem; }
-.footer { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-top: 1px solid var(--color-border); color: var(--color-text-muted); font-size: 0.8rem; padding: 1.5rem max(1.25rem, calc((100vw - 73rem) / 2)); }
+.footer { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-top: 1px solid var(--color-border); color: var(--color-text-muted); font-size: 0.9rem; padding: 1.5rem max(1.25rem, calc((100vw - 73rem) / 2)); }
 @media (max-width: 46rem) { .header { flex-direction: column; align-items: flex-start; gap: 0.6rem; padding: 1rem; } .language { position: absolute; top: 1rem; right: 1rem; } .accountActions { width: 100%; gap: 0.25rem 0.75rem; } .main { padding: 1.5rem 1rem; } }

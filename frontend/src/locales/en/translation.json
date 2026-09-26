@@ -27,7 +27,7 @@
       "submitting": "Creating account…",
       "success": "Your account was created. Log in to continue.",
       "duplicate": "That email or username is already in use. Choose another one.",
-      "unavailable": "We could not create the account right now. Check that the BikeMatch backend is running and try again.",
+      "unavailable": "We could not create the account right now. Please try again in a moment.",
       "errors": {
         "required": "{{field}} is required.",
         "email": "Enter a valid email address.",
@@ -45,7 +45,7 @@
       "submit": "Log in",
       "submitting": "Logging in…",
       "invalidCredentials": "The email or password is incorrect.",
-      "unavailable": "We could not log you in right now. Check that the BikeMatch backend is running and try again.",
+      "unavailable": "We could not log you in right now. Please try again in a moment.",
       "errors": {
         "required": "{{field}} is required.",
         "email": "Enter a valid email address."
@@ -204,7 +204,7 @@
     },
     "errors": {
       "sessionExpired": "Your session has expired. Log in again to see your bikes.",
-      "unavailable": "We could not load your bikes right now. Check that the BikeMatch backend is running."
+      "unavailable": "We could not load your bikes right now. Please try again in a moment."
     }
   },
   "bikeDetail": {
@@ -255,7 +255,7 @@
       "title": "We could not open this bike",
       "notFound": "This bike is private, no longer available, or does not exist.",
       "sessionExpired": "Your session has expired. Log in again to open this bike.",
-      "unavailable": "We could not load this bike right now. Check that the BikeMatch backend is running."
+      "unavailable": "We could not load this bike right now. Please try again in a moment."
     },
     "backHome": "Back to the community",
     "backCatalog": "Back to the catalog"
@@ -267,6 +267,7 @@
     "description": "Browse public suspension analyses shared by the BikeMatch community.",
     "filterLabel": "Bike category",
     "loading": "Loading the public catalog…",
+    "waking": "Waking up the server… After a quiet spell, the first visit can take up to a minute.",
     "retry": "Try again",
     "empty": "No bikes have been published yet. Analyze yours, save it and request publication to share it here.",
     "openDetail": "View analysis",
@@ -286,7 +287,7 @@
       "page": "Page {{page}} of {{total}}"
     },
     "errors": {
-      "unavailable": "We could not load the public catalog right now. Check that the BikeMatch backend is running.",
+      "unavailable": "We could not load the public catalog right now. Please try again in a moment.",
       "title": "The bikes could not be loaded."
     },
     "openBike": "View analysis of {{name}}",
@@ -537,7 +538,7 @@
         "timeout": "The calculation took too long. Try again; your marks and measurements are still here.",
         "invalidResponse": "The service returned incomplete or invalid results. Your marks are safe; try again.",
         "invalidRequest": "The marks and measurements could not produce a valid suspension movement. Check the selected suspension layout, pivot positions and shock measurements. For a yoke, mark the actual shock eye separately from the pivot joining the extension to the rocker.",
-        "network": "We could not reach the calculation service. Check that the BikeMatch backend is running, then try again.",
+        "network": "We could not reach the calculation service. Check your connection and try again in a moment.",
         "rateLimited": "Please wait a moment before requesting another explanation.",
         "server": "The calculation service had a problem. Try again in a moment.",
         "unavailable": "The calculation service is not available right now. Try again in a moment.",

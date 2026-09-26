@@ -555,9 +555,9 @@
   },
   "saveAnalysis": {
     "eyebrow": "Guarda tu análisis",
-    "title": "Guarda tu bici",
-    "description": "Guárdala en privado y tendrás un resumen en palabras sencillas junto a tus curvas. Más adelante puedes decidir compartirla.",
-    "guest": "Conserva tus curvas y obtén una explicación sencilla de tu bici. Regístrate para guardar este análisis en privado. Tu foto, tus marcas y tus medidas seguirán aquí mientras te registras o inicias sesión.",
+    "title": "Guarda tu bici para ver su resumen con IA",
+    "description": "Al guardarla, la IA te explica en palabras sencillas cómo trabaja su suspensión. Queda privada hasta que decidas compartirla.",
+    "guest": "Crea una cuenta gratis y guarda esta bici: la IA te explicará en palabras sencillas cómo trabaja su suspensión. Tu foto, tus marcas y tus medidas seguirán aquí mientras te registras o inicias sesión.",
     "details": "Sobre tu bici",
     "fields": {
       "brand": "Marca",
@@ -600,9 +600,9 @@
       "resume": "El guardado se detuvo antes de terminar. Tu bici privada se ha conservado; reanuda el guardado para seguir desde el último paso confirmado.",
       "unavailable": "No hemos podido guardar tu bici. Vuelve a intentarlo."
     },
-    "registerToSave": "Regístrate para guardar tu bici",
+    "registerToSave": "Regístrate gratis y guarda tu bici",
     "loginToSave": "¿Ya tienes cuenta? Inicia sesión",
-    "reminder": "¿Quieres conservar estos resultados?",
+    "reminder": "¿Quieres saber qué dice la IA de tu bici? Guárdala.",
     "resultsActionLabel": "Guarda tus resultados",
     "reviewSave": "Ver el estado del guardado"
   }

@@ -555,9 +555,9 @@
   },
   "saveAnalysis": {
     "eyebrow": "Keep your analysis",
-    "title": "Save your bike",
-    "description": "Save privately to get a plain-language summary alongside your curves. You can choose to share it later.",
-    "guest": "Keep your curves and get a simple explanation of your bike. Sign up to save this analysis privately. Your photo, marks and measurements will stay here while you sign up or log in.",
+    "title": "Save your bike to see its AI summary",
+    "description": "Once it is saved, AI explains in plain words how its suspension works. It stays private until you choose to share it.",
+    "guest": "Create a free account and save this bike: AI will explain in plain words how its suspension works. Your photo, marks and measurements will stay here while you sign up or log in.",
     "details": "About your bike",
     "fields": {
       "brand": "Brand",
@@ -600,9 +600,9 @@
       "resume": "Saving stopped before it finished. Your private bike has been kept; resume saving to continue from the confirmed step.",
       "unavailable": "We could not save your bike. Please try again."
     },
-    "registerToSave": "Sign up to save your bike",
+    "registerToSave": "Sign up free and save your bike",
     "loginToSave": "Already have an account? Log in",
-    "reminder": "Want to keep these results?",
+    "reminder": "Want to know what AI makes of your bike? Save it.",
     "resultsActionLabel": "Save your results",
     "reviewSave": "View saving status"
   }

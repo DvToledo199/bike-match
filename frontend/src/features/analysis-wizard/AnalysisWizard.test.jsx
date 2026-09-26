@@ -99,7 +99,7 @@ it('clears incompatible marks and the stale preview when the yoke layout is sele
 it('shows explicit registration actions above and below completed curves for a guest', () => {
   state.preview.data = {}
   render(<AnalysisWizard />)
-  const links = screen.getAllByRole('link', { name: 'Sign up to save your bike' })
+  const links = screen.getAllByRole('link', { name: 'Sign up free and save your bike' })
   expect(links).toHaveLength(2)
   expect(links.every((link) => link.getAttribute('href') === '#/register')).toBe(true)
   const curves = screen.getByRole('heading', { name: 'Calculated curves' })
@@ -111,8 +111,8 @@ it('shows explicit registration actions above and below completed curves for a g
 it('offers the signed-in user a save form and a footer shortcut that focuses it', () => {
   state.preview.data = {}
   render(<AnalysisWizard session={{ username: 'rider' }} />)
-  expect(screen.queryByRole('link', { name: 'Sign up to save your bike' })).toBeNull()
-  const form = screen.getByRole('region', { name: 'Save your bike' })
+  expect(screen.queryByRole('link', { name: 'Sign up free and save your bike' })).toBeNull()
+  const form = screen.getByRole('region', { name: 'Save your bike to see its AI summary' })
   expect(within(form).getByRole('button', { name: 'Save bike' }).type).toBe('submit')
   const panel = document.getElementById('save-analysis-panel')
   panel.scrollIntoView = vi.fn()
@@ -125,17 +125,17 @@ it('offers the signed-in user a save form and a footer shortcut that focuses it'
 it.each([{ isLoading: true }, { error: { kind: 'network' } }])('does not offer to save an unfinished calculation: %j', (preview) => {
   Object.assign(state.preview, preview)
   render(<AnalysisWizard />)
-  expect(screen.queryByRole('link', { name: 'Sign up to save your bike' })).toBeNull()
+  expect(screen.queryByRole('link', { name: 'Sign up free and save your bike' })).toBeNull()
   expect(screen.queryByRole('region', { name: 'Save your results' })).toBeNull()
 })
 
 it('updates saving actions when a guest logs in without recalculating', () => {
   state.preview.data = {}
   const { rerender } = render(<AnalysisWizard />)
-  expect(screen.getAllByRole('link', { name: 'Sign up to save your bike' })).toHaveLength(2)
+  expect(screen.getAllByRole('link', { name: 'Sign up free and save your bike' })).toHaveLength(2)
   rerender(<AnalysisWizard session={{ username: 'rider' }} />)
   expect(screen.getByRole('heading', { name: 'Calculated curves' })).toBeTruthy()
-  expect(screen.queryByRole('link', { name: 'Sign up to save your bike' })).toBeNull()
+  expect(screen.queryByRole('link', { name: 'Sign up free and save your bike' })).toBeNull()
   expect(screen.getAllByRole('button', { name: 'Save bike' })).toHaveLength(2)
   expect(state.preview.requestPreview).not.toHaveBeenCalled()
 })

@@ -7,8 +7,9 @@ services:
     name: bikematch-api
     runtime: docker
     rootDir: backend
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    # Both paths count from rootDir, so they point at backend/Dockerfile and backend/.
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     plan: free
     region: frankfurt
     healthCheckPath: /api/health

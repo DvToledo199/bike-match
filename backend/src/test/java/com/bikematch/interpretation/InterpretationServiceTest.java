@@ -135,9 +135,11 @@ class InterpretationServiceTest {
     void reusesTheStoredRulesExplanationAndLogsWhyTheProviderFailed(CapturedOutput output) {
         allowGeneration();
         storedFor("gemini-test", Optional.empty());
+        // As Spring AI reports it: a generic wrapper around the provider's own answer.
         given(provider.generate(context)).willThrow(new InterpretationProviderException(
                 "Gemini did not return a valid explanation",
-                new IllegalStateException("503 model is busy")));
+                new RuntimeException("Failed to generate content",
+                        new IllegalStateException("503 model is busy"))));
         given(providerSelector.fallback()).willReturn(fallback);
         given(fallback.providerVersion()).willReturn("rules-1");
         given(fallback.promptVersion()).willReturn(PROMPT_VERSION);

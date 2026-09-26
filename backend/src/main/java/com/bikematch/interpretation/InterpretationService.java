@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,13 +73,12 @@ public class InterpretationService {
         try {
             interpretation = provider.generate(context);
         } catch (InterpretationProviderException exception) {
-            // The wrapper message says little on its own: the cause carries the provider's own
-            // answer, such as a rejected model or a busy service.
-            log.warn("Provider {} did not explain bike {}: {}",
-                    provider.providerVersion(), bikeId,
-                    exception.getCause() == null
-                            ? exception.getMessage()
-                            : exception.getMessage() + " (" + exception.getCause() + ")");
+            // The provider's own answer, such as a busy model or a rejected key, sits at the end
+            // of the cause chain: Spring AI wraps it in a generic "Failed to generate content".
+            Throwable rootCause = NestedExceptionUtils.getMostSpecificCause(exception);
+            log.warn("Provider {} did not explain bike {}: {}{}",
+                    provider.providerVersion(), bikeId, exception.getMessage(),
+                    rootCause == exception ? "" : " (" + rootCause + ")");
             usedProvider = providerSelector.fallback();
             // The fallback may already have an explanation for this context: reuse it instead of
             // storing a second one, which the unique key would reject.

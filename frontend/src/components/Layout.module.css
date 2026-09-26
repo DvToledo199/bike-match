@@ -2,8 +2,10 @@
 .skipLink { position: fixed; z-index: 10; top: 0.5rem; left: 0.5rem; padding: 0.75rem; transform: translateY(-150%); background: var(--color-primary); color: var(--color-on-primary); border-radius: var(--radius-sm); }
 .skipLink:focus-visible { transform: translateY(0); }
 .header { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 1.25rem max(1.25rem, calc((100vw - 76rem) / 2)); border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
-.logo { display: inline-flex; gap: 0.65rem; align-items: center; text-decoration: none; color: var(--color-text); font-size: 1.3rem; font-weight: 800; letter-spacing: -0.05em; white-space: nowrap; }
-.logoMark { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; background: var(--color-primary); color: var(--color-on-primary); font-weight: 900; }
+.logo { display: inline-flex; gap: 0.65rem; align-items: center; text-decoration: none; color: var(--color-text); font-size: 1.3rem; font-weight: 700; letter-spacing: -0.05em; white-space: nowrap; }
+.logoMark { display: block; height: 32px; width: auto; }
+.logoBike { color: var(--color-text); }
+.logoMatch { color: #2BD67B; }
 .accountActions { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 1rem; margin-left: auto; }
 .language { flex-shrink: 0; }
 .username { color: var(--color-text); font-weight: 700; font-size: 0.9rem; }

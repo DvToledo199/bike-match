@@ -57,7 +57,7 @@
     "title": "Administración de cuentas",
     "description": "Revisa las cuentas y concede o retira el rol de moderador.",
     "accounts": "Cuentas de usuario",
-    "username": "Nombre de usuario",
+    "username": "Usuario / correo",
     "role": "Rol",
     "createdAt": "Alta",
     "actions": "Acciones",

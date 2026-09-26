@@ -18,6 +18,11 @@ const english = Object.fromEntries(flatten(en))
 const spanish = Object.fromEntries(flatten(es))
 
 describe('translations', () => {
+  it('labels the admin identity column with both username and email', () => {
+    expect(en.admin.username).toBe('Username / email')
+    expect(es.admin.username).toBe('Usuario / correo')
+  })
+
   it('Spanish has exactly the English keys, so no text is left untranslated', () => {
     expect(Object.keys(spanish).sort()).toEqual(Object.keys(english).sort())
   })

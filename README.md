@@ -167,8 +167,11 @@ La versión publicada usa dos servicios con plan gratuito sin fecha de caducidad
 | API (Spring Boot) | Render, contenedor | [`backend/Dockerfile`](backend/Dockerfile) |
 | Base de datos | Neon, PostgreSQL | Flyway crea el esquema al arrancar la API |
 
-Direcciones: pendientes de la primera publicación. La documentación de la API desplegada
-está en `<dirección de la API>/swagger-ui.html`.
+| Enlace | Dirección |
+|---|---|
+| Web | https://bikematch.onrender.com |
+| API | https://bikematch-api.onrender.com |
+| Swagger desplegado | https://bikematch-api.onrender.com/swagger-ui.html |
 
 [`render.yaml`](render.yaml) describe los dos servicios de Render (un *Blueprint*): al
 conectarlo, Render crea la API y la web y pide los valores secretos, que no están en el

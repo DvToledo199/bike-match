@@ -6,6 +6,8 @@ export default function UsersTable({ users, currentUsername, disabled, onSelectU
 
   return (
     <div className={styles.tableScroll}>
+      {/* On narrow screens the CSS turns rows into stacked cards; changing display drops the
+          table semantics in some browsers, so the roles keep them for screen readers. */}
       <table className={styles.table} role="table">
         <caption>{t('admin.accounts')}</caption>
         <thead role="rowgroup"><tr role="row">

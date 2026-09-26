@@ -27,7 +27,7 @@
       "submitting": "Creando la cuenta…",
       "success": "Tu cuenta se ha creado. Inicia sesión para continuar.",
       "duplicate": "Ese correo o nombre de usuario ya está en uso. Elige otro.",
-      "unavailable": "No hemos podido crear la cuenta ahora mismo. Comprueba que el backend de BikeMatch está en marcha y vuelve a intentarlo.",
+      "unavailable": "No hemos podido crear la cuenta ahora mismo. Vuelve a intentarlo en unos momentos.",
       "errors": {
         "required": "{{field}}: este campo es obligatorio.",
         "email": "Introduce un correo electrónico válido.",
@@ -45,7 +45,7 @@
       "submit": "Iniciar sesión",
       "submitting": "Iniciando sesión…",
       "invalidCredentials": "El correo o la contraseña no son correctos.",
-      "unavailable": "No hemos podido iniciar tu sesión ahora mismo. Comprueba que el backend de BikeMatch está en marcha y vuelve a intentarlo.",
+      "unavailable": "No hemos podido iniciar tu sesión ahora mismo. Vuelve a intentarlo en unos momentos.",
       "errors": {
         "required": "{{field}}: este campo es obligatorio.",
         "email": "Introduce un correo electrónico válido."
@@ -204,7 +204,7 @@
     },
     "errors": {
       "sessionExpired": "Tu sesión ha caducado. Vuelve a iniciar sesión para ver tus bicis.",
-      "unavailable": "No hemos podido cargar tus bicis ahora mismo. Comprueba que el backend de BikeMatch está en marcha."
+      "unavailable": "No hemos podido cargar tus bicis ahora mismo. Vuelve a intentarlo en unos momentos."
     }
   },
   "bikeDetail": {
@@ -255,7 +255,7 @@
       "title": "No hemos podido abrir esta bici",
       "notFound": "Esta bici es privada, ya no está disponible o no existe.",
       "sessionExpired": "Tu sesión ha caducado. Vuelve a iniciar sesión para abrir esta bici.",
-      "unavailable": "No hemos podido cargar esta bici ahora mismo. Comprueba que el backend de BikeMatch está en marcha."
+      "unavailable": "No hemos podido cargar esta bici ahora mismo. Vuelve a intentarlo en unos momentos."
     },
     "backHome": "Volver a la comunidad",
     "backCatalog": "Volver al catálogo"
@@ -267,6 +267,7 @@
     "description": "Descubre los análisis de suspensión públicos que comparte la comunidad de BikeMatch.",
     "filterLabel": "Categoría de bici",
     "loading": "Cargando el catálogo público…",
+    "waking": "Despertando el servidor… Tras un rato sin visitas, la primera puede tardar hasta un minuto.",
     "retry": "Reintentar",
     "empty": "Aún no se ha publicado ninguna bici. Analiza la tuya, guárdala y solicita su publicación para compartirla aquí.",
     "openDetail": "Ver análisis",
@@ -286,7 +287,7 @@
       "page": "Página {{page}} de {{total}}"
     },
     "errors": {
-      "unavailable": "No hemos podido cargar el catálogo público ahora mismo. Comprueba que el backend de BikeMatch está en marcha.",
+      "unavailable": "No hemos podido cargar el catálogo público ahora mismo. Vuelve a intentarlo en unos momentos.",
       "title": "No se han podido cargar las bicis."
     },
     "openBike": "Ver el análisis de {{name}}",
@@ -537,7 +538,7 @@
         "timeout": "El cálculo ha tardado demasiado. Vuelve a intentarlo; tus marcas y medidas siguen aquí.",
         "invalidResponse": "El servicio ha devuelto resultados incompletos o no válidos. Tus marcas están a salvo; vuelve a intentarlo.",
         "invalidRequest": "Con estas marcas y medidas no sale un movimiento de suspensión válido. Revisa el tipo de suspensión elegido, la posición de los pivotes y las medidas del amortiguador. Si lleva extensión, marca el ojo real del amortiguador por separado del pivote que une la extensión con la bieleta.",
-        "network": "No hemos podido conectar con el servicio de cálculo. Comprueba que el backend de BikeMatch está en marcha y vuelve a intentarlo.",
+        "network": "No hemos podido conectar con el servicio de cálculo. Comprueba tu conexión y vuelve a intentarlo en unos momentos.",
         "rateLimited": "Espera un momento antes de pedir otra explicación.",
         "server": "El servicio de cálculo ha tenido un problema. Vuelve a intentarlo en un momento.",
         "unavailable": "El servicio de cálculo no está disponible ahora mismo. Vuelve a intentarlo en un momento.",

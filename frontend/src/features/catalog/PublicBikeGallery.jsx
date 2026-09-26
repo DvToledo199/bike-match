@@ -17,15 +17,23 @@ export default function PublicBikeGallery({ onOpenBikeDetail }) {
   const [catalog, setCatalog] = useState(null)
   const [error, setError] = useState(null)
   const [reloadKey, setReloadKey] = useState(0)
+  const [waking, setWaking] = useState(false)
 
   useEffect(() => {
     let active = true
     setCatalog(null)
     setError(null)
+    setWaking(false)
+    // A catalog still loading after a few seconds means the server is waking up: say so.
+    const wakingTimer = setTimeout(() => { if (active) setWaking(true) }, 5000)
     listPublicBikes({ category, page })
       .then((result) => { if (active) setCatalog(result) })
       .catch((requestError) => { if (active) setError(requestError) })
-    return () => { active = false }
+      .finally(() => clearTimeout(wakingTimer))
+    return () => {
+      active = false
+      clearTimeout(wakingTimer)
+    }
   }, [category, page, reloadKey])
 
   function filter(nextCategory) {
@@ -54,7 +62,7 @@ export default function PublicBikeGallery({ onOpenBikeDetail }) {
         </div>
       ) : !catalog ? (
         <div aria-busy="true">
-          <p className={styles.muted} role="status">{t('catalog.loading')}</p>
+          <p className={styles.muted} role="status">{t(waking ? 'catalog.waking' : 'catalog.loading')}</p>
           <div className={styles.grid} aria-hidden="true">
             {[0, 1, 2].map((key) => <div key={key} className={styles.skeleton} />)}
           </div>

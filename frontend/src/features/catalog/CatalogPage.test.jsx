@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, expect, it, vi } from 'vitest'
 import CatalogPage from './CatalogPage.jsx'
 
@@ -25,6 +25,18 @@ const catalog = {
   totalPages: 2,
   hasNext: true,
 }
+
+/** The free host needs about a minute to wake up; the page says so instead of looking stuck. */
+it('says the server is waking up when the catalog takes more than a few seconds', () => {
+  vi.useFakeTimers()
+  listPublicBikes.mockReturnValue(new Promise(() => {}))
+
+  render(<CatalogPage onOpenBikeDetail={vi.fn()} />)
+  expect(screen.getByText('Loading the public catalog…')).toBeTruthy()
+
+  act(() => { vi.advanceTimersByTime(5000) })
+  expect(screen.getByText(/Waking up the server/)).toBeTruthy()
+})
 
 it('shows public bikes and opens their detail', async () => {
   const onOpenBikeDetail = vi.fn()

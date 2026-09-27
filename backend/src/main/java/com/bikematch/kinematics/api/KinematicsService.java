@@ -14,11 +14,14 @@ import com.bikematch.kinematics.model.KinematicsInput;
 import com.bikematch.kinematics.model.KinematicsParameters;
 import com.bikematch.kinematics.model.HorstLinkCurveInput;
 import com.bikematch.kinematics.model.HorstLinkGeometry;
+import com.bikematch.kinematics.model.HorstLinkSeatstayGeometry;
 import com.bikematch.kinematics.model.HorstLinkYokeGeometry;
 import com.bikematch.kinematics.model.MarkedPoint;
 import com.bikematch.kinematics.model.PointType;
 import com.bikematch.kinematics.model.ReferenceSetup;
 import com.bikematch.kinematics.solver.HorstLinkPosition;
+import com.bikematch.kinematics.solver.HorstLinkSeatstayPosition;
+import com.bikematch.kinematics.solver.HorstLinkSeatstaySolver;
 import com.bikematch.kinematics.solver.HorstLinkSolver;
 import com.bikematch.kinematics.solver.HorstLinkYokePosition;
 import com.bikematch.kinematics.solver.HorstLinkYokeSolver;
@@ -34,6 +37,7 @@ public class KinematicsService {
     private final MonopivotSolver monopivotSolver = new MonopivotSolver();
     private final HorstLinkSolver horstLinkSolver = new HorstLinkSolver();
     private final HorstLinkYokeSolver horstLinkYokeSolver = new HorstLinkYokeSolver();
+    private final HorstLinkSeatstaySolver horstLinkSeatstaySolver = new HorstLinkSeatstaySolver();
 
     /** Turns the request (points in pixels + calibration) into the engine's input (points in mm). */
     private PreparedInput prepareInput(PreviewRequest request) {
@@ -117,6 +121,7 @@ public class KinematicsService {
             case SINGLE_PIVOT -> calculateMonopivot(input, parameters, setup);
             case HORST_LINK -> calculateHorstLink(input, parameters, setup);
             case HORST_LINK_YOKE -> calculateHorstLinkYoke(input, parameters, setup);
+            case HORST_LINK_SEATSTAY -> calculateHorstLinkSeatstay(input, parameters, setup);
         };
 
         LeverageDescriptors leverageDescriptors = LeverageDescriptors.from(
@@ -221,6 +226,38 @@ public class KinematicsService {
                 input.parameters(), setup));
         return new CalculatedCurves(curves.axlePath(), curves.leverage(), curves.kickback(), curves.responses(),
                 "horst-link-yoke-reference-v2");
+    }
+
+    private CalculatedCurves calculateHorstLinkSeatstay(KinematicsInput input,
+                                                        KinematicsParametersDto parameters,
+                                                        ReferenceSetup setup) {
+        HorstLinkSeatstayGeometry geometry = new HorstLinkSeatstayGeometry(
+                input.pointOf(PointType.MAIN_PIVOT),
+                input.pointOf(PointType.HORST_PIVOT),
+                input.pointOf(PointType.ROCKER_FRAME_PIVOT),
+                input.pointOf(PointType.ROCKER_SEATSTAY_PIVOT),
+                input.pointOf(PointType.SHOCK_FRAME),
+                input.pointOf(PointType.SHOCK_SEATSTAY),
+                input.pointOf(PointType.REAR_AXLE));
+        List<HorstLinkPosition> positions = horstLinkSeatstaySolver.sweep(geometry, parameters.shockStrokeMm())
+                .stream()
+                .map(HorstLinkSeatstayPosition::asHorstLinkPosition)
+                .toList();
+        List<Point2D> axlePath = positions.stream().map(HorstLinkPosition::rearAxle).toList();
+
+        if (setup == null) {
+            LeverageCurve leverageCurve = LeverageCurve.from(axlePath, parameters.shockStrokeMm());
+            KickbackCurve kickbackCurve = KickbackCurve.from(
+                    axlePath, input.pointOf(PointType.BOTTOM_BRACKET), parameters.chainringTeeth());
+            return new CalculatedCurves(axlePath, leverageCurve, kickbackCurve,
+                    new SuspensionResponseCurves(List.of(), List.of()), "horst-link-seatstay-v1");
+        }
+
+        HorstLinkCurves curves = HorstLinkCurves.from(positions, new HorstLinkCurveInput(
+                geometry.asHorstLinkGeometry(), input.pointOf(PointType.BOTTOM_BRACKET),
+                input.pointOf(PointType.FRONT_AXLE), input.parameters(), setup));
+        return new CalculatedCurves(curves.axlePath(), curves.leverage(), curves.kickback(), curves.responses(),
+                "horst-link-seatstay-reference-v1");
     }
 
     private record CalculatedCurves(

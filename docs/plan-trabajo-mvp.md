@@ -226,7 +226,7 @@ mostrar números por sí solo no cumple el objetivo de ayudar a principiantes.
 - [ ] **Seed de datos por migración o runner: al menos el usuario MODERATOR inicial** (sin él no se puede aprobar nada en la demo) y 2–3 bicis de muestra para que el catálogo no salga vacío.
 - [ ] Handler global de excepciones + `@Valid` en todos los DTOs de entrada.
 - [ ] Límite de tamaño de subida (`spring.servlet.multipart.max-file-size`) y validación de tipo de imagen.
-- [ ] JaCoCo configurado con umbral del 60% para que la CI falle si baja.
+- [x] JaCoCo configurado con umbral del 60% para que la CI falle si baja.
 - [ ] Paginación en catálogo y rankings.
 - [ ] Índices en BD para las consultas de ranking (category, status, votos).
 - [ ] Timestamps en UTC.

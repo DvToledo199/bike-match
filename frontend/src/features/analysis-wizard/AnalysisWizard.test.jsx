@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, expect, it, vi } from 'vitest'
 import AnalysisWizard from './AnalysisWizard.jsx'
 
@@ -6,6 +6,9 @@ const state = vi.hoisted(() => ({ wizard: {}, preview: {} }))
 vi.mock('./useWizardState.js', () => ({ default: () => state.wizard }))
 vi.mock('./usePreview.js', () => ({ default: () => state.preview }))
 vi.mock('./KinematicsCharts.jsx', () => ({ default: () => <h1 id="wizard-title">Calculated curves</h1> }))
+vi.mock('../../services/saveAnalysis.js', () => ({
+  createAnalysisSaver: () => ({ checkpoint: {}, save: vi.fn().mockResolvedValue({ bikeId: 42, explanationReady: true }) }),
+}))
 
 beforeEach(() => {
   state.wizard = {
@@ -16,7 +19,7 @@ beforeEach(() => {
       parameters: { bikeType: 'ENDURO', eyeToEyeMm: '210', shockStrokeMm: '55',
         declaredTravelMm: '150', wheelConfiguration: 'FULL_29' },
     },
-    updateWizardData: vi.fn(), goToNextStep: vi.fn(), goToPreviousStep: vi.fn(),
+    updateWizardData: vi.fn(), goToNextStep: vi.fn(), goToPreviousStep: vi.fn(), resetWizard: vi.fn(),
   }
   state.preview = { data: null, error: null, isLoading: false, requestPreview: vi.fn(), cancelPreview: vi.fn() }
 })
@@ -138,4 +141,32 @@ it('updates saving actions when a guest logs in without recalculating', () => {
   expect(screen.queryByRole('link', { name: 'Sign up free and save your bike' })).toBeNull()
   expect(screen.getAllByRole('button', { name: 'Save bike' })).toHaveLength(2)
   expect(state.preview.requestPreview).not.toHaveBeenCalled()
+})
+
+it('starts a new analysis once the saved bike is left behind', async () => {
+  state.preview.data = {}
+  const onSaved = vi.fn()
+  const { rerender } = render(<AnalysisWizard active session={{ username: 'rider' }} onSaved={onSaved} />)
+  const form = screen.getByRole('region', { name: 'Save your bike to see its AI summary' })
+  fireEvent.change(within(form).getByLabelText('Brand'), { target: { value: 'Orange' } })
+  fireEvent.change(within(form).getByLabelText('Model'), { target: { value: 'Stage 6' } })
+  fireEvent.click(within(form).getByRole('button', { name: 'Save bike' }))
+  await waitFor(() => expect(onSaved).toHaveBeenCalledWith(42))
+  expect(state.wizard.resetWizard).not.toHaveBeenCalled()
+
+  rerender(<AnalysisWizard active={false} session={{ username: 'rider' }} onSaved={onSaved} />)
+
+  expect(state.wizard.resetWizard).toHaveBeenCalledOnce()
+})
+
+it('keeps a guest draft on login but clears it when the account changes or logs out', () => {
+  const { rerender } = render(<AnalysisWizard session={null} />)
+  rerender(<AnalysisWizard session={{ username: 'rider' }} />)
+  expect(state.wizard.resetWizard).not.toHaveBeenCalled()
+
+  rerender(<AnalysisWizard session={{ username: 'another_rider' }} />)
+  expect(state.wizard.resetWizard).toHaveBeenCalledTimes(1)
+
+  rerender(<AnalysisWizard session={null} />)
+  expect(state.wizard.resetWizard).toHaveBeenCalledTimes(2)
 })

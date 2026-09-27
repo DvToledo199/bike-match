@@ -469,7 +469,7 @@
       "description": "Lee cada curva con sus unidades, consulta un valor exacto con el puntero o revisa abajo sus valores inicial y final.",
       "curveLabel": "Curva cinemática",
       "referenceSetup": "Configuración de referencia: {{wheels}} · {{chainring}}/{{sprocket}}T · altura del centro de gravedad {{height}} m.",
-      "referenceLimit": "Estimaciones con neumáticos nominales y una posición de referencia del piloto; no es una predicción personalizada ni una medición de laboratorio. La validación externa del kickback, el anti-squat y el anti-rise sigue en curso. Solo monopivotes con transmisión directa.",
+      "referenceLimit": "Estimaciones con neumáticos nominales y una posición de referencia del piloto; no es una predicción personalizada ni una medición de laboratorio. La validación externa del kickback, el anti-squat y el anti-rise sigue en curso. Solo transmisiones directas, sin roldana.",
       "percentageAxis": "Respuesta de referencia (%)",
       "percentageSummary": "Empieza en {{start}}% y termina en {{end}}%. Línea discontinua: referencia del 100%, no es una nota.",
       "antiSquat": {

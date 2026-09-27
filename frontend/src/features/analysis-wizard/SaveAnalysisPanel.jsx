@@ -7,7 +7,7 @@ export default function SaveAnalysisPanel({ session, wizardData, onLockedChange,
   const { t } = useTranslation()
   const saver = useRef(null)
   if (!saver.current) saver.current = createAnalysisSaver()
-  const [metadata, setMetadata] = useState({ brand: '', model: '', modelYear: '', category: '', cassetteType: '' })
+  const [metadata, setMetadata] = useState({ brand: '', model: '', modelYear: '' })
   const [stage, setStage] = useState(null)
   const [error, setError] = useState(null)
   const [saved, setSaved] = useState(null)
@@ -77,19 +77,6 @@ export default function SaveAnalysisPanel({ session, wizardData, onLockedChange,
                 min={name === 'modelYear' ? 1900 : undefined} max={name === 'modelYear' ? 2100 : undefined}
                 step={name === 'modelYear' ? 1 : undefined} />
             </label>)}
-            <label><span>{t('saveAnalysis.fields.category')}</span>
-              <select name="category" value={metadata.category} onChange={update} required>
-                <option value="" disabled>{t('saveAnalysis.choose')}</option>
-                {['ENDURO', 'E_ENDURO', 'DOWNHILL'].map((value) => <option key={value} value={value}>{t(`saveAnalysis.categories.${value}`)}</option>)}
-              </select>
-            </label>
-            <label><span>{t('saveAnalysis.fields.cassetteType')}</span>
-              <select name="cassetteType" value={metadata.cassetteType} onChange={update} required>
-                <option value="" disabled>{t('saveAnalysis.choose')}</option>
-                <option value="TWELVE_SPEED">{t('saveAnalysis.cassettes.twelve')}</option>
-                <option value="DH_7_8">{t('saveAnalysis.cassettes.dh')}</option>
-              </select>
-            </label>
           </fieldset>
           <p className={styles.note}>{t('saveAnalysis.photoNotice')}</p>
           {error && <p className={styles.error} role="alert">{t(`saveAnalysis.errors.${error}`)}</p>}

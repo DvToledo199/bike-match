@@ -3,18 +3,24 @@ import { requestKinematicsPreview } from './kinematicsPreview.js'
 import { validatePreview } from './previewValidation.js'
 import { referencePreview } from '../test/referencePreview.js'
 
-it('sends the selected layout and explicit wheel preset without inventing rider weight', async () => {
-  const fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify(referencePreview()), {
-    headers: { 'content-type': 'application/json' },
-  }))
-  vi.stubGlobal('fetch', fetch)
-  await requestKinematicsPreview({ suspensionLayout: 'HORST_LINK', points: {}, parameters: { eyeToEyeMm: '210', shockStrokeMm: '55',
-    chainringTeeth: '32', sprocketTeeth: '50', declaredTravelMm: '150', sagPercent: '30', wheelConfiguration: 'MULLET' } })
-  const body = JSON.parse(fetch.mock.calls[0][1].body)
-  expect(body.suspensionLayout).toBe('HORST_LINK')
-  expect(body.parameters).toEqual({ shockStrokeMm: 55, chainringTeeth: 32, sprocketTeeth: 50,
-    declaredTravelMm: 150, sagPercent: 30, wheelConfiguration: 'MULLET' })
-})
+/** The bike type stands for its usual drivetrain, and every bike is read at a 30% sag. */
+it.each([
+  ['ENDURO', 32, 52],
+  ['E_ENDURO', 34, 52],
+  ['DOWNHILL', 36, 25],
+])('sends the gearing of a %s bike, the layout and the wheel preset without inventing rider weight',
+  async (bikeType, chainringTeeth, sprocketTeeth) => {
+    const fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify(referencePreview()), {
+      headers: { 'content-type': 'application/json' },
+    }))
+    vi.stubGlobal('fetch', fetch)
+    await requestKinematicsPreview({ suspensionLayout: 'HORST_LINK', points: {}, parameters: { bikeType,
+      eyeToEyeMm: '210', shockStrokeMm: '55', declaredTravelMm: '150', wheelConfiguration: 'MULLET' } })
+    const body = JSON.parse(fetch.mock.calls[0][1].body)
+    expect(body.suspensionLayout).toBe('HORST_LINK')
+    expect(body.parameters).toEqual({ shockStrokeMm: 55, chainringTeeth, sprocketTeeth,
+      declaredTravelMm: 150, sagPercent: 30, wheelConfiguration: 'MULLET' })
+  })
 
 it('accepts finite negative response percentages', () => {
   expect(validatePreview(referencePreview()).antiSquatCurve[1].percent).toBe(-10.2)

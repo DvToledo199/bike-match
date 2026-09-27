@@ -419,6 +419,11 @@
         "invalidReference": "The two shock mounts are in the same place. Go back and correct one of those marks.",
         "highScaleWarning": "This photo may be too small for reliable marks. A larger side photo would give a more trustworthy result."
       },
+      "bikeType": {
+        "label": "Bike type",
+        "help": "Each type uses its usual gearing for the pedalling figures: Enduro 32/52, E-Enduro 34/52, Downhill 36/25.",
+        "placeholder": "Select bike type"
+      },
       "wheels": {
         "label": "Wheel setup",
         "help": "Choose your front and rear wheel sizes.",
@@ -440,28 +445,14 @@
           "help": "How far the shock compresses, in millimetres.",
           "unit": "mm"
         },
-        "chainring": {
-          "label": "Front chainring teeth",
-          "help": "Number of teeth on the front chainring.",
-          "unit": "teeth"
-        },
-        "sprocket": {
-          "label": "Largest cassette sprocket (teeth)",
-          "help": "Teeth on the biggest cog in your rear cassette.",
-          "unit": "teeth"
-        },
         "declaredTravel": {
           "label": "Rear wheel travel",
           "help": "Rear suspension travel stated by the bike manufacturer.",
           "unit": "mm"
-        },
-        "sag": {
-          "label": "Sag",
-          "help": "Suspension compression under your riding weight, as a percentage.",
-          "unit": "%"
         }
       },
       "errors": {
+        "bikeType": "Select the type of bike.",
         "wheelConfiguration": "Select the wheel setup fitted to this bike.",
         "required": "Enter {{field}}.",
         "integer": "{{field}} must be a whole number.",
@@ -563,19 +554,13 @@
       "brand": "Brand",
       "model": "Model",
       "modelYear": "Model year (optional)",
-      "category": "Category",
-      "cassetteType": "Cassette"
+      "category": "Category"
     },
     "categories": {
       "ENDURO": "Enduro",
       "E_ENDURO": "E-Enduro",
       "DOWNHILL": "Downhill"
     },
-    "cassettes": {
-      "twelve": "12-speed",
-      "dh": "Downhill · 7 or 8-speed"
-    },
-    "choose": "Select an option",
     "photoAlt": "Photo of the bike you are saving",
     "photoNotice": "Your bike stays private until you request publication. Photo and marks are fixed after saving; a new marking creates another analysis.",
     "save": "Save bike",

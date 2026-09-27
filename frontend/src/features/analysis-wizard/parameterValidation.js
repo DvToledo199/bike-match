@@ -1,3 +1,4 @@
+import { bikeTypeNames } from '../../models/bikeTypes.js'
 import { wheelConfigurations } from '../../models/wheelConfigurations.js'
 
 export const parameterFields = [
@@ -16,34 +17,11 @@ export const parameterFields = [
     translationKey: 'wizard.parameters.fields.shockStroke',
   },
   {
-    name: 'chainringTeeth',
-    integer: true,
-    minimum: 28,
-    maximum: 38,
-    step: '1',
-    translationKey: 'wizard.parameters.fields.chainring',
-  },
-  {
-    name: 'sprocketTeeth',
-    integer: true,
-    minimum: 10,
-    maximum: 60,
-    step: '1',
-    translationKey: 'wizard.parameters.fields.sprocket',
-  },
-  {
     name: 'declaredTravelMm',
     minimum: 50,
     maximum: 250,
     step: '1',
     translationKey: 'wizard.parameters.fields.declaredTravel',
-  },
-  {
-    name: 'sagPercent',
-    minimum: 10,
-    maximum: 50,
-    step: '1',
-    translationKey: 'wizard.parameters.fields.sag',
   },
 ]
 
@@ -62,6 +40,7 @@ export function getParameterErrors(parameters) {
 
     return errors
   }, {})
+  if (!bikeTypeNames.includes(parameters.bikeType)) errors.bikeType = 'bikeType'
   if (!wheelConfigurations.includes(parameters.wheelConfiguration)) errors.wheelConfiguration = 'wheelConfiguration'
   return errors
 }

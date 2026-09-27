@@ -20,6 +20,11 @@ Material de referencia para la capa de IA de BikeMatch. El motor de la aplicaci�
 > Validación analítica no equivale a comparación externa estricta ni ensayo de campo.
 > Ver [`modelo-referencia-cinematica.md`](modelo-referencia-cinematica.md).
 
+> **Ampliación cuatro barras:** las tres variantes (amortiguador en la bieleta, con
+> extensión o empujado por los tirantes) entregan las mismas cinco curvas, con la pinza
+> en los tirantes. Las reglas de este documento se aplican igual. Ver
+> [`modelos-cuatro-barras.md`](modelos-cuatro-barras.md).
+
 ---
 
 ## 1. Reglas de oro para la IA
@@ -142,8 +147,9 @@ condiciones, NO eficiencia del 100% ni ausencia garantizada de balanceo al pedal
 
 **Qué es:** cuánto contrarresta la frenada trasera la tendencia a extenderse por
 transferencia de carga. 100% representa compensación en el modelo de referencia,
-no una promesa de mantener toda la geometría de la bici. Solo se calcula con la
-pinza fija al basculante; frenos flotantes y otros sistemas necesitan otro modelo.
+no una promesa de mantener toda la geometría de la bici. Se calcula con la pinza fija
+al basculante (monopivote) o a los tirantes (cuatro barras); los frenos flotantes
+necesitan otro modelo.
 
 **Lectura por bandas, dicha como la nota el piloto:** **<50%** al frenar la trasera **se levanta**: la bici va menos asentada y la bajada se siente más inclinada, pero el amortiguador copia mejor el terreno · **50–80%** el equilibrio más común en bicis modernas · **80–110%** al frenar la trasera **se asienta**, lo que hace la bici **más estable al frenar**, a consecuencia de no copiar el terreno tan de cerca · **>110%** se asienta claramente al frenar.
 
@@ -190,17 +196,16 @@ Arquetipos rápidos si el usuario no concreta: *saltador/agresivo* → progresi�
 ### Ejemplo completo (números ficticios)
 
 > **Una enduro progresiva y con nervio, más de bajar fuerte que de contemplar el paisaje.**
-> Su curva de palanca va de 2.9 a 2.35 con una progresión útil del 21%, y la pendiente es continua en los tres tramos: arranca sensible, mantiene el apoyo en la zona media donde de verdad se rueda y guarda reserva para las recepciones. Es lo contrario de una bici que se hunde a media carrera.
-> El retroceso de pedal, calculado en 32×52, ronda los 38°: es de los valores altos, así que en subidas rotas la cadena pelea con la suspensión y la rueda copia el suelo peor de lo que su curva sugiere. Su trayectoria de eje es convencional y no añade nada a ese balance.
-> Frenando se agacha de detrás (anti-rise del 95%): ganas aplomo en las pendientes serias, pero la trasera resigue el terreno con menos finura justo cuando vas frenando.
+> Su curva de palanca va de 2.9 a 2.35, un 23% de progresión total, y la pendiente es continua en los tres tramos: arranca sensible, mantiene el apoyo en la zona media donde de verdad se rueda y guarda reserva para las recepciones. Es lo contrario de una bici que se hunde a media carrera.
+> Pedalea con eficacia: con un anti-squat del 110% en el sag, tu fuerza mueve la bici en lugar de perderse en el amortiguador, a cambio de un retroceso de pedal alto (38°) que se nota en subidas rotas.
+> Al frenar, la trasera se asienta (anti-rise del 95%): la bici es más estable al frenar, a cambio de copiar el terreno con menos finura.
 > Le encajará a quien baje con intención y acepte ese peaje pedaleando; un piloto muy ligero puede quedarse sin usar el último tramo de recorrido.
-> Recuerda que estos números salen de los puntos marcados sobre la foto: tómalos como una radiografía fiable de tendencias, y remata el ajuste fino sobre el terreno.
 
 ---
 
 ## 11. Glosario mínimo (ES ↔ EN)
 
-Relación de palanca = *leverage ratio (LR)* · Progresión = *progression* · Regresivo = *falling-rate inverso / digressive* · Hacer tope = *bottom-out* · Hundimiento estático = *sag* · Retroceso de pedal = *pedal kickback (PK)* · Eficacia de pedaleo ≈ *anti-squat (AS)* · Comportamiento al frenar ≈ *anti-rise / brake squat (AR)* · Trayectoria del eje = *axle path* · Vainas = *chainstays* · Cámara de aire grande/reducida = *high/low volume* · Reductor de volumen = *volume spacer/token* · Desacoplador de núcleo = *drivetrain decoupler*.
+Relación de palanca = *leverage ratio (LR)* · Progresión = *progression* · Regresivo = *falling-rate inverso / digressive* · Hacer tope = *bottom-out* · Hundimiento estático = *sag* · Retroceso de pedal = *pedal kickback (PK)* · Eficacia de pedaleo ≈ *anti-squat (AS)* · Comportamiento al frenar ≈ *anti-rise / brake squat (AR)* · Trayectoria del eje = *axle path* · Vainas = *chainstays* · Tirantes = *seatstays* · Cámara de aire grande/reducida = *high/low volume* · Reductor de volumen = *volume spacer/token* · Desacoplador de núcleo = *drivetrain decoupler*.
 
 ---
 

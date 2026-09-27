@@ -1,13 +1,9 @@
 # Curvas ampliadas: modelo de referencia y mejoras futuras
 
-El modelo de extensión rígida del amortiguador para Horst, su corrección #249 y
-los límites de validación se describen en [modelo-yoke-horst.md](modelo-yoke-horst.md).
-El Horst con el amortiguador empujado por los tirantes se describe en
-[modelo-horst-tirantes.md](modelo-horst-tirantes.md).
-
-Decisión tomada el 10 de septiembre de 2026. Se adelantan las curvas
-anti-squat/anti-rise y el kickback cog-aware antes de persistencia e IA. Issues
-#108 (dominio), #31 (kickback) y #109 (API/web). No se modifica auth #94.
+Cómo se calculan anti-squat, anti-rise y el kickback que tiene en cuenta el piñón, con
+qué ruedas y centro de gravedad de referencia, y qué evidencia los respalda (#108, #31,
+#109). Las particularidades de cada variante de cuatro barras están en
+[`modelos-cuatro-barras.md`](modelos-cuatro-barras.md).
 
 ## Experiencia del MVP
 
@@ -39,7 +35,8 @@ Duplicar esa altura divide por dos ambos porcentajes; los tests comprueban esto.
 
 ## Alcance físico
 
-Monopivote simple, cadena directa sin roldana, pinza fija al basculante. Ejes
+Monopivote simple y cuatro barras (Horst link), cadena directa sin roldana, pinza
+fija al basculante (monopivote) o a los tirantes (cuatro barras). Ejes
 x hacia delante e y hacia abajo, como las coordenadas de imagen existentes.
 Cuadro con orientación fija durante el barrido; no simulamos cabeceo dinámico,
 movimiento de horquilla, neumático deformable, tracción ni movimiento del ciclista.
@@ -68,8 +65,16 @@ El modelo de cadena usa círculos de paso lisos `r=N·12,7/(2π)` (no dientes
 discretos). La tangente tiene longitud `sqrt(d²−(rCog−rRing)²)` y ángulo
 `θ=atan2(BBy−Ay, BBx−Ax)+asin((rCog−rRing)/d)`.
 
-No se confunde anti-rise con anti-dive de la horquilla. Un freno flotante o Horst
-requiere otro centro instantáneo de reacción; NO reutilizar el pivote principal.
+No se confunde anti-rise con anti-dive de la horquilla.
+
+**Cuatro barras.** El eje y la pinza van en el tirante, que no gira alrededor de un pivote
+fijo. Se usa su **centro instantáneo**: el cruce de la recta vaina (pivote principal →
+pivote Horst) con la recta bieleta (pivote de la bieleta → unión con el tirante), en cada
+muestra. Las mismas construcciones sustituyen el pivote principal por ese centro. Se
+calcula en coordenadas homogéneas, así que unas rectas paralelas dan un centro en el
+infinito válido; si el centro cae justo en la vertical del eje trasero, el cálculo se
+rechaza. Un freno flotante necesitaría otro centro de reacción: NO reutilizar el pivote
+principal.
 
 ## Validación y limitaciones de la evidencia
 
@@ -147,11 +152,13 @@ No presentar las tres curvas ampliadas como precisión certificada de Linkage.
 
 - `parameters.wheelConfiguration`: `FULL_29`, `MULLET` o `FULL_27_5`.
   Omitido/null conserva V1; un valor desconocido, vacío o numérico se rechaza.
-- `conditions.modelVersion`: `monopivot-v1` o `monopivot-reference-v2`.
-  En V1, `reference=null` y curvas anti vacías; no rellenar resultados no calculados.
+- `conditions.modelVersion`: `monopivot-v1` o `monopivot-reference-v2`, y las versiones
+  de cada variante de cuatro barras (ver `modelos-cuatro-barras.md`). Sin ruedas,
+  `reference=null` y curvas anti vacías; no rellenar resultados no calculados.
 - `conditions.reference`: ruedas, radios, altura CG, corrección de foto en grados,
-  `motionModel=FIXED_FRAME_LOCAL_GROUND`, `brakeModel=SWINGARM_FIXED`,
-  `validationLevel=ANALYTICAL_REFERENCE`. Debe persistirse junto con las curvas.
+  `motionModel=FIXED_FRAME_LOCAL_GROUND`, `brakeModel` (`SWINGARM_FIXED` en monopivote,
+  `SEATSTAY_FIXED` en cuatro barras) y `validationLevel=ANALYTICAL_REFERENCE`. Se guarda
+  junto con las curvas.
 - Se refleja la orientación izquierda/derecha. En V2, tras calibrar, la diferencia
   de altura esperada entre ejes descuenta los radios distintos antes de corregir
   inclinación; rechazo si la corrección supera 15°. Se asume suelo plano, fotografía
@@ -159,21 +166,6 @@ No presentar las tres curvas ampliadas como precisión certificada de Linkage.
 - La web exige elegir ruedas y recibe cinco curvas con condiciones visibles;
   no acepta como V2 una respuesta antigua/incompleta. Números negativos o >100%
   válidos se conservan. No añade peso ni tablas de todos los puntos.
-- Pruebas: 112 tests Java y 28 frontend, lint/build; navegador Chromium con llamada
-  real al backend, las tres selecciones, cinco curvas, modos claro/oscuro a 1280 px
-  y móvil a 390 px sin desbordamiento. La foto sintética de esta comprobación prueba
-  la interfaz, no sustituye las dos referencias Orange de la tabla anterior.
-
-## Trazabilidad de esta ampliación
-
-- #108 → [PR #110](https://github.com/DvToledo199/bike-match/pull/110): geometría de cadena,
-  condiciones y curvas anti-squat/anti-rise, con tests independientes de Spring.
-- #31 → [PR #111](https://github.com/DvToledo199/bike-match/pull/111): kickback cog-aware;
-  implementado, pero issue abierta por el contraste externo pendiente.
-- #109 → [PR #114](https://github.com/DvToledo199/bike-match/pull/114): integración
-  API/selector/gráficas, normalización mullet y documentos sincronizados.
-- #113: retirada del avance inerte en resultados y diseño documentado de la
-  futura ficha #3. No implementa Mis bicis ni la IA.
 
 ## Mejoras futuras, sin implementarlas por adelantado
 
@@ -181,15 +173,12 @@ No presentar las tres curvas ampliadas como precisión certificada de Linkage.
   entre ejes). Evitar inferir inclinación de ejes sin descontar ruedas mullet (#97).
 - CG configurable/perfiles de postura: revisión física y explicación clara antes
   de personalizar; el peso por sí solo no localiza el CG.
-- Horst, bieletas, frenos flotantes, roldanas/idlers y extensores (#19/#98): modelo
-  explícito y fixture propio; no activarlos por parecido visual.
+- Monopivotes con bieleta, pivotes virtuales, frenos flotantes y roldanas (#98): modelo
+  explícito y fixture propio para cada uno; no activarlos por parecido visual.
 - Kickback dinámico: velocidad, rueda libre, contacto/deslizamiento y horquilla;
   la curva cuasiestática no equivale a lo que siempre siente el ciclista rodando.
 - Simulador de fuerza: muelle/aire genéricos normalizados al sag, luego datos
   medidos. Sigue fuera de este bloque por modelado/validación, no por pedir peso.
-- Persistencia/IA (#103): guardar versión, condiciones y capacidades con cada
-  resultado. Invalidar/recalcular resúmenes al cambiar el motor; nunca presentar
-  una condición de referencia como información personal real del usuario.
 
 ## Fuentes de las construcciones (no de los valores predeterminados)
 

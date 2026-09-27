@@ -1,9 +1,10 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, expect, it, vi } from 'vitest'
 import BikeDetailPage from './BikeDetailPage.jsx'
 
 vi.mock('../../services/myBikes.js', () => ({
   getBikeDetail: vi.fn(),
+  publishBike: vi.fn(),
   toKinematicsData: vi.fn(),
 }))
 
@@ -16,7 +17,7 @@ vi.mock('../analysis-wizard/KinematicsCharts.jsx', () => ({
   default: () => <div role="region" aria-label="Saved kinematics charts" />,
 }))
 
-import { getBikeDetail, toKinematicsData } from '../../services/myBikes.js'
+import { getBikeDetail, publishBike, toKinematicsData } from '../../services/myBikes.js'
 import { generateBikeInterpretation, getBikeInterpretation } from '../../services/interpretation.js'
 
 const bike = {
@@ -31,6 +32,7 @@ const bike = {
   sagPercent: 30,
   photoUrl: 'https://example.com/stage.jpg',
   status: 'PRIVATE',
+  analyzed: true,
   ownerUsername: 'david',
   result: { curves: {}, descriptors: {} },
 }
@@ -151,4 +153,56 @@ it('explains when the bike cannot be accessed and allows going back', async () =
   screen.getByRole('button', { name: 'Back to my bikes' }).click()
 
   expect(onBack).toHaveBeenCalled()
+})
+
+function logInAs(username) {
+  sessionStorage.setItem('bikematch.session', JSON.stringify({ accessToken: 'token', tokenType: 'Bearer', username }))
+}
+
+it('lets the owner request publication from the detail page after confirming', async () => {
+  logInAs('david')
+  getBikeDetail.mockResolvedValue(bike)
+  getBikeInterpretation.mockResolvedValue(explanation)
+  publishBike.mockResolvedValue({ id: 7, status: 'PENDING' })
+  render(<BikeDetailPage bikeId={7} onBack={vi.fn()} />)
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Request publication' }))
+  expect(screen.getByRole('group', { name: /Send this bike to moderation/ })).toBeTruthy()
+  expect(publishBike).not.toHaveBeenCalled()
+  fireEvent.click(screen.getByRole('button', { name: 'Confirm publication' }))
+
+  await waitFor(() => expect(screen.getByText('Pending review')).toBeTruthy())
+  expect(publishBike).toHaveBeenCalledWith(7)
+  expect(screen.queryByText('Private')).toBeNull()
+  expect(screen.queryByRole('button', { name: 'Request publication' })).toBeNull()
+})
+
+it('keeps the bike private when the owner cancels or the session has expired', async () => {
+  logInAs('david')
+  getBikeDetail.mockResolvedValue(bike)
+  getBikeInterpretation.mockResolvedValue(explanation)
+  publishBike.mockRejectedValue({ status: 401 })
+  render(<BikeDetailPage bikeId={7} onBack={vi.fn()} />)
+
+  fireEvent.click(await screen.findByRole('button', { name: 'Request publication' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Keep private' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Request publication' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Confirm publication' }))
+
+  expect((await screen.findByRole('alert')).textContent).toBe('Your session has expired. Log in again before publishing.')
+  expect(screen.getByText('Private')).toBeTruthy()
+})
+
+it.each([
+  ['a visitor', 'someone_else', bike],
+  ['the owner of a public bike', 'david', { ...bike, status: 'PUBLIC' }],
+  ['the owner of an unanalysed bike', 'david', { ...bike, analyzed: false }],
+])('does not offer publication to %s', async (_, username, shownBike) => {
+  logInAs(username)
+  getBikeDetail.mockResolvedValue(shownBike)
+  getBikeInterpretation.mockResolvedValue(explanation)
+  render(<BikeDetailPage bikeId={7} onBack={vi.fn()} />)
+
+  await screen.findByRole('heading', { name: 'Orange Stage 6' })
+  expect(screen.queryByRole('button', { name: 'Request publication' })).toBeNull()
 })

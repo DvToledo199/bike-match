@@ -41,6 +41,52 @@
   gap: var(--space-md);
 }
 
+.headerActions {
+  display: grid;
+  flex: 0 0 auto;
+  max-width: 24rem;
+  justify-items: end;
+  gap: var(--space-sm);
+}
+
+.primaryButton {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.confirmation {
+  display: grid;
+  gap: var(--space-sm);
+  color: var(--color-text-muted);
+}
+
+.confirmation p {
+  margin: 0;
+}
+
+.confirmationActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.actionError {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
 .titleRow h1,
 .owner,
 .card h2,

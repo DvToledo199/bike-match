@@ -19,3 +19,19 @@ export function getEqualScaleDomains(points) {
     yDomain: [centerY - span / 2, centerY + span / 2],
   }
 }
+
+// Fits a value axis to the data with round ticks, so a curve fills the chart instead of hugging
+// its top edge. A minimum span keeps an almost flat curve from looking dramatic.
+export function getFittedAxis(values, { minimumSpan = 0.5, targetTicks = 5 } = {}) {
+  const dataMin = Math.min(...values), dataMax = Math.max(...values)
+  const center = (dataMin + dataMax) / 2
+  const span = Math.max(dataMax - dataMin, minimumSpan)
+  const rawStep = span / (targetTicks - 1)
+  const magnitude = 10 ** Math.floor(Math.log10(rawStep))
+  const step = [1, 2, 2.5, 5, 10].map((factor) => factor * magnitude).find((candidate) => candidate >= rawStep)
+  const padding = span * 0.02
+  const first = Math.floor((center - span / 2 - padding) / step)
+  const last = Math.ceil((center + span / 2 + padding) / step)
+  const ticks = Array.from({ length: last - first + 1 }, (_, index) => Number(((first + index) * step).toFixed(6)))
+  return { yDomain: [ticks[0], ticks.at(-1)], yTicks: ticks }
+}

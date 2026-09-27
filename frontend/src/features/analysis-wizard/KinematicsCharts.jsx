@@ -10,7 +10,7 @@ import {
 } from 'recharts'
 import { useTranslation } from 'react-i18next'
 import styles from './KinematicsCharts.module.css'
-import { chartAxisSize, chartMargin, getEqualScaleDomains, relativeAxlePath } from './chartGeometry.js'
+import { chartAxisSize, chartMargin, getEqualScaleDomains, getFittedAxis, relativeAxlePath } from './chartGeometry.js'
 
 function formatNumber(value, decimals = 1) {
   return Number(value).toFixed(decimals)
@@ -88,6 +88,7 @@ function CurveChart({ config, data, domains, square }) {
               type="number"
               dataKey={config.yKey}
               domain={domains?.yDomain}
+              ticks={domains?.yTicks}
               width={chartAxisSize}
               allowDataOverflow={square}
               tickCount={5}
@@ -138,6 +139,7 @@ function KinematicsCharts({ data }) {
       tooltipLabelKey: 'wizard.charts.tooltip.wheelTravel',
       tooltipValueKey: 'wizard.charts.tooltip.leverage',
       summaryKey: 'wizard.charts.leverage.summary',
+      domains: getFittedAxis(data.leverageCurve.map((sample) => sample.ratio)),
       highlight: t('wizard.charts.leverage.highlight', {
         total: formatNumber(leverageDescriptors.totalProgressionPercent),
       }),

@@ -331,7 +331,7 @@
       }
     },
     "marking": {
-      "mouseHint": "Clic izquierdo para marcar · Rueda para hacer zoom · Arrastra con el botón derecho para mover",
+      "mouseHint": "Clic para marcar · Pellizca o Ctrl + rueda para hacer zoom · Desliza con dos dedos o arrastra con el botón derecho para moverte",
       "keyboardLabel": "Controles de teclado",
       "label": "Marcar puntos",
       "title": "Marca los puntos clave",

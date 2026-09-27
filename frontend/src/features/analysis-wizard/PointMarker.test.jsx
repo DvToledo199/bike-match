@@ -15,11 +15,11 @@ function MarkerTest({ suspensionLayout = 'SINGLE_PIVOT' }) {
     <output aria-label="Stored marks">{JSON.stringify(points)}</output></>
 }
 
-it('zooms with the wheel, pans with the right button without marking, and marks the pedalier second', () => {
+it('zooms with a pinch, pans with the right button without marking, and marks the pedalier second', () => {
   render(<MarkerTest />)
   const marker = screen.getByRole('application')
   vi.spyOn(marker, 'getBoundingClientRect').mockReturnValue({ left: 0, top: 0, width: 600, height: 400 })
-  fireEvent.wheel(marker, { clientX: 300, clientY: 200, deltaY: -200 })
+  fireEvent.wheel(marker, { clientX: 300, clientY: 200, deltaY: -50, ctrlKey: true })
   const boxBefore = marker.getAttribute('viewBox')
   fireEvent.pointerDown(marker, { button: 2, clientX: 300, clientY: 200 })
   fireEvent.pointerMove(marker, { buttons: 2, clientX: 350, clientY: 230 })
@@ -33,6 +33,49 @@ it('zooms with the wheel, pans with the right button without marking, and marks 
   fireEvent.keyDown(marker, { key: 'Enter' })
   expect(JSON.parse(screen.getByLabelText('Stored marks').textContent).MAIN_PIVOT).toEqual(first)
   expect(JSON.parse(screen.getByLabelText('Stored marks').textContent).BOTTOM_BRACKET).toBeTruthy()
+})
+
+function renderMeasuredMarker() {
+  render(<MarkerTest />)
+  const marker = screen.getByRole('application')
+  vi.spyOn(marker, 'getBoundingClientRect').mockReturnValue({ left: 0, top: 0, width: 600, height: 400 })
+  const box = () => marker.getAttribute('viewBox').split(' ').map(Number)
+  return { marker, box }
+}
+
+it('lets a two-finger swipe scroll the page until the photo is zoomed in, then moves the photo', () => {
+  const { marker, box } = renderMeasuredMarker()
+  expect(fireEvent.wheel(marker, { clientX: 300, clientY: 200, deltaX: 60, deltaY: 40 })).toBe(true)
+  expect(box()).toEqual([0, 0, 1800, 1200])
+
+  expect(fireEvent.wheel(marker, { clientX: 300, clientY: 200, deltaY: -50, ctrlKey: true })).toBe(false)
+  const [x, y, width, height] = box()
+  expect(width).toBeLessThan(1800)
+
+  expect(fireEvent.wheel(marker, { clientX: 300, clientY: 200, deltaX: 60, deltaY: 40 })).toBe(false)
+  const [movedX, movedY, movedWidth, movedHeight] = box()
+  expect([movedWidth, movedHeight]).toEqual([width, height])
+  expect(movedX).toBeCloseTo(x + 60 / 600 * width)
+  expect(movedY).toBeCloseTo(y + 40 / 400 * height)
+  expect(JSON.parse(screen.getByLabelText('Stored marks').textContent)).toEqual({})
+})
+
+it('zooms with the Safari pinch gesture and ignores its duplicate wheel events meanwhile', () => {
+  const { marker, box } = renderMeasuredMarker()
+  const gesture = (type, scale) => fireEvent(marker,
+    Object.assign(new Event(type, { cancelable: true }), { scale, clientX: 300, clientY: 200 }))
+
+  expect(gesture('gesturestart', 1)).toBe(false)
+  gesture('gesturechange', 2)
+  expect(box()[2]).toBeCloseTo(900)
+  expect(fireEvent.wheel(marker, { clientX: 300, clientY: 200, deltaY: -50, ctrlKey: true })).toBe(false)
+  expect(box()[2]).toBeCloseTo(900)
+  gesture('gesturechange', 3)
+  expect(box()[2]).toBeCloseTo(600)
+  gesture('gestureend', 3)
+
+  fireEvent.wheel(marker, { clientX: 300, clientY: 200, deltaY: 50, ctrlKey: true })
+  expect(box()[2]).toBeGreaterThan(600)
 })
 
 it('creates all six points with the keyboard, and undo removes both cross and data immediately', () => {

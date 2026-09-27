@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getPointDefinitions, hasAllPoints } from './pointDefinitions.js'
 import styles from './PointMarker.module.css'
@@ -47,20 +47,61 @@ function PointMarker({ photo, points, suspensionLayout, updateWizardData }) {
       ? currentType : pointDefinitions[0].type)
   }, [pointDefinitions])
 
+  // Read inside the gesture listeners without re-attaching them on every zoom step.
+  const isZoomedIn = useEffectEvent(() => zoom > minimumZoom)
+
+  // Map-like gestures: pinch to zoom, two-finger swipe to move. Chrome and Firefox report a pinch as a wheel
+  // event with ctrlKey (as Ctrl + mouse wheel does); Safari reports it as its own gesture events instead.
   useEffect(() => {
     const marker = markerRef.current
+    let gestureScale = null
+    const zoomBy = (event, bounds, factor) => {
+      const anchor = { x: (event.clientX - bounds.left) / bounds.width, y: (event.clientY - bounds.top) / bounds.height }
+      setView((current) => zoomAt(photo, current, current.zoom * factor, anchor, aspect))
+    }
     const wheel = (event) => {
-      if (event.ctrlKey || event.metaKey || !event.deltaY) return
-      event.preventDefault()
       const bounds = marker.getBoundingClientRect()
       if (!bounds.width || !bounds.height) return
-      const anchor = { x: (event.clientX - bounds.left) / bounds.width, y: (event.clientY - bounds.top) / bounds.height }
-      const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? bounds.height : 1)
-      setView((current) => zoomAt(photo, current, current.zoom * Math.exp(-clamp(delta, -200, 200) * 0.003), anchor, aspect))
+      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? bounds.height : 1
+      if (event.ctrlKey || event.metaKey) {
+        event.preventDefault()
+        // Safari may repeat its pinch as wheel events; the gesture events already zoom.
+        if (gestureScale === null) zoomBy(event, bounds, Math.exp(-clamp(event.deltaY * unit, -50, 50) * 0.01))
+        return
+      }
+      // Without zoom there is nothing to move, so the page scrolls as usual.
+      if (!isZoomedIn()) return
+      event.preventDefault()
+      setView((current) => {
+        const box = getViewBox(photo, current.zoom, current.center, aspect)
+        return constrainView(photo, { zoom: current.zoom, center: {
+          x: current.center.x + event.deltaX * unit / bounds.width * box.width,
+          y: current.center.y + event.deltaY * unit / bounds.height * box.height,
+        } }, aspect)
+      })
     }
-    // The listener must be non-passive to keep wheel zoom from scrolling the page.
-    marker.addEventListener('wheel', wheel, { passive: false })
-    return () => marker.removeEventListener('wheel', wheel)
+    const gestureStart = (event) => {
+      event.preventDefault()
+      gestureScale = 1
+    }
+    const gestureChange = (event) => {
+      event.preventDefault()
+      const bounds = marker.getBoundingClientRect()
+      if (!bounds.width || !bounds.height || !event.scale) return
+      // event.scale counts from the start of the pinch, so apply only the change since the last event.
+      zoomBy(event, bounds, event.scale / (gestureScale ?? 1))
+      gestureScale = event.scale
+    }
+    const gestureEnd = (event) => {
+      event.preventDefault()
+      gestureScale = null
+    }
+    const listeners = { wheel, gesturestart: gestureStart, gesturechange: gestureChange, gestureend: gestureEnd }
+    // Non-passive, so the photo can stop the browser from scrolling or zooming the whole page.
+    for (const [type, listener] of Object.entries(listeners)) marker.addEventListener(type, listener, { passive: false })
+    return () => {
+      for (const [type, listener] of Object.entries(listeners)) marker.removeEventListener(type, listener)
+    }
   }, [photo, aspect])
 
   function handleMarkerPointerDown(event) {

@@ -21,5 +21,7 @@ USER bikematch
 # Inside a container the API must listen on every interface, not only on 127.0.0.1.
 ENV SERVER_ADDRESS=0.0.0.0
 EXPOSE 8080
-# Render gives the port in PORT. The free plan has 512 MB: cap the heap and use the lightest GC.
-ENTRYPOINT ["sh", "-c", "exec java -XX:MaxRAMPercentage=75 -XX:+UseSerialGC -jar app.jar --server.port=${PORT:-8080}"]
+# Render gives the port in PORT. The free plan has 512 MB and a tenth of a CPU: cap the heap, use
+# the lightest GC, and keep only the quick JIT compiler. The optimising one competes with the
+# application for that CPU while it starts; without it, startup under a 0.1-CPU limit nearly halves.
+ENTRYPOINT ["sh", "-c", "exec java -XX:MaxRAMPercentage=75 -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -jar app.jar --server.port=${PORT:-8080}"]

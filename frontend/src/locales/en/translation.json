@@ -267,7 +267,7 @@
     "description": "Browse public suspension analyses shared by the BikeMatch community.",
     "filterLabel": "Bike category",
     "loading": "Loading the public catalog…",
-    "waking": "Waking up the server… After a quiet spell, the first visit can take up to a minute.",
+    "waking": "Waking up the server… After a quiet spell, the first visit can take a couple of minutes.",
     "retry": "Try again",
     "empty": "No bikes have been published yet. Analyze yours, save it and request publication to share it here.",
     "openDetail": "View analysis",

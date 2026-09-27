@@ -64,9 +64,9 @@ async function readErrorBody(response) {
 }
 
 export async function requestApi(path, options = {}) {
-  // The free host sleeps after 15 idle minutes and takes about a minute to wake up. Giving up
-  // sooner would show the first visitor an error while the server is still starting.
-  const { signal, timeoutMs = 75000, ...fetchOptions } = options
+  // The free host sleeps after 15 idle minutes, and starting the API there takes about two and a
+  // half minutes. Giving up sooner would show the first visitor an error while it is starting.
+  const { signal, timeoutMs = 180000, ...fetchOptions } = options
   const controller = new AbortController()
   let timedOut = false
   const cancel = () => controller.abort()

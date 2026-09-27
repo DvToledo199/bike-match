@@ -44,7 +44,7 @@ it('generates an interpretation only when explicitly requested', async () => {
 
   expect(requestApi).toHaveBeenCalledWith(
     '/api/bikes/7/interpretation?language=en',
-    { method: 'POST', timeoutMs: 75000 },
+    { method: 'POST', timeoutMs: 240000 },
   )
 })
 

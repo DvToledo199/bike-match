@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getCalibration, getParameterErrors, parameterFields } from './parameterValidation.js'
+import { bikeTypeNames } from '../../models/bikeTypes.js'
 import { wheelConfigurations } from '../../models/wheelConfigurations.js'
 import styles from './ParameterStep.module.css'
 
@@ -48,6 +49,38 @@ function ParameterField({ field, error, onBlur, onChange, value }) {
   )
 }
 
+/** A drop-down question: the bike type or the wheel setup. */
+function ChoiceField({ name, translationKey, optionKey, options, value, error, onChange, onBlur }) {
+  const { t } = useTranslation()
+  const fieldId = `parameter-${name}`
+  const helpId = `${fieldId}-help`
+  const errorId = `${fieldId}-error`
+
+  return (
+    <div className={styles.field}>
+      <label className={styles.label} htmlFor={fieldId}>{t(`${translationKey}.label`)}</label>
+      <p className={styles.helpText} id={helpId}>{t(`${translationKey}.help`)}</p>
+      <select
+        id={fieldId}
+        name={name}
+        className={`${styles.input} ${styles.select}`}
+        value={value ?? ''}
+        onChange={onChange}
+        onBlur={onBlur}
+        required
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${helpId} ${errorId}` : helpId}
+      >
+        <option value="" disabled>{t(`${translationKey}.placeholder`)}</option>
+        {options.map((option) => (
+          <option key={option} value={option}>{t(`${optionKey}.${option}`)}</option>
+        ))}
+      </select>
+      {error && <p id={errorId} className={styles.error} role="alert">{t(`wizard.parameters.errors.${error}`)}</p>}
+    </div>
+  )
+}
+
 function ParameterStep({ parameters, points, suspensionLayout, updateWizardData }) {
   const { t } = useTranslation()
   const [touchedFields, setTouchedFields] = useState({})
@@ -85,33 +118,17 @@ function ParameterStep({ parameters, points, suspensionLayout, updateWizardData 
       </div>
 
       <div className={styles.fieldGrid}>
+          <ChoiceField name="bikeType" translationKey="wizard.parameters.bikeType"
+            optionKey="saveAnalysis.categories" options={bikeTypeNames} value={parameters.bikeType}
+            error={getVisibleError('bikeType')} onChange={handleChange} onBlur={handleBlur} />
+          <ChoiceField name="wheelConfiguration" translationKey="wizard.parameters.wheels"
+            optionKey="wizard.parameters.wheels.options" options={wheelConfigurations}
+            value={parameters.wheelConfiguration} error={getVisibleError('wheelConfiguration')}
+            onChange={handleChange} onBlur={handleBlur} />
           {parameterFields.map((field) => (
             <ParameterField key={field.name} field={field} value={parameters[field.name]}
               error={getVisibleError(field.name)} onChange={handleChange} onBlur={handleBlur} />
           ))}
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="parameter-wheelConfiguration">{t('wizard.parameters.wheels.label')}</label>
-            <p className={styles.helpText} id="wheel-help">{t('wizard.parameters.wheels.help')}</p>
-            <select
-              id="parameter-wheelConfiguration"
-              name="wheelConfiguration"
-              className={`${styles.input} ${styles.select}`}
-              value={parameters.wheelConfiguration ?? ''}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-              aria-invalid={Boolean(getVisibleError('wheelConfiguration'))}
-              aria-describedby={getVisibleError('wheelConfiguration') ? 'wheel-help wheel-error' : 'wheel-help'}
-            >
-              <option value="" disabled>{t('wizard.parameters.wheels.placeholder')}</option>
-              {wheelConfigurations.map((configuration) => (
-                <option key={configuration} value={configuration}>{t(`wizard.parameters.wheels.options.${configuration}`)}</option>
-              ))}
-            </select>
-            {getVisibleError('wheelConfiguration') && (
-              <p id="wheel-error" className={styles.error} role="alert">{t('wizard.parameters.errors.wheelConfiguration')}</p>
-            )}
-          </div>
       </div>
       {calibration && !calibration.isValid && (
         <p className={styles.error} role="alert">{t('wizard.parameters.calibration.invalidReference')}</p>

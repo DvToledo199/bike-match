@@ -1,18 +1,19 @@
 import { expect, it } from 'vitest'
 import { getCalibration, getParameterErrors, hasValidParameters } from './parameterValidation.js'
 
-const valid = { eyeToEyeMm: '230', shockStrokeMm: '65', chainringTeeth: '34', sprocketTeeth: '50', declaredTravelMm: '164', sagPercent: '30', wheelConfiguration: 'MULLET' }
-it('accepts valid measurements but not fractional teeth', () => {
+const valid = { bikeType: 'ENDURO', eyeToEyeMm: '230', shockStrokeMm: '65', declaredTravelMm: '164', wheelConfiguration: 'MULLET' }
+it('accepts valid measurements and rejects them out of range', () => {
   expect(hasValidParameters(valid)).toBe(true)
-  expect(getParameterErrors({ ...valid, chainringTeeth: '34.9', sprocketTeeth: '10.5' }))
-    .toEqual({ chainringTeeth: 'integer', sprocketTeeth: 'integer' })
+  expect(getParameterErrors({ ...valid, shockStrokeMm: '10', declaredTravelMm: '' }))
+    .toEqual({ shockStrokeMm: 'range', declaredTravelMm: 'required' })
 })
-it('accepts only mountain-bike chainrings', () => {
-  for (const chainringTeeth of ['20', '27', '39', '60']) {
-    expect(getParameterErrors({ ...valid, chainringTeeth }).chainringTeeth).toBe('range')
+/** The type replaces the chainring, sprocket and sag questions, so it has to be one we know. */
+it('requires a supported bike type', () => {
+  for (const bikeType of ['', undefined, 'XC', 0]) {
+    expect(getParameterErrors({ ...valid, bikeType }).bikeType).toBe('bikeType')
   }
-  for (const chainringTeeth of ['28', '32', '38']) {
-    expect(hasValidParameters({ ...valid, chainringTeeth })).toBe(true)
+  for (const bikeType of ['ENDURO', 'E_ENDURO', 'DOWNHILL']) {
+    expect(hasValidParameters({ ...valid, bikeType })).toBe(true)
   }
 })
 it('requires an explicit supported wheel choice', () => {

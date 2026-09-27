@@ -419,6 +419,11 @@
         "invalidReference": "Los dos anclajes del amortiguador están en el mismo sitio. Vuelve atrás y corrige una de esas marcas.",
         "highScaleWarning": "Puede que esta foto sea demasiado pequeña para marcar con fiabilidad. Una foto lateral más grande daría un resultado más fiable."
       },
+      "bikeType": {
+        "label": "Tipo de bici",
+        "help": "Cada tipo usa su desarrollo habitual para los datos de pedaleo: Enduro 32/52, E-Enduro 34/52 y Descenso 36/25.",
+        "placeholder": "Elige el tipo de bici"
+      },
       "wheels": {
         "label": "Configuración de ruedas",
         "help": "Elige el tamaño de la rueda delantera y el de la trasera.",
@@ -440,28 +445,14 @@
           "help": "Cuánto se comprime el amortiguador, en milímetros.",
           "unit": "mm"
         },
-        "chainring": {
-          "label": "Dientes del plato",
-          "help": "Número de dientes del plato delantero.",
-          "unit": "dientes"
-        },
-        "sprocket": {
-          "label": "Piñón más grande del cassette (dientes)",
-          "help": "Dientes del piñón más grande de tu cassette trasero.",
-          "unit": "dientes"
-        },
         "declaredTravel": {
           "label": "Recorrido de la rueda trasera",
           "help": "Recorrido de la suspensión trasera según el fabricante.",
           "unit": "mm"
-        },
-        "sag": {
-          "label": "Sag",
-          "help": "Cuánto se comprime la suspensión con tu peso encima, en porcentaje.",
-          "unit": "%"
         }
       },
       "errors": {
+        "bikeType": "Elige el tipo de bici.",
         "wheelConfiguration": "Elige la configuración de ruedas que lleva esta bici.",
         "required": "{{field}}: introduce un valor.",
         "integer": "{{field}}: debe ser un número entero.",
@@ -563,19 +554,13 @@
       "brand": "Marca",
       "model": "Modelo",
       "modelYear": "Año del modelo (opcional)",
-      "category": "Categoría",
-      "cassetteType": "Cassette"
+      "category": "Categoría"
     },
     "categories": {
       "ENDURO": "Enduro",
       "E_ENDURO": "E-Enduro",
       "DOWNHILL": "Descenso"
     },
-    "cassettes": {
-      "twelve": "12 velocidades",
-      "dh": "Descenso · 7 u 8 velocidades"
-    },
-    "choose": "Elige una opción",
     "photoAlt": "Foto de la bici que estás guardando",
     "photoNotice": "Tu bici es privada hasta que solicites su publicación. La foto y las marcas quedan fijas al guardar; marcar de nuevo crea otro análisis.",
     "save": "Guardar bici",

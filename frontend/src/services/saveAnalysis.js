@@ -1,3 +1,4 @@
+import { referenceSetupFor } from '../models/bikeTypes.js'
 import { ApiError, requestApi } from './apiClient.js'
 import { getBikeDetail } from './myBikes.js'
 import { getSession } from './session.js'
@@ -5,15 +6,17 @@ import { generateBikeInterpretation } from './interpretation.js'
 
 export function createBikePayload(metadata, wizardData) {
   const p = wizardData.parameters
+  // The bike type chosen in the wizard is the category and sets the drivetrain and sag.
+  const setup = referenceSetupFor(p.bikeType)
   return {
     brand: metadata.brand.trim(), model: metadata.model.trim(),
     modelYear: metadata.modelYear === '' ? null : Number(metadata.modelYear),
-    category: metadata.category, cassetteType: metadata.cassetteType,
+    category: p.bikeType, cassetteType: setup.cassetteType,
     suspensionLayout: wizardData.suspensionLayout,
     declaredTravelMm: Number(p.declaredTravelMm), shockEyeToEyeMm: Number(p.eyeToEyeMm),
     shockStrokeMm: Number(p.shockStrokeMm), wheelConfiguration: p.wheelConfiguration,
-    chainringTeeth: Number(p.chainringTeeth), sprocketTeeth: Number(p.sprocketTeeth),
-    sagPercent: Number(p.sagPercent),
+    chainringTeeth: setup.chainringTeeth, sprocketTeeth: setup.sprocketTeeth,
+    sagPercent: setup.sagPercent,
   }
 }
 

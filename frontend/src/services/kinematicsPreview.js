@@ -1,3 +1,4 @@
+import { referenceSetupFor } from '../models/bikeTypes.js'
 import { requestApi } from './apiClient.js'
 import { validatePreview } from './previewValidation.js'
 
@@ -7,6 +8,7 @@ function toNumber(value) {
 
 export async function requestKinematicsPreview(wizardData, signal) {
   const { parameters, points } = wizardData
+  const setup = referenceSetupFor(parameters.bikeType)
 
   const response = await requestApi('/api/kinematics/preview', {
     signal,
@@ -20,10 +22,10 @@ export async function requestKinematicsPreview(wizardData, signal) {
       eyeToEyeMm: toNumber(parameters.eyeToEyeMm),
       parameters: {
         shockStrokeMm: toNumber(parameters.shockStrokeMm),
-        chainringTeeth: toNumber(parameters.chainringTeeth),
-        sprocketTeeth: toNumber(parameters.sprocketTeeth),
+        chainringTeeth: setup.chainringTeeth,
+        sprocketTeeth: setup.sprocketTeeth,
         declaredTravelMm: toNumber(parameters.declaredTravelMm),
-        sagPercent: toNumber(parameters.sagPercent),
+        sagPercent: setup.sagPercent,
         wheelConfiguration: parameters.wheelConfiguration,
       },
     }),

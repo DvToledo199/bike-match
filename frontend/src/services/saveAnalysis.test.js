@@ -11,10 +11,10 @@ vi.mock('./interpretation.js', () => ({ generateBikeInterpretation: vi.fn() }))
 vi.mock('./session.js', () => ({ getSession: vi.fn() }))
 
 const input = {
-  username: 'rider', metadata: { brand: ' Orange ', model: 'Stage 6', modelYear: '', category: 'ENDURO', cassetteType: 'TWELVE_SPEED' },
+  username: 'rider', metadata: { brand: ' Orange ', model: 'Stage 6', modelYear: '' },
   wizardData: { suspensionLayout: 'SINGLE_PIVOT', photo: { file: new File(['photo'], 'bike.png', { type: 'image/png' }), width: 1800, height: 1200 },
     points: { MAIN_PIVOT: { type: 'MAIN_PIVOT', x: 320.5, y: 410 } },
-    parameters: { eyeToEyeMm: '230', shockStrokeMm: '65', declaredTravelMm: '160', wheelConfiguration: 'FULL_29', chainringTeeth: '32', sprocketTeeth: '50', sagPercent: '30' },
+    parameters: { bikeType: 'ENDURO', eyeToEyeMm: '230', shockStrokeMm: '65', declaredTravelMm: '160', wheelConfiguration: 'FULL_29' },
   },
 }
 beforeEach(() => {
@@ -26,7 +26,12 @@ beforeEach(() => {
 })
 
 it('maps the form to the API contract and saves metadata, original photo and natural coordinates in order', async () => {
-  expect(createBikePayload(input.metadata, input.wizardData)).toMatchObject({ brand: 'Orange', modelYear: null, shockEyeToEyeMm: 230, sprocketTeeth: 50 })
+  // The bike type chosen in the wizard sets the category, the cassette, the gearing and the sag.
+  expect(createBikePayload(input.metadata, input.wizardData)).toMatchObject({ brand: 'Orange', modelYear: null,
+    shockEyeToEyeMm: 230, category: 'ENDURO', cassetteType: 'TWELVE_SPEED', chainringTeeth: 32, sprocketTeeth: 52, sagPercent: 30 })
+  const downhill = { ...input.wizardData, parameters: { ...input.wizardData.parameters, bikeType: 'DOWNHILL' } }
+  expect(createBikePayload(input.metadata, downhill)).toMatchObject({ category: 'DOWNHILL', cassetteType: 'DH_7_8',
+    chainringTeeth: 36, sprocketTeeth: 25, sagPercent: 30 })
   const progress = vi.fn()
   expect(await createAnalysisSaver().save(input, progress)).toEqual({ bikeId: 42, explanationReady: true })
   expect(requestApi.mock.calls.map(([path]) => path)).toEqual(['/api/bikes', '/api/bikes/42/photo', '/api/bikes/42/analysis'])

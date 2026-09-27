@@ -67,12 +67,17 @@ sin solapamientos; los gestos multitáctiles avanzados requieren #162.
 
 Una sola sección con unidades y ayudas breves. Se distingue «Shock stroke»
 (carrera del amortiguador) de «Rear wheel travel» (recorrido trasero).
-«Shock eye-to-eye» indica distancia entre centros de los anclajes;
-«Chainring teeth» es el plato delantero y «Largest rear sprocket» pide el piñón
-mayor del cassette. El motor usa exactamente ese número para la marcha calculada.
-No se cambia el contrato genérico sprocketTeeth ni se afirma que el backend
-compruebe qué piñón es el mayor. La interfaz no inventa dientes por disciplina.
-El selector de ruedas y el sag se mantienen. Errores y advertencias que ayudan a
+«Shock eye-to-eye» indica distancia entre centros de los anclajes.
+
+El formulario no pide plato, piñón ni sag: pregunta el **tipo de bici** (Enduro,
+E-Enduro o Descenso), que cualquier persona sabe, mientras que los dientes de su
+transmisión no siempre. La web usa el desarrollo habitual de cada tipo, con el piñón
+mayor porque es donde el pedal kickback es más fuerte: Enduro 32/52, E-Enduro 34/52 y
+Descenso 36/25 (cassette de 7 velocidades). El sag queda fijo en el 30 % para todas
+las bicis, así las cifras «en el sag» se pueden comparar entre bicis; las curvas no
+dependen del sag. El contrato de la API no cambia: la web sigue enviando
+`chainringTeeth`, `sprocketTeeth` y `sagPercent`, ya calculados. El selector de ruedas
+se mantiene. Errores y advertencias que ayudan a
 corregir una medición siguen visibles; se retiran explicaciones de implementación.
 
 Fuentes de vocabulario consultadas:
@@ -96,8 +101,8 @@ No dar por probadas las dos últimas solo porque pasen los tests automáticos.
 ### Guardado desde las gráficas (#161)
 
 El invitado puede iniciar sesión o registrarse sin perder el asistente mientras
-no recargue la página. Después completa marca, modelo, año opcional, categoría y
-tipo de cassette. Guardar crea una bici PRIVATE, sube la foto original a Cloudinary,
+no recargue la página. Después completa marca, modelo y año opcional; la categoría
+y el tipo de cassette salen del tipo de bici elegido en el asistente. Guardar crea una bici PRIVATE, sube la foto original a Cloudinary,
 finaliza el análisis con sus coordenadas naturales y solicita la explicación.
 La ficha se abre al terminar; publicar sigue siendo una acción independiente.
 Un fallo de explicación no deshace el guardado ni oculta las gráficas.

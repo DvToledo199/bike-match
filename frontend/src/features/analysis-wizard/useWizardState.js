@@ -5,12 +5,10 @@ const initialWizardData = {
   suspensionLayout: null,
   points: {},
   parameters: {
+    bikeType: '',
     eyeToEyeMm: '',
     shockStrokeMm: '',
-    chainringTeeth: '',
-    sprocketTeeth: '',
     declaredTravelMm: '',
-    sagPercent: '',
     wheelConfiguration: '',
   },
 }

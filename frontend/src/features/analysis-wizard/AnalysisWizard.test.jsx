@@ -13,8 +13,8 @@ beforeEach(() => {
     wizardData: {
       photo: null,
       points: { SHOCK_FRAME: { x: 10, y: 10 }, SHOCK_SWINGARM: { x: 210, y: 10 } },
-      parameters: { eyeToEyeMm: '210', shockStrokeMm: '55', chainringTeeth: '32',
-        sprocketTeeth: '50', declaredTravelMm: '150', sagPercent: '30', wheelConfiguration: 'FULL_29' },
+      parameters: { bikeType: 'ENDURO', eyeToEyeMm: '210', shockStrokeMm: '55',
+        declaredTravelMm: '150', wheelConfiguration: 'FULL_29' },
     },
     updateWizardData: vi.fn(), goToNextStep: vi.fn(), goToPreviousStep: vi.fn(),
   }

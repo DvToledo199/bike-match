@@ -29,8 +29,9 @@ it('passes metadata to the workflow and opens the saved bike', async () => {
   render(<SaveAnalysisPanel session={{ username: 'rider' }} wizardData={{}} onSaved={onSaved} onLockedChange={onLockedChange} />)
   fireEvent.change(screen.getByLabelText('Brand'), { target: { value: 'Orange' } })
   fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Stage 6' } })
-  fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'ENDURO' } })
-  fireEvent.change(screen.getByLabelText('Cassette'), { target: { value: 'TWELVE_SPEED' } })
+  // Category and cassette come from the bike type chosen in the wizard: the form no longer asks.
+  expect(screen.queryByLabelText('Category')).toBeNull()
+  expect(screen.queryByLabelText('Cassette')).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Save bike' }))
   await waitFor(() => expect(onSaved).toHaveBeenCalledWith(42))
   expect(onLockedChange).toHaveBeenCalledWith(true)

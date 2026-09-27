@@ -1,26 +1,35 @@
-# Proyecto final — Web de análisis de cinemática de bicicletas de montaña
-
-*(Nombre por decidir)*
-
----
+# BikeMatch — la idea y el producto
 
 ## Qué es este documento
 
-Es el resumen de trabajo del proyecto. Recoge la idea, las decisiones que ya se han tomado y lo que queda por decidir. Está redactado para que alguien que no ha participado en las conversaciones previas pueda entender todas las ideas. No pretende enseñar cómo funciona la suspensión de una bicicleta; solo dar el contexto suficiente para que las decisiones se entiendan.
-
-La evolución posterior a la V1 —catálogo abierto, perfiles, comentarios, rangos y
-futuro modelo gratuito/de pago— se concreta en
-[`vision-producto-v2.md`](vision-producto-v2.md).
+Es el resumen del proyecto: de dónde sale la idea, qué hace la aplicación entregada, qué
+decisiones de diseño la sostienen y hacia dónde podría crecer. Está redactado para que
+alguien que no ha participado en el proyecto entienda todas las ideas. No pretende enseñar
+cómo funciona la suspensión de una bicicleta; solo dar el contexto suficiente para que las
+decisiones se entiendan.
 
 ---
 
 ## Contexto
 
 - Es el **proyecto final de un bootcamp de desarrollo Java**.
-- **El backend lo desarrolla el alumno**, apoyándose en IA como herramienta de consulta, pero sin que la IA lo haga sola. **El frontend se hace con IA**: es un reto planteado por el propio curso, porque no se ha dado nada de frontend y esta es la forma de sacar adelante esa parte.
-- El curso **no obliga a terminar** el proyecto, sino a implementar ciertas historias de usuario. La intención es poder **continuar el proyecto después del curso** para tener algo real que enseñar a la hora de buscar trabajo.
-- **De dónde nace la idea:** hoy ya existen programas (por ejemplo *Linkage* o *BikeChecker*) que calculan la cinemática de la suspensión trasera de una bicicleta. El problema es que exigen bastante trabajo y conocimiento al usuario: hay que darles una foto lateral "limpia" (totalmente de lado, sin perspectiva desde arriba ni desde abajo), marcar a mano los puntos de la suspensión, y después interpretar uno mismo unas gráficas técnicas. **La propuesta es hacer algo parecido, pero facilitándoselo al usuario aficionado:** guiarlo al marcar los puntos y, sobre todo, traducirle el resultado a lenguaje normal.
-- **Sobre el alcance real:** es un tema de nicho y probablemente no sea una web con gran recorrido comercial. Pero para el objetivo (proyecto final + pieza de portfolio para buscar empleo) eso da igual: lo que importa es que el código demuestre que se sabe construir un sistema de verdad. Se plantea, aun así, pensada para poder llevarla a producción, por si en el futuro se decidiera lanzarla.
+- **El backend lo desarrolla el alumno**, apoyándose en IA como herramienta de consulta, pero
+  sin que la IA lo haga sola. **El frontend se hace con IA**: es un reto planteado por el
+  propio curso, porque no se ha dado nada de frontend y esta es la forma de sacar adelante
+  esa parte. Debe poder explicarse.
+- La intención es poder **continuar el proyecto después del curso** para tener algo real que
+  enseñar a la hora de buscar trabajo.
+- **De dónde nace la idea:** hoy ya existen programas (por ejemplo *Linkage* o *BikeChecker*)
+  que calculan la cinemática de la suspensión trasera de una bicicleta. El problema es que
+  exigen bastante trabajo y conocimiento al usuario: hay que darles una foto lateral
+  "limpia", marcar a mano los puntos de la suspensión y después interpretar uno mismo unas
+  gráficas técnicas. **La propuesta es hacer algo parecido, pero facilitándoselo al usuario
+  aficionado:** guiarlo al marcar los puntos y, sobre todo, traducirle el resultado a
+  lenguaje normal.
+- **Sobre el alcance real:** es un tema de nicho y probablemente no sea una web con gran
+  recorrido comercial. Para el objetivo (proyecto final + pieza de portfolio) eso da igual:
+  lo que importa es que el código demuestre que se sabe construir un sistema de verdad.
+  Aun así, está desplegada y pensada para poder llevarla a producción.
 
 ---
 
@@ -28,116 +37,100 @@ futuro modelo gratuito/de pago— se concreta en
 
 *Solo para ubicar los términos que aparecen más abajo. No explica la parte técnica.*
 
-- **Cinemática de la suspensión:** cómo se comporta la suspensión trasera de la bici a lo largo de su recorrido. Es lo principal que calcula la aplicación.
-- **Geometría:** las medidas del cuadro (alcance, ángulos, etc.). En esta app es un dato secundario y opcional.
-- **Pivotes / puntos de giro:** los puntos donde articula la suspensión trasera. El usuario los marca sobre la foto y son la entrada del cálculo.
-- **Sistemas de suspensión** (monopivote, Horst link, high pivot, etc.): distintas formas de construir la suspensión trasera de una bici. Importan porque **el cálculo es diferente para cada uno**.
-- **Leverage / progresión, trayectoria del eje, pedal kickback:** los distintos resultados que calcula el motor a partir de los pivotes. Qué significan técnicamente queda fuera de este documento.
-- **Disciplinas** (Enduro, Downhill, XC…): tipos de bicicleta de montaña. La app se centra en las disciplinas cuyo público sí se interesa por la cinemática.
+- **Cinemática de la suspensión:** cómo se comporta la suspensión trasera de la bici a lo
+  largo de su recorrido. Es lo que calcula la aplicación.
+- **Pivotes / puntos de giro:** los puntos donde articula la suspensión trasera. El usuario
+  los marca sobre la foto y son la entrada del cálculo.
+- **Sistemas de suspensión** (monopivote, cuatro barras o Horst link, pivote alto…): distintas
+  formas de construir la suspensión trasera. Importan porque **el cálculo es diferente para
+  cada uno**.
+- **Relación de palanca y progresión, trayectoria del eje, pedal kickback, anti-squat,
+  anti-rise:** los resultados que calcula el motor. Qué significan está en
+  [`base-conocimiento-cinematica.md`](base-conocimiento-cinematica.md).
+- **Disciplinas** (Enduro, E-Enduro, Descenso): tipos de bicicleta de montaña cuyo público sí
+  se interesa por la cinemática. XC queda fuera.
 
 ---
 
-## La aplicación
+## La aplicación entregada
 
-### Concepto
+### Flujo del usuario
 
-Una web donde consultar la cinemática (y opcionalmente la geometría) de bicicletas de montaña. Equivalente a *Linkage* / *BikeChecker*, pero pensada para el usuario aficionado: menos fricción al introducir los datos y resultados explicados en lenguaje natural.
+1. **Analizar sin cuenta.** El asistente pide una foto lateral y el sistema de suspensión,
+   guía el marcado punto a punto (6, 9 o 10 puntos), pide el tipo de bici y unas pocas
+   medidas y muestra al momento las cinco curvas.
+2. **Guardar con cuenta.** Tras registrarse o iniciar sesión, sin perder el análisis, el
+   usuario guarda la bici en privado con su foto y recibe una explicación en lenguaje
+   sencillo.
+3. **Publicar.** El dueño puede solicitar que su bici se publique. Nace **pendiente** y pasa
+   a **pública** cuando un moderador la aprueba (mismo patrón que "tu anuncio tardará un
+   rato en publicarse" de los portales de anuncios). El moderador también puede rechazarla
+   o retirarla con un motivo, que le llega al dueño como aviso.
+4. **Consultar.** Cualquiera puede explorar el catálogo por categorías y abrir la ficha de
+   una bici pública: foto, datos, explicación y gráficas, sin repetir el marcado.
 
-### Reparto del trabajo
-
-- **Backend:** desarrollado por el alumno, en **Java (Spring Boot)**.
-- **Frontend:** desarrollado con IA (reto del curso).
+Hay tres roles: **usuario**, **moderador** y **administrador** (este último concede o retira
+el rol de moderador). Interfaz y explicación están en inglés y en español.
 
 ### Núcleo: el motor de cinemática
 
 Es la parte central y la más exigente del proyecto.
 
-- A partir de los pivotes que marca el usuario, **calcula las curvas de comportamiento** de la suspensión: leverage/progresión, trayectoria del eje y pedal kickback.
-- Es **código determinista, sin IA**: son cálculos matemáticos, no una interpretación.
-- **Importante sobre la "forma" de las curvas:** dos bicicletas pueden tener el mismo dato resumido (por ejemplo, el mismo porcentaje de progresión) y comportarse de forma muy distinta según la forma de la curva (una recta, una que empieza pronunciada y se aplana, una que empieza plana y se acentúa al final). Por eso el motor no saca un único número, sino **varios descriptores de la propia curva** (pendiente por tramos, puntos de inflexión, etc.). De esta forma la "forma" también son datos calculados, no algo que haya que interpretar mirando una imagen.
-- El cálculo concreto **depende del sistema de suspensión** (por eso hay que decidir qué sistemas se soportan; ver "Decisiones pendientes").
-- Los resultados se **validan contra un programa existente** (*BikeChecker*) para comprobar que el cálculo es correcto.
+- A partir de los pivotes marcados, **calcula las curvas de comportamiento** de la
+  suspensión: relación de palanca, trayectoria del eje, pedal kickback, anti-squat y
+  anti-rise.
+- Es **código determinista, sin IA**: cálculos geométricos, no una interpretación.
+- **La "forma" de las curvas también son datos:** dos bicis pueden tener el mismo porcentaje
+  de progresión y comportarse de forma muy distinta. Por eso el motor saca varios
+  descriptores de la propia curva (valores en el sag, forma en tres fases…), no un único
+  número.
+- **Sistemas soportados:** monopivote y tres variantes de cuatro barras. El método está en
+  [`fundamentos-motor-cinematica.md`](fundamentos-motor-cinematica.md).
+- **Validación:** contra curvas publicadas de bicis reales, con recorrido y palanca dentro
+  del ±3 % en monopivote.
 
 ### Papel de la inteligencia artificial
 
-Esta es una decisión de diseño clave, para evitar el principal riesgo (que la IA se invente o falle):
+Decisión de diseño clave, para evitar el principal riesgo (que la IA se invente o falle):
 
-- **La IA no decide la física.** Todo lo que se puede calcular o clasificar (si una bici es más progresiva o más lineal, etc.) lo hace el motor mediante reglas sobre los números que ya ha calculado. Eso es fiable y no depende de la IA.
-- **La IA (un modelo de lenguaje) se encarga solo de "traducir":** coge los números y clasificaciones que produjo el motor, más las respuestas del usuario sobre sus preferencias, y redacta un análisis en lenguaje natural y personalizado. También formula las preguntas al usuario (peso, estilo de conducción ágil o estable, si suele hacer saltos/topes, si prefiere suspensiones progresivas o lineales, etc.).
-- Las gráficas y 2–4 cifras relevantes acompañan al texto para poder contrastarlo.
-  Esto ayuda a la revisión, pero no garantiza por sí solo que la redacción sea correcta.
-- **La orientación sobre tipo de amortiguador** (muelle / aire y volumen de cámara)
-  formará parte de la capa narrativa, todavía no implementada en la V1 técnica.
-  Parte de los descriptores y reglas revisadas de la sección 3 de la base de conocimiento,
-  sin necesidad de la gráfica de fuerzas, y no garantiza compatibilidad física ni reglajes.
-- **No hay que "entrenar" ningún modelo** (eso sería demasiado costoso para el plazo). Se trabaja con *prompting* (darle al modelo el contexto y los números ya calculados) y con reglas codificadas.
+- **La IA no decide la física.** Todo lo que se puede calcular o clasificar (si una bici es
+  más progresiva o más lineal, etc.) lo hace el motor mediante reglas sobre sus números.
+- **La IA solo "traduce":** recibe los números y clasificaciones ya calculados y redacta un
+  resumen breve, acompañado de 2–4 cifras para poder contrastarlo. Si no responde, un texto
+  por reglas la sustituye y la web lo indica.
+- **No hay que "entrenar" ningún modelo:** se trabaja con *prompting* (darle al modelo el
+  contexto y los números) y con reglas codificadas.
 
-La planificación vigente separa **resumen básico sin cuestionario** (final de Sprint 2,
-#103–#105), **personalización opcional** (#10, Sprint 4) y **chat futuro** (#106, posible
-pago por decidir). El objetivo es facilitar la entrada a la cinemática. Detalle de
-reutilización y límites en [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
+Detalle en [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
 
-### Flujo del usuario
+### Decisiones de producto
 
-1. El usuario **busca una bici** en el catálogo público.
-2. **Si está:** ve las gráficas ya calculadas y una descripción de su comportamiento con algún consejo.
-3. **Si no está:** se registra, **crea la bici** subiendo una foto y marcando los pivotes. Introducir la **geometría es opcional** (se ha decidido no hacerla obligatoria: forzarla añade demasiada fricción y haría abandonar el proceso a muchos usuarios, y la cinemática —que es lo importante— funciona sin ella).
-4. Puede **guardar la bici para sí mismo** o **hacerla pública**.
-
-### Comunidad y moderación
-
-- Cuando un usuario **publica** una bici, esta no aparece de inmediato en el catálogo público: nace en estado **pendiente** y pasa a **aprobada** cuando un moderador la revisa (mismo patrón que "tu anuncio tardará un rato en publicarse" de webs como Wallapop). Técnicamente es un campo de estado en el registro más unos permisos por rol; no hay ningún proceso complejo detrás.
-- Sobre las bicis públicas, los usuarios pueden **votar y comentar**.
-- Esto implica montar **roles** (usuario / moderador), lo cual, además de dar sentido a la comunidad, aporta valor de cara al portfolio (demuestra manejo de permisos y flujos).
-
-### Rankings
-
-*(Idea para dar más recorrido a la web e incentivar que la gente suba sus bicis analizadas.)*
-
-- Rankings por categoría, alimentados por los votos de los usuarios:
-  - Bicicletas de **Enduro**.
-  - Bicicletas de **Enduro eléctricas**.
-  - Bicicletas de **Downhill**.
-- **XC queda fuera**, porque ese público no suele interesarse por la cinemática.
-
-### Onboarding (guiar al usuario a marcar los puntos)
-
-- Al crear una bici, se muestra un **esquema sencillo y una explicación breve de cada pivote** (por ejemplo, orientar sobre dónde suele estar el punto de giro principal), para el usuario que tiene interés pero no es experto.
-- **Primero se pregunta el diseño del sistema de suspensión** (con ejemplos visuales) y, según el sistema elegido, se guía al usuario a marcar los puntos que corresponden a ese sistema concreto.
+- **Sin geometría del cuadro.** Pedirla añadiría fricción y la cinemática funciona sin ella.
+- **Tipo de bici en lugar de dientes.** Cualquiera sabe si su bici es de enduro, pero no
+  siempre los dientes de su transmisión: el tipo fija un desarrollo de referencia.
+- **Sag fijo del 30 %** para que las cifras «en el sag» se puedan comparar entre bicis.
+- **Moderación antes de publicar:** una foto mal marcada podría dar datos engañosos a toda
+  la comunidad.
+- **Una bici guardada no cambia su foto ni sus puntos:** repetir el marcado crea otro
+  análisis.
 
 ---
 
-## Fuera de alcance (posible trabajo futuro)
+## Futuro
 
-Estas ideas se descartan para la versión inicial pero pueden mencionarse como líneas futuras (en el README quedan bien porque transmiten visión):
+Ideas que quedaron fuera del MVP, con su issue cuando existe:
 
-- **Detección automática de los pivotes a partir de la foto** mediante visión por computador. Hoy no es viable con fiabilidad suficiente; por eso los programas actuales obligan a marcarlos a mano.
-- **Extracción automática de la geometría** desde las webs oficiales de cada marca (scraping): frágil y de mantenimiento costoso.
-- La **parte de geometría como foco principal**.
-- Personalización del centro de gravedad y medidas exactas de neumáticos.
-  Anti-squat/anti-rise se adelantan en la ampliación del 10/09/2026 con condiciones
-  de referencia explícitas, sin pedir peso; ver `modelo-referencia-cinematica.md`.
-- **Simulador de emparejamiento de amortiguadores:** comparar, sobre un mismo cuadro, las curvas de fuerza en rueda con resortes genéricos (muelle lineal, aire de cámara grande, aire de cámara reducida) dimensionados para el sag estándar de la disciplina, sin pedir ningún dato al usuario — con un resorte lineal, la forma de la curva de fuerza se deriva directamente de la de leverage. Queda fuera de v1 por el trabajo extra de modelado y validación de esas curvas genéricas, no por falta de datos. Prioridad: después de anti-squat / anti-rise.
-- Sistemas de incentivos más elaborados.
-
----
-
-## Orden de construcción vigente
-
-1. Motor monopivote y flujo foto → puntos → curvas: V1 técnica local completada.
-2. Cuentas, permisos, guardado y detalle de bicicletas: Sprint 2 en curso.
-3. Explicación básica en lenguaje sencillo junto a los resultados: cierre de Sprint 2.
-4. Comunidad y requisitos de entrega, con despliegue verificado: Sprint 3.
-5. Otros sistemas de suspensión y personalización por cuestionario: Sprint 4.
-6. Chat y posible modalidad de pago: futuro, pendiente de decisión.
-
-El contrato de interpretación se prepara antes de cerrar el guardado, para reutilizar
-los mismos resultados sin rehacer el motor. El resumen no espera a cuatro barras.
-
----
-
-## Decisiones pendientes / próximos pasos
-
-- **Definir qué sistemas de suspensión entran en la primera versión.** Es la decisión que más condiciona el trabajo, porque el motor de cálculo es distinto para cada sistema. Propuesta sobre la mesa: empezar por **monopivote** (el más simple, para montar el flujo completo de principio a fin) y después añadir **Horst link**, que entre ambos cubren muchas bicicletas.
-- **Escribir las historias de usuario** a partir de este documento.
-- **Consultar con alguien con conocimiento profundo de cinemática** para definir qué características de las curvas son relevantes y qué umbrales corresponden a qué comportamiento. Esto no es "entrenar la IA", sino afinar las reglas del motor y el contexto que se le da al modelo de lenguaje.
+- **Comunidad:** votos (#9), rankings por categoría (#4), comentarios (#86) y perfil público
+  con un rango que premie contribuciones aprobadas, nunca con permisos (#87).
+- **Comparador:** 2 a 4 bicis con sus curvas superpuestas y una comparación con IA (#11).
+- **Personalización:** cuestionario opcional (peso, estilo, preferencias) y chat sobre una
+  bici (#106).
+- **Modelo gratuito y de pago:** hipótesis de dos bicis privadas como máximo en la cuenta
+  gratuita, con las públicas sin límite para favorecer el catálogo (#88). Se diseñarían
+  planes y permisos antes de integrar un proveedor de pagos.
+- **Motor:** otros sistemas (pivotes virtuales, pivote alto con polea, frenos flotantes),
+  simulador de emparejamiento con resortes genéricos y calibración con referencias más
+  largas. Ver [`limitaciones-y-mejoras.md`](limitaciones-y-mejoras.md).
+- **Descartado:** detectar los pivotes automáticamente en la foto (visión por computador;
+  hoy no es fiable) y extraer la geometría de las webs de las marcas (frágil y costoso de
+  mantener).

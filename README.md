@@ -259,9 +259,13 @@ docker exec bikematch-postgres sh -c 'createdb -U "$POSTGRES_USER" bikematch_tes
 Para usar otro nombre, define `POSTGRES_TEST_DB`. El siguiente `docker compose up -d`
 recrea el contenedor para montar el script de inicio, sin tocar el volumen de datos.
 
-GitHub Actions ejecuta Java y, por separado, tests/lint/build del frontend. JaCoCo y la
-cobertura ≥60% siguen previstos para Sprint 3: el número de tests no acredita por sí solo
-ese porcentaje.
+GitHub Actions ejecuta Java y, por separado, tests/lint/build del frontend.
+
+**Cobertura del backend** con JaCoCo: **95,0 % de líneas** y 72,9 % de ramas, con 352
+tests. El enunciado pide un mínimo del 60 %, y `./mvnw verify` **falla por debajo** de ese
+umbral, también en CI. El informe se genera en `backend/target/site/jacoco/index.html`; en
+GitHub Actions, cada ejecución lo muestra en el resumen y lo adjunta como
+`backend-coverage-report`.
 
 ## Organización y contrato
 

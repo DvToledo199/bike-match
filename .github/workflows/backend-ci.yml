@@ -41,3 +41,22 @@ jobs:
       - name: Build and test the backend
         working-directory: backend
         run: JWT_SECRET_BASE64="$(openssl rand -base64 32)" ./mvnw verify
+
+      # JaCoCo already fails the build below 60% line coverage; this shows the figures in the run.
+      - name: Summarise test coverage
+        if: always()
+        working-directory: backend
+        run: |
+          if [ -f target/site/jacoco/jacoco.csv ]; then
+            awk -F, 'NR > 1 { lm += $8; lc += $9; bm += $6; bc += $7 }
+              END { printf "### Backend test coverage\n\n| Lines | Branches |\n|---|---|\n| %.1f%% | %.1f%% |\n",
+                    100 * lc / (lm + lc), 100 * bc / (bm + bc) }' target/site/jacoco/jacoco.csv >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload the coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: backend/target/site/jacoco/
+          if-no-files-found: ignore

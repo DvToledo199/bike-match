@@ -145,7 +145,7 @@ IA no bloquea los resultados; su integración se valida con ejemplos reales.
 - [ ] Comentarios en bicicletas públicas
 - [ ] Perfil público y rango basado en contribuciones aprobadas
 - [ ] Front (IA): botón publicar, vista de moderación, votar, página de rankings
-- [ ] Cobertura ≥60% con JaCoCo (rellenar huecos con tests útiles, no de relleno)
+- [x] Cobertura ≥60% con JaCoCo (rellenar huecos con tests útiles, no de relleno): 95,0 % de líneas y 72,9 % de ramas; el build falla por debajo del 60 %
 - [ ] README completo siguiendo punto por punto la lista del enunciado
 - [ ] Repasar el checklist "cosas que se olvidan" del plan (.env.example, CORS de producción, límites de subida…)
 - [ ] Despliegue final verificado, Swagger probado en producción

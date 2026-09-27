@@ -426,8 +426,8 @@
       },
       "bikeType": {
         "label": "Tipo de bici",
-        "help": "Cada tipo usa su desarrollo habitual para los datos de pedaleo: Enduro 32/52, E-Enduro 34/52 y Descenso 36/25.",
-        "placeholder": "Elige el tipo de bici"
+        "help": "El tipo fija el desarrollo de referencia para los datos de pedaleo.",
+        "gearing": "Plato {{chainring}} · piñón {{sprocket}}"
       },
       "wheels": {
         "label": "Configuración de ruedas",

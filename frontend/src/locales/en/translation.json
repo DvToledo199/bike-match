@@ -426,8 +426,8 @@
       },
       "bikeType": {
         "label": "Bike type",
-        "help": "Each type uses its usual gearing for the pedalling figures: Enduro 32/52, E-Enduro 34/52, Downhill 36/25.",
-        "placeholder": "Select bike type"
+        "help": "The type sets the reference gearing for the pedalling figures.",
+        "gearing": "Chainring {{chainring}} · cog {{sprocket}}"
       },
       "wheels": {
         "label": "Wheel setup",

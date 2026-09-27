@@ -8,7 +8,7 @@ Material de referencia para la capa de IA de BikeMatch. El motor de la aplicaci�
 > registre. Las bandas de kickback por desarrollo y las frases sobre pedaleo/frenada
 > de los ejemplos siguientes no se pueden trasladar automáticamente a V1. Las
 > heurísticas necesitan revisión; los ejemplos no son resultados verificados de la app.
-> El contrato #103 y [`plan-ia-explicacion.md`](plan-ia-explicacion.md) concretarán el
+> El contrato #103 y [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md) concretarán el
 > contexto antes de integrar el proveedor. Estas restricciones prevalecen sobre
 > los ejemplos generales de este documento.
 

@@ -75,7 +75,7 @@ Esta es una decisión de diseño clave, para evitar el principal riesgo (que la 
 La planificación vigente separa **resumen básico sin cuestionario** (final de Sprint 2,
 #103–#105), **personalización opcional** (#10, Sprint 4) y **chat futuro** (#106, posible
 pago por decidir). El objetivo es facilitar la entrada a la cinemática. Detalle de
-reutilización y límites en [`plan-ia-explicacion.md`](plan-ia-explicacion.md).
+reutilización y límites en [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
 
 ### Flujo del usuario
 

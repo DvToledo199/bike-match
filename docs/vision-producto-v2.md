@@ -26,7 +26,7 @@ La explicación comprensible de la cinemática es parte central del producto: ta
 debe servir a quien empieza y no sabe interpretar las gráficas. La decisión del
 9 de septiembre separa un resumen básico sin cuestionario, una personalización
 posterior y un posible chat futuro. Alcance y tareas en
-[`plan-ia-explicacion.md`](plan-ia-explicacion.md), épica #10.
+[`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md), épica #10.
 
 ## Punto de partida: V1 terminada
 
@@ -189,4 +189,4 @@ modalidad de pago. Esta última queda en el backlog comercial, fuera del Sprint 
 
 La épica #10 incluye el resumen básico de Sprint 2 (#103 contrato, #104 servicio,
 #105 pantalla) y conserva el cuestionario como ampliación posterior. El chat #106
-queda en Backlog. Los detalles y dependencias están en `plan-ia-explicacion.md`.
+queda en Backlog. Los detalles y dependencias están en `contrato-interpretacion-cinematica.md`.

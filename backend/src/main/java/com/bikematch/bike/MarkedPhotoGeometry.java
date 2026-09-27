@@ -15,12 +15,14 @@ public record MarkedPhotoGeometry(
     public static final int SINGLE_PIVOT_SCHEMA_VERSION = 1;
     public static final int HORST_LINK_SCHEMA_VERSION = 2;
     public static final int HORST_LINK_YOKE_SCHEMA_VERSION = 3;
-    public static final int CURRENT_SCHEMA_VERSION = HORST_LINK_YOKE_SCHEMA_VERSION;
+    public static final int HORST_LINK_SEATSTAY_SCHEMA_VERSION = 4;
+    public static final int CURRENT_SCHEMA_VERSION = HORST_LINK_SEATSTAY_SCHEMA_VERSION;
     private static final int MAXIMUM_IMAGE_SIDE_PIXELS = 100_000;
 
     public MarkedPhotoGeometry {
         if (schemaVersion != SINGLE_PIVOT_SCHEMA_VERSION && schemaVersion != HORST_LINK_SCHEMA_VERSION
-                && schemaVersion != HORST_LINK_YOKE_SCHEMA_VERSION) {
+                && schemaVersion != HORST_LINK_YOKE_SCHEMA_VERSION
+                && schemaVersion != HORST_LINK_SEATSTAY_SCHEMA_VERSION) {
             throw new IllegalArgumentException("Unsupported marked-photo schema version");
         }
         requireImageDimension(imageWidth, "Image width");
@@ -85,6 +87,13 @@ public record MarkedPhotoGeometry(
         if (yokePointPresent) {
             return HORST_LINK_YOKE_SCHEMA_VERSION;
         }
+        boolean seatstayShockPresent = points.stream()
+                .filter(Objects::nonNull)
+                .map(MarkedPhotoPoint::type)
+                .anyMatch(type -> type == PointType.SHOCK_SEATSTAY);
+        if (seatstayShockPresent) {
+            return HORST_LINK_SEATSTAY_SCHEMA_VERSION;
+        }
         return horstPointPresent ? HORST_LINK_SCHEMA_VERSION : SINGLE_PIVOT_SCHEMA_VERSION;
     }
 
@@ -93,6 +102,7 @@ public record MarkedPhotoGeometry(
             case SINGLE_PIVOT -> SINGLE_PIVOT_SCHEMA_VERSION;
             case HORST_LINK -> HORST_LINK_SCHEMA_VERSION;
             case HORST_LINK_YOKE -> HORST_LINK_YOKE_SCHEMA_VERSION;
+            case HORST_LINK_SEATSTAY -> HORST_LINK_SEATSTAY_SCHEMA_VERSION;
         };
     }
 
@@ -101,6 +111,7 @@ public record MarkedPhotoGeometry(
             case SINGLE_PIVOT_SCHEMA_VERSION -> SuspensionLayout.SINGLE_PIVOT;
             case HORST_LINK_SCHEMA_VERSION -> SuspensionLayout.HORST_LINK;
             case HORST_LINK_YOKE_SCHEMA_VERSION -> SuspensionLayout.HORST_LINK_YOKE;
+            case HORST_LINK_SEATSTAY_SCHEMA_VERSION -> SuspensionLayout.HORST_LINK_SEATSTAY;
             default -> throw new IllegalArgumentException("Unsupported marked-photo schema version");
         };
     }

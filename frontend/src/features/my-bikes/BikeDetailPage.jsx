@@ -3,13 +3,66 @@ import { useTranslation } from 'react-i18next'
 import KinematicsCharts from '../analysis-wizard/KinematicsCharts.jsx'
 import InterpretationSummary from './InterpretationSummary.jsx'
 import { generateBikeInterpretation, getBikeInterpretation } from '../../services/interpretation.js'
-import { getBikeDetail, toKinematicsData } from '../../services/myBikes.js'
+import { getBikeDetail, publishBike, toKinematicsData } from '../../services/myBikes.js'
 import { getSession } from '../../services/session.js'
 import styles from './BikeDetailPage.module.css'
 
 // The API sends the layout as a code; the wizard already names each one in both languages.
 const layoutKeys = { SINGLE_PIVOT: 'singlePivot', HORST_LINK: 'horstLink', HORST_LINK_YOKE: 'horstLinkYoke',
   HORST_LINK_SEATSTAY: 'horstLinkSeatstay' }
+
+/** The owner's shortcut to ask for publication without going back to My bikes. */
+function PublishAction({ bikeId, onPublished }) {
+  const { t } = useTranslation()
+  const [confirming, setConfirming] = useState(false)
+  const [publishing, setPublishing] = useState(false)
+  const [error, setError] = useState(null)
+
+  async function handleConfirm() {
+    setPublishing(true)
+    setError(null)
+    try {
+      const result = await publishBike(bikeId)
+      onPublished(result.status)
+    } catch (requestError) {
+      setError(requestError)
+    } finally {
+      setPublishing(false)
+    }
+  }
+
+  if (!confirming) {
+    return (
+      <button type="button" className={styles.primaryButton} onClick={() => setConfirming(true)}>
+        {t('myBikes.publish.request')}
+      </button>
+    )
+  }
+
+  return (
+    <div className={styles.confirmation} role="group" aria-label={t('myBikes.publish.confirmation')}>
+      <p>{t('myBikes.publish.confirmation')}</p>
+      <p>{t('myBikes.publish.photoRights')}</p>
+      <div className={styles.confirmationActions}>
+        <button type="button" className={styles.secondaryButton} onClick={() => setConfirming(false)} disabled={publishing}>
+          {t('myBikes.publish.cancel')}
+        </button>
+        <button type="button" className={styles.primaryButton} onClick={handleConfirm} disabled={publishing}>
+          {publishing ? t('myBikes.publish.submitting') : t('myBikes.publish.confirm')}
+        </button>
+      </div>
+      {error && (
+        <p className={styles.actionError} role="alert">
+          {error.status === 401
+            ? t('myBikes.publish.errors.sessionExpired')
+            : error.status === 403
+              ? t('myBikes.publish.errors.forbidden')
+              : t('myBikes.publish.errors.unavailable')}
+        </p>
+      )}
+    </div>
+  )
+}
 
 function BikeDetailPage({ bikeId, onBack, backLabelKey = 'bikeDetail.back' }) {
   const { t, i18n } = useTranslation()
@@ -109,7 +162,8 @@ function BikeDetailPage({ bikeId, onBack, backLabelKey = 'bikeDetail.back' }) {
   const statusKey = bike.status?.toLowerCase() ?? 'unknown'
   const kinematicsData = toKinematicsData(bike)
   const session = getSession()
-  const canGenerateInterpretation = Boolean(session?.username && session.username === bike.ownerUsername)
+  const isOwner = Boolean(session?.username && session.username === bike.ownerUsername)
+  const canRequestPublication = isOwner && bike.status === 'PRIVATE' && bike.analyzed
 
   return (
     <section className={styles.page} aria-labelledby="bike-detail-title">
@@ -120,9 +174,14 @@ function BikeDetailPage({ bikeId, onBack, backLabelKey = 'bikeDetail.back' }) {
         <p className={styles.eyebrow}>{t('bikeDetail.eyebrow')}</p>
         <div className={styles.titleRow}>
           <h1 id="bike-detail-title">{title}</h1>
-          <span className={`${styles.status} ${styles[`status${statusKey}`]}`}>
-            {t(`myBikes.status.${statusKey}`)}
-          </span>
+          <div className={styles.headerActions}>
+            <span className={`${styles.status} ${styles[`status${statusKey}`]}`}>
+              {t(`myBikes.status.${statusKey}`)}
+            </span>
+            {canRequestPublication && (
+              <PublishAction bikeId={bikeId} onPublished={(status) => setBike((current) => ({ ...current, status }))} />
+            )}
+          </div>
         </div>
         <p className={styles.owner}>{t('bikeDetail.owner', { username: bike.ownerUsername })}</p>
       </header>
@@ -152,7 +211,7 @@ function BikeDetailPage({ bikeId, onBack, backLabelKey = 'bikeDetail.back' }) {
         error={interpretationError}
         loading={interpretationLoading}
         generating={interpretationGenerating}
-        canGenerate={canGenerateInterpretation}
+        canGenerate={isOwner}
         onGenerate={handleGenerateInterpretation}
         onRetry={() => setReloadKey((key) => key + 1)}
       />

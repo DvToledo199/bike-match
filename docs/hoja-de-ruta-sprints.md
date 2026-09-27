@@ -13,7 +13,7 @@
 
 **Actualización de producto (9 de septiembre):** la explicación básica con IA (#10)
 se incorpora al cierre de Sprint 2, después de guardado/permisos y junto al detalle.
-Cuestionario y chat se separan; ver [`plan-ia-explicacion.md`](plan-ia-explicacion.md).
+Cuestionario y chat se separan; ver [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
 
 **Ampliación aprobada (10 de septiembre):** antes de persistir resultados se
 incorporan condiciones de referencia, anti-squat/anti-rise monopivote (#108),

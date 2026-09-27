@@ -4,7 +4,7 @@ Documento de trabajo. Orden operativo: qué cerrar antes de codificar, cómo tra
 
 > Actualización de producto, 9 de septiembre de 2026: el resumen básico con IA es
 > prioritario al cierre de Sprint 2. Cuestionario y chat son ampliaciones separadas.
-> Detalle vigente: [`plan-ia-explicacion.md`](plan-ia-explicacion.md), épica #10.
+> Detalle vigente: [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md), épica #10.
 
 ---
 

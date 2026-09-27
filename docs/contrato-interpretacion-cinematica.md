@@ -1,269 +1,177 @@
-# Contrato de interpretación cinemática
+# Explicación con IA: contrato y funcionamiento
 
-Decisión de la issue #103, 12 de septiembre de 2026. Este documento define la
-frontera entre el motor matemático de BikeMatch y la futura capa que lo explica
-en lenguaje sencillo. No añade IA, dependencias, tablas ni cálculos: #6 usará este
-contrato al guardar un resultado y #104/#105 lo usarán al redactar y mostrar el
-resumen.
+Cómo BikeMatch convierte los números del motor en un resumen en lenguaje sencillo, qué
+datos usa, qué no puede afirmar y cómo se protege el coste y la privacidad. Épica #10:
+contrato #103, servicio #104, pantalla #105 y guardado desde el asistente #161.
 
-## 1. Idea central
+## 1. Objetivo e idea central
 
-El motor es la fuente de verdad: recibe puntos y parámetros, calcula números y
-curvas, y los devuelve en `PreviewResponse`. La futura IA no calcula física ni
-decide por intuición si una bici es progresiva; solo redacta a partir de datos y
-clasificaciones que ya existan.
+BikeMatch debe ayudar a entender una suspensión aunque quien la mire no sepa leer las
+gráficas. El resumen es breve: qué tendencias muestra la suspensión, qué significan en
+palabras sencillas y qué límites tiene la lectura, con 2–4 cifras que lo respaldan. Las
+gráficas siguen visibles; el texto no las sustituye.
 
-Es como separar una hoja de resultados de un comentarista deportivo: el marcador
-sale del partido y el comentarista lo traduce para quien no lo ha visto. El
-comentario no puede cambiar el marcador.
+El motor es la fuente de verdad: calcula números, curvas y clasificaciones. La IA no
+calcula física ni decide por intuición si una bici es progresiva; solo redacta a partir
+de datos que ya existen.
 
-La persistencia no cambia el JSON público de `POST /api/kinematics/preview`.
-El flujo autenticado reutiliza el mismo motor y guarda el resultado completo definido
-en este contrato.
+Es como separar una hoja de resultados de un comentarista deportivo: el marcador sale del
+partido y el comentarista lo traduce para quien no lo ha visto. El comentario no puede
+cambiar el marcador.
 
-## 2. Resultado canónico que se guarda
+## 2. Cómo funciona hoy
 
-Cada bicicleta tendrá un único resultado actual (`kinematics_results`, relación
-1:1 con `bikes`). `POST /api/bikes/{id}/analysis` calcula y guarda en una misma
-transacción los puntos de origen y ese resultado; si el cálculo falla, no persiste
-ninguno. `POST /api/kinematics/preview` continúa siendo público y no sella datos.
+1. El propietario guarda su bici desde el asistente. La web pide la explicación con
+   `POST /api/bikes/{id}/interpretation?language=es|en`, en el idioma de la interfaz.
+2. El backend construye un **contexto de interpretación** a partir del resultado guardado
+   (sección 5) y se lo pasa al **proveedor** configurado.
+3. La respuesta se valida y se guarda. La ficha la muestra con su procedencia: «resumen
+   generado con IA» o «resumen basado en reglas».
+4. Cualquier visita a una bici pública la lee con `GET` sobre la misma ruta. **Una lectura
+   nunca llama al proveedor**: si no hay explicación guardada, no se genera.
 
-Tras el primer resultado guardado, la foto y los puntos son inmutables. Corregirlos
-implica crear otra bicicleta/análisis, incluso si se reutiliza la misma foto. Una futura
-edición de parámetros técnicos podrá recalcular y reemplazar atómicamente el resultado
-actual, sin recalcular en cada consulta ni alterar la fuente. Si la bici está pendiente
-o pública, esos cambios deberán devolverla a privada o pasar de nuevo por moderación.
-El historial de ejecuciones es una posible mejora futura, no una tabla prematura del MVP.
+El preview anónimo del asistente calcula y muestra las gráficas, pero no pide explicación.
 
-La persistencia conserva estos campos, aunque algunos estén duplicados de forma útil
-entre columnas y JSON:
+**Proveedores** (`INTERPRETATION_PROVIDER`):
 
-| Campo de `kinematics_results` | Tipo previsto | Contenido | Motivo |
-|---|---|---|---|
-| `bike_id` | FK única | Bici propietaria | Una ficha actual por bici |
-| `result_version` | entero | Versión de este formato, inicialmente `1` | Poder leer resultados antiguos |
-| `engine_version` | texto | `monopivot-v1` o `monopivot-reference-v2` | Saber qué motor calculó los datos |
-| `curves` | `jsonb` | Todas las muestras de las curvas disponibles | Gráficas y futuras comparaciones |
-| `descriptors` | `jsonb` | Descriptores, `travelCheck` y condiciones | Lectura rápida y explicación |
-| `capabilities` | `jsonb` | Qué afirmaciones permite este resultado | No aplicar reglas de una versión a otra |
-| `computed_at` | timestamp con zona horaria | Momento del cálculo | Trazabilidad |
+- `rules` (por defecto): textos fijos por reglas, en `messages.properties` y
+  `messages_es.properties`. Funciona sin red ni coste; sirve en desarrollo, en tests y
+  como reserva.
+- `google-genai`: Gemini mediante Spring AI (`ChatClient`), con `GEMINI_API_KEY` y
+  `GEMINI_MODEL` solo en el backend. Pide la respuesta en JSON, con un único intento y un
+  tiempo máximo de 60 s (`GEMINI_TIMEOUT`), sin los reintentos que Spring AI y el cliente
+  de Google harían por defecto.
 
-No se guardan por separado el correo, contraseña, nombre de usuario ni la foto en
-este resultado. La foto pertenece a la bicicleta; las credenciales pertenecen a
-`users` y nunca salen de backend.
+**Si Gemini no responde** (tiempo agotado, alta demanda o cuota consumida), el backend
+guarda el texto por reglas marcado como `source=RULES` y `fallback=true`. La web avisa de
+que la IA no ha respondido, muestra ese texto como descripción aproximada y ofrece volver
+a intentarlo. Las gráficas, el guardado y el resto de la ficha no se ven afectados.
 
-### Forma lógica del contenido
+**Tiempos:** la web espera hasta 4 minutos al generar, porque la API gratuita puede estar
+despertando; las demás peticiones esperan hasta 3 minutos.
 
-La migración concreta podrá serializar los bloques anteriores en las columnas
-indicadas, pero el contenido lógico será equivalente a este ejemplo. Los nombres
-de las curvas son los nombres reales de `PreviewResponse`:
+## 3. Resultado guardado del que parte la explicación
 
-```json
-{
-  "resultVersion": 1,
-  "engineVersion": "monopivot-reference-v2",
-  "curves": {
-    "leverageCurve": [{ "wheelTravelMm": 0.0, "ratio": 2.65 }],
-    "kickbackCurve": [{ "wheelTravelMm": 0.0, "kickbackDegrees": 0.0 }],
-    "axlePath": [{ "x": 0.0, "y": 0.0 }],
-    "antiSquatCurve": [{ "wheelTravelMm": 0.0, "percent": 112.0 }],
-    "antiRiseCurve": [{ "wheelTravelMm": 0.0, "percent": 78.0 }]
-  },
-  "descriptors": {
-    "leverageDescriptors": { "usefulProgressionPercent": 18.0 },
-    "axlePathDescriptors": { "maxRearwardMm": 12.0 },
-    "travelCheck": { "withinTolerance": true, "deviationPercent": 3.1 },
-    "conditions": {
-      "sagPercent": 30.0,
-      "chainringTeeth": 32,
-      "sprocketTeeth": 50,
-      "modelVersion": "monopivot-reference-v2",
-      "reference": {
-        "wheelConfiguration": "FULL_29",
-        "frontWheelRadiusMm": 371.0,
-        "rearWheelRadiusMm": 371.0,
-        "centerOfGravityHeightMm": 1100.0,
-        "photoRotationDegrees": 0.0,
-        "motionModel": "FIXED_FRAME_LOCAL_GROUND",
-        "brakeModel": "SWINGARM_FIXED",
-        "validationLevel": "ANALYTICAL_REFERENCE"
-      }
-    }
-  },
-  "capabilities": {
-    "cogAwareKickback": true,
-    "antiSquat": true,
-    "antiRise": true,
-    "referenceOnly": true
-  }
-}
-```
+Cada bici tiene un único resultado actual (`kinematics_results`, relación 1:1 con `bikes`).
+`POST /api/bikes/{id}/analysis` calcula y guarda en una misma transacción los puntos de
+origen y ese resultado; si el cálculo falla, no se guarda nada.
 
-El ejemplo solo enseña una muestra por curva para que se pueda leer. En la base de
-datos se guardan todas las muestras que entrega el motor. Si una curva no está
-calculada en V1, se conserva como lista vacía; no se inventan ceros ni porcentajes.
-
-## 3. Capacidades por versión del motor
-
-La capa de interpretación debe basarse primero en `engineVersion` y en
-`capabilities`, no deducir capacidades porque un campo tenga un aspecto concreto.
-Así una versión futura podrá añadir datos sin reescribir resultados anteriores.
-
-| Versión | Puede explicar | No puede afirmar |
+| Campo | Contenido | Motivo |
 |---|---|---|
-| `monopivot-v1` | Leverage/progresión, trayectoria del eje y kickback simple | Anti-squat, anti-rise o influencia real del piñón: el kickback V1 no lo usa |
-| `monopivot-reference-v2` | Las cinco curvas, incluyendo kickback sensible al piñón y tendencias de anti-squat/anti-rise | Rendimiento garantizado, ajuste personal o precisión certificada frente a Linkage |
+| `result_version` | Versión de este formato (`1`) | Poder leer resultados antiguos |
+| `engine_version` | Versión del motor que calculó los datos | No aplicar reglas de una versión a otra |
+| `curves` (jsonb) | Todas las muestras de las cinco curvas | Gráficas y futuras comparaciones |
+| `descriptors` (jsonb) | Descriptores, comprobación del recorrido y condiciones | Lectura rápida y explicación |
+| `capabilities` (jsonb) | Qué afirmaciones permite este resultado | Que el texto no hable de lo que no se calculó |
+| `computed_at` | Momento del cálculo | Trazabilidad |
 
-En V2, `conditions.reference` es obligatoria y se guarda completa. Sus ruedas,
-CG de 1100 mm, cuadro fijo y freno en basculante son condiciones de cálculo; no
-son medidas del usuario ni de su postura. `ANALYTICAL_REFERENCE` significa que
-las fórmulas y los casos analíticos se han probado, no que la bici haya sido
-medida en laboratorio.
+Tras el primer resultado, la foto y los puntos son inmutables: corregirlos crea otro
+análisis. No se guardan en el resultado ni el correo, ni el nombre de usuario, ni la foto.
 
-La comparación externa pendiente de #31 sigue abierta: la Orange Stage 6 no
-coincide de forma suficiente en kickback. Por eso los textos de V2 deben hablar de
-"estimación de referencia" y no prometer equivalencia con Linkage. Las reglas y
-la evidencia completa están en
+## 4. Capacidades por versión del motor
+
+La explicación se basa en `engineVersion` y `capabilities`, no en el aspecto de los campos.
+
+| Versiones | Puede explicar | No puede afirmar |
+|---|---|---|
+| Sin ruedas: `monopivot-v1`, `horst-link-v1`, `horst-link-yoke-v2`, `horst-link-seatstay-v1` | Palanca y progresión, trayectoria del eje y kickback simple | Anti-squat, anti-rise o efecto del piñón |
+| Con ruedas: `monopivot-reference-v2`, `horst-link-reference-v1`, `horst-link-yoke-reference-v2`, `horst-link-seatstay-reference-v1` | Las cinco curvas, con kickback sensible al piñón y tendencias de anti-squat y anti-rise | Rendimiento garantizado, ajuste personal o precisión certificada |
+
+La web siempre elige ruedas, así que en la práctica se usan las versiones con ruedas. Sus
+ruedas y su centro de gravedad (1100 mm) son **condiciones de referencia**, no medidas de
+quien consulta. `ANALYTICAL_REFERENCE` significa que las fórmulas se han probado con casos
+analíticos, no que la bici se haya medido en un laboratorio. Detalle en
 [`modelo-referencia-cinematica.md`](modelo-referencia-cinematica.md).
 
-## 4. Contexto que recibirá la futura explicación
+## 5. Contexto que recibe el proveedor
 
-El adaptador de #104 construirá, desde un resultado guardado, un objeto interno
-versionado. No enviará una captura de las gráficas. Su forma mínima será:
+El backend construye, desde el resultado guardado, un objeto versionado. Nunca envía una
+captura de las gráficas. Forma resumida (ilustrativa):
 
 ```json
 {
-  "interpretationContextVersion": 1,
+  "interpretationContextVersion": 4,
   "resultVersion": 1,
-  "engineVersion": "monopivot-reference-v2",
+  "engineVersion": "horst-link-seatstay-reference-v1",
   "rulesVersion": "kinematics-rules-1",
-  "language": "en",
-  "dataQuality": {
-    "travelCheckPassed": true,
-    "warning": null
-  },
-  "capabilities": {
-    "antiSquat": true,
-    "antiRise": true,
-    "cogAwareKickback": true,
-    "referenceOnly": true
-  },
+  "language": "es",
+  "dataQuality": { "travelCheckPassed": true, "warning": null },
+  "capabilities": { "antiSquat": true, "antiRise": true, "cogAwareKickback": true, "referenceOnly": true },
   "evidence": [
-    { "key": "usefulProgressionPercent", "value": 18.0, "unit": "%" },
-    { "key": "maxRearwardMm", "value": 12.0, "unit": "mm" }
+    { "key": "totalProgressionPercent", "value": 36.6, "unit": "%" },
+    { "key": "leverageRatioAtSag", "value": 2.6, "unit": "ratio" }
   ],
-  "limits": ["Analytical reference; not a personal setup recommendation."],
   "allowedTopics": ["leverage", "axlePath", "kickback", "antiSquat", "antiRise"],
   "forbiddenTopics": ["pressure", "clicks", "productModels", "riderSuitability"]
 }
 ```
 
-`evidence` selecciona entre dos y cuatro cifras canónicas, con unidades, que se
-mostrarán junto al texto. La IA no puede añadir una cifra que no esté ahí. El
-adaptador añade `antiSquat` y `antiRise` a `allowedTopics` solo cuando existan
-esas capacidades; no basta con que el modelo de lenguaje conozca el concepto.
+Además de las cifras, lleva la forma de la curva de palanca (banda de progresión, tendencia
+de cada tercio y LR inicial, en el sag y final) y las condiciones del cálculo (categoría,
+sag y desarrollo). `evidence` selecciona entre dos y cuatro cifras con unidad, que la web
+muestra junto al texto; la IA no puede añadir una cifra que no esté ahí. Anti-squat y
+anti-rise solo entran en `allowedTopics` si el resultado los calculó.
 
-Cada explicación guardada o en caché deberá llevar, como mínimo, `resultVersion`,
-`interpretationContextVersion`, `rulesVersion`, idioma y versión del prompt. Si
-cambia el motor, las reglas o el prompt, el texto se invalida y se regenera para
-el resultado correspondiente. La explicación es un derivado reemplazable; las
-curvas numéricas originales nunca se sustituyen por texto.
+La banda de progresión y los criterios de lectura salen de la
+[base de conocimiento](base-conocimiento-cinematica.md). El programa no lee ese documento:
+sus reglas están implementadas en el código, que cita la sección de la que salen.
 
-## 5. Reglas de seguridad de la explicación
+## 6. Versiones y caché
 
-1. Si `travelCheck.withinTolerance` es `false`, el resumen empieza avisando de
-   que el recorrido calculado no coincide con el declarado. Pide revisar foto,
-   marcado y calibración; no ofrece conclusiones firmes ni orientación de ajuste.
-2. Con V1 no menciona anti-squat, anti-rise ni el efecto de cambiar de piñón.
-3. Con V2 puede describir tendencias de pedaleo y frenada como referencia
-   geométrica, pero nunca como una promesa de eficiencia, agarre o seguridad.
-4. No convierte el análisis en recomendación personal: sin peso, estilo, muelle,
-   amortiguador, presión, clics, compatibilidad física ni productos concretos.
-   La futura orientación aire/muelle será condicional, conservadora y trazable a
-   reglas revisadas; no se habilita por este contrato.
-5. El texto no puede ocultar limitaciones, presentar CG/radios de referencia como
-   datos reales de la persona ni usar HTML ejecutable generado por un proveedor.
-6. La salida se valida estructuralmente y se muestra como texto. Si falla el
-   proveedor, curvas, guardado y gráficas siguen funcionando; se muestra un
-   estado de indisponibilidad o un resumen determinista identificado como tal.
+Cada explicación guardada lleva `resultVersion`, `interpretationContextVersion`,
+`rulesVersion`, idioma, proveedor y su versión (`rules-5` o el prompt
+`interpretation-prompt-6` de Gemini). Si cambia cualquiera, la explicación deja de valer y
+se vuelve a generar: es un derivado reemplazable, nunca sustituye a las curvas.
 
-## 6. Formato de la primera explicación
+- **Generar** reutiliza solo la explicación del proveedor configurado: con Gemini activo,
+  una bici que solo tiene el texto por reglas se le vuelve a pedir a Gemini.
+- **Leer** devuelve la que haya guardada, sea de Gemini o de la reserva.
+- Las explicaciones se guardan **por idioma** (`en` y `es`).
 
-El resumen básico de #104/#105 tendrá esta estructura, visible sin necesidad de
-leer toda la ficha técnica:
+## 7. Reglas de la explicación
 
-1. Una frase principal sobre la tendencia más relevante.
-2. Entre dos y cuatro evidencias numéricas con unidad y nombre comprensible.
-3. Un intercambio o límite: qué no permite concluir ese análisis.
-4. Si procede, una sugerencia conservadora de seguir mirando las gráficas, no una
-   receta de reglaje.
+1. Si `travelCheck.withinTolerance` es `false`, el resumen empieza avisando de que el
+   recorrido calculado no coincide con el declarado y pide revisar foto, marcado y
+   calibración, sin conclusiones firmes.
+2. Sin ruedas no menciona anti-squat, anti-rise ni el efecto de cambiar de piñón.
+3. Con ruedas puede describir tendencias de pedaleo y frenada como referencia geométrica,
+   nunca como promesa de eficiencia, agarre o seguridad.
+4. No es una recomendación personal: sin peso, estilo, muelle, amortiguador, presión,
+   clics, compatibilidad ni marcas o productos.
+5. No oculta limitaciones ni presenta el centro de gravedad o las ruedas de referencia como
+   datos reales de la persona. La advertencia sobre el alcance del análisis la muestra la
+   web una sola vez, al pie de la explicación, no el texto.
+6. La salida se valida como texto plano (sin HTML) con evidencias conocidas y límites de
+   tamaño, y se muestra como texto.
 
-La interfaz distingue siempre su procedencia: "resumen basado en reglas" o
-"resumen generado con IA". Ambos enlazan mentalmente con las cifras mostradas y
-ninguno reemplaza las curvas.
+**Estructura del resumen:** carácter de la bici en una frase, las cifras que lo sostienen,
+pedaleo, frenada y para quién encaja (base de conocimiento, sección 10).
 
-## 7. Ejemplos de comportamiento esperado
+**Ejemplo de recorrido sospechoso** (cifras ilustrativas): «Antes de interpretar la
+suspensión, revisa el marcado y la calibración: el recorrido calculado difiere un 14 % del
+declarado. Las curvas se mantienen visibles como ayuda para corregir los puntos, pero no se
+emite una conclusión sobre su comportamiento.»
 
-Estos ejemplos son casos de contrato para pruebas humanas y automáticas. Las cifras
-son ilustrativas; no describen una bicicleta concreta ni son texto producido por IA.
+## 8. Permisos, privacidad y coste
 
-### A. V2 con comprobación de recorrido correcta
+- **Quién genera:** solo el propietario de la bici, sobre un resultado guardado. Hay un
+  enfriamiento de 30 s por propietario y bici (`INTERPRETATION_GENERATION_COOLDOWN`).
+  Si el backend se desplegara en varias instancias, habría que sustituirlo por una cuota
+  compartida.
+- **Quién lee:** cualquiera en una bici pública; en una privada, solo su propietario.
+- **Qué viaja al proveedor:** solo el contexto de la sección 5. No viajan correo,
+  contraseña, nombre de usuario, foto ni puntos de marcado.
+- **Seguridad:** las claves del proveedor viven solo en el backend, y los textos de los
+  usuarios se tratan como datos, nunca como instrucciones.
+- **Coste:** no se promete IA gratuita ilimitada; la cuota depende del proveedor y del
+  modelo. La caché evita repetir llamadas para el mismo contexto.
 
-Entrada: `monopivot-reference-v2`, comprobación correcta, progresión útil 18 %,
-recorrido trasero máximo 12 mm y curvas AS/AR disponibles.
+## 9. Futuro
 
-Resultado permitido: "La relación de palanca baja durante la parte útil del
-recorrido, una tendencia progresiva de referencia. La progresión útil es 18 % y
-el eje se desplaza hasta 12 mm hacia atrás. También se muestran anti-squat y
-anti-rise como estimaciones bajo las ruedas y CG de referencia, no como un ajuste
-personal ni una medida de laboratorio."
-
-### B. Recorrido sospechoso
-
-Entrada: cualquier versión con `travelCheck.withinTolerance=false` y desviación
-del 14 %.
-
-Resultado permitido: "Antes de interpretar la suspensión, revisa el marcado y la
-calibración: el recorrido calculado difiere un 14 % del declarado. Las curvas se
-mantienen visibles como ayuda para corregir los puntos, pero no se emite una
-conclusión sobre su comportamiento."
-
-### C. V1 con métricas que no existen
-
-Entrada: `monopivot-v1`, comprobación correcta y kickback simple disponible.
-
-Resultado permitido: "El resultado muestra la progresión, la trayectoria del eje
-y el kickback del modelo monopivote básico. No incluye anti-squat ni anti-rise,
-y este cálculo de kickback no cambia según el piñón seleccionado; por eso no se
-extraen conclusiones de pedaleo, frenada o desarrollo."
-
-## 8. Privacidad, permisos y disponibilidad
-
-La generación solo se solicita sobre un resultado guardado al que el solicitante
-tenga acceso. La primera versión no genera IA para cada preview anónimo: así una
-visita pública no puede disparar llamadas de pago sin límite.
-
-Al proveedor externo solo viajarán el contexto de interpretación necesario, las
-capacidades y las cifras seleccionadas. No viajan correo, contraseña, nombre de
-usuario, foto, puntos de marcado ni conversaciones personales. Las claves del
-proveedor permanecen en backend y las entradas de usuario se tratan como datos,
-nunca como instrucciones del sistema.
-
-Un chat personalizado será otra fase (#106): sus respuestas, límites de uso y
-retención serán privadas y no se mezclarán con este resumen general ni con una
-caché pública.
-
-## 9. Consecuencia para las siguientes issues
-
-- **#6** ya dispone de migración y persistencia de los puntos y del resultado con las
-  columnas y el contenido de la sección 2. No guarda todavía una explicación generada.
-- **#104** crea el adaptador de contexto, las reglas/fallback, proveedor y caché
-  versionada respetando las secciones 4, 5 y 8.
-- **#105** muestra el resumen junto a la foto, las gráficas y las evidencias de la
-  ficha de una bici; no añade un segundo botón para revelar resultados ya calculados.
-- **#31** permanece abierto hasta conseguir una referencia externa reproducible;
-  este contrato no lo da por resuelto.
-
-Con esto se puede persistir una bici ahora y añadir el texto después sin cambiar
-el motor, reescribir las gráficas ni mezclar una estimación de referencia con una
-recomendación personal.
+- **Cuestionario opcional** de peso, estilo y preferencias para personalizar la lectura
+  (base de conocimiento, sección 9). Tendrá su propio contrato y nunca reutilizará la
+  caché del resumen público.
+- **Chat** sobre una bici y posible modalidad de pago (#106), con historial privado.
+- **Explicación en el idioma de quien la lee**, aunque el propietario la generara en otro
+  (#264).
+- **Comparar bicis con IA** (#11).

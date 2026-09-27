@@ -171,6 +171,16 @@ function PhotoStep({ photo, suspensionLayout, updateWizardData, onSuspensionLayo
           />
           <span>{t('wizard.photo.suspensionLayouts.horstLinkYoke')}</span>
         </label>
+        <label className={styles.suspensionOption}>
+          <input
+            type="radio"
+            name="suspension-layout"
+            value="HORST_LINK_SEATSTAY"
+            checked={suspensionLayout === 'HORST_LINK_SEATSTAY'}
+            onChange={handleSuspensionLayoutChange}
+          />
+          <span>{t('wizard.photo.suspensionLayouts.horstLinkSeatstay')}</span>
+        </label>
         <label className={`${styles.suspensionOption} ${styles.unavailable}`}>
           <input type="radio" name="suspension-layout" disabled />
           <span>{t('wizard.photo.suspensionLayouts.dualLink')}</span>

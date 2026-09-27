@@ -316,11 +316,12 @@
       "dimensions": "{{width}} × {{height}} px",
       "lowResolutionWarning": "This image is smaller than {{minimumPixels}} px on its longest side. Use a larger photo if possible: small images make the marking less reliable.",
       "suspensionLegend": "Suspension layout",
-      "suspensionHelp": "Choose the linkage shown in your side photo. Idlers, floating brakes and other layouts are not supported yet.",
+      "suspensionHelp": "Choose the linkage shown in your side photo. For a four-bar, check what moves the shock: the rocker, an extension or the seatstays. Idlers, floating brakes and other layouts are not supported yet.",
       "suspensionLayouts": {
         "singlePivot": "Single pivot",
         "horstLink": "Four-bar (Horst link)",
         "horstLinkYoke": "Four-bar (Horst link with rigid yoke)",
+        "horstLinkSeatstay": "Four-bar (Horst link, shock driven by the seatstays)",
         "dualLink": "Dual link / virtual pivot"
       },
       "comingSoon": "Coming soon",
@@ -395,6 +396,10 @@
         "shockYokeEye": {
           "label": "Yoke-side shock eye",
           "description": "The physical shock mounting bolt on the yoke. Do not mark the yoke-to-rocker pivot here."
+        },
+        "shockSeatstay": {
+          "label": "Shock mount on the seatstay",
+          "description": "The centre of the shock bolt joined to the seatstay, usually on its extension past the rocker."
         },
         "bottomBracket": {
           "label": "Bottom bracket",

@@ -2,6 +2,8 @@
 
 El modelo de extensión rígida del amortiguador para Horst, su corrección #249 y
 los límites de validación se describen en [modelo-yoke-horst.md](modelo-yoke-horst.md).
+El Horst con el amortiguador empujado por los tirantes se describe en
+[modelo-horst-tirantes.md](modelo-horst-tirantes.md).
 
 Decisión tomada el 10 de septiembre de 2026. Se adelantan las curvas
 anti-squat/anti-rise y el kickback cog-aware antes de persistencia e IA. Issues

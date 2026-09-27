@@ -107,10 +107,16 @@ const horstLinkYokePointDefinitions = [
   },
 ]
 
+// Same four-bar as the Horst link; the shock's moving eye sits on the seatstay instead of the rocker.
+const horstLinkSeatstayPointDefinitions = horstLinkPointDefinitions.map((point) => point.type === 'SHOCK_ROCKER'
+  ? { type: 'SHOCK_SEATSTAY', translationKey: 'wizard.marking.points.shockSeatstay' }
+  : point)
+
 const pointDefinitionsByLayout = {
   SINGLE_PIVOT: singlePivotPointDefinitions,
   HORST_LINK: horstLinkPointDefinitions,
   HORST_LINK_YOKE: horstLinkYokePointDefinitions,
+  HORST_LINK_SEATSTAY: horstLinkSeatstayPointDefinitions,
 }
 
 export function getPointDefinitions(suspensionLayout = 'SINGLE_PIVOT') {

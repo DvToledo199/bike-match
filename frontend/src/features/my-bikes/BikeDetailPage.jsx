@@ -8,7 +8,8 @@ import { getSession } from '../../services/session.js'
 import styles from './BikeDetailPage.module.css'
 
 // The API sends the layout as a code; the wizard already names each one in both languages.
-const layoutKeys = { SINGLE_PIVOT: 'singlePivot', HORST_LINK: 'horstLink', HORST_LINK_YOKE: 'horstLinkYoke' }
+const layoutKeys = { SINGLE_PIVOT: 'singlePivot', HORST_LINK: 'horstLink', HORST_LINK_YOKE: 'horstLinkYoke',
+  HORST_LINK_SEATSTAY: 'horstLinkSeatstay' }
 
 function BikeDetailPage({ bikeId, onBack, backLabelKey = 'bikeDetail.back' }) {
   const { t, i18n } = useTranslation()

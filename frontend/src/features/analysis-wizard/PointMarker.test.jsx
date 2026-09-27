@@ -43,20 +43,19 @@ function renderMeasuredMarker() {
   return { marker, box }
 }
 
-it('lets a two-finger swipe scroll the page until the photo is zoomed in, then moves the photo', () => {
+it('zooms with the mouse wheel around the cursor without scrolling the page', () => {
   const { marker, box } = renderMeasuredMarker()
-  expect(fireEvent.wheel(marker, { clientX: 300, clientY: 200, deltaX: 60, deltaY: 40 })).toBe(true)
-  expect(box()).toEqual([0, 0, 1800, 1200])
 
-  expect(fireEvent.wheel(marker, { clientX: 300, clientY: 200, deltaY: -50, ctrlKey: true })).toBe(false)
-  const [x, y, width, height] = box()
+  expect(fireEvent.wheel(marker, { clientX: 150, clientY: 100, deltaY: -200 })).toBe(false)
+  const [x, y, width] = box()
   expect(width).toBeLessThan(1800)
+  expect(x).toBeGreaterThan(0)
+  expect(x).toBeLessThan(450)
+  expect(y).toBeGreaterThan(0)
 
-  expect(fireEvent.wheel(marker, { clientX: 300, clientY: 200, deltaX: 60, deltaY: 40 })).toBe(false)
-  const [movedX, movedY, movedWidth, movedHeight] = box()
-  expect([movedWidth, movedHeight]).toEqual([width, height])
-  expect(movedX).toBeCloseTo(x + 60 / 600 * width)
-  expect(movedY).toBeCloseTo(y + 40 / 400 * height)
+  fireEvent.wheel(marker, { clientX: 150, clientY: 100, deltaY: 200 })
+  expect(box()).toEqual([0, 0, 1800, 1200])
+  expect(fireEvent.wheel(marker, { clientX: 150, clientY: 100, deltaX: 60 })).toBe(true)
   expect(JSON.parse(screen.getByLabelText('Stored marks').textContent)).toEqual({})
 })
 

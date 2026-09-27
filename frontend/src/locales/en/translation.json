@@ -332,7 +332,7 @@
       }
     },
     "marking": {
-      "mouseHint": "Click to mark · Pinch or Ctrl + scroll to zoom · Two-finger swipe or right-drag to move",
+      "mouseHint": "Click to mark · Scroll or pinch to zoom · Right-drag to move",
       "keyboardLabel": "Keyboard controls",
       "label": "Mark points",
       "title": "Mark the key points",

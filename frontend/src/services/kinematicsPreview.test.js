@@ -26,7 +26,7 @@ it('accepts finite negative response percentages', () => {
   expect(validatePreview(referencePreview()).antiSquatCurve[1].percent).toBe(-10.2)
 })
 
-it.each(['horst-link-reference-v1', 'horst-link-yoke-reference-v2'])('accepts %s only with its seatstay brake model', (version) => {
+it.each(['horst-link-reference-v1', 'horst-link-yoke-reference-v2', 'horst-link-seatstay-reference-v1'])('accepts %s only with its seatstay brake model', (version) => {
   const horstPreview = referencePreview()
   horstPreview.conditions.modelVersion = version
   horstPreview.conditions.reference.brakeModel = 'SEATSTAY_FIXED'

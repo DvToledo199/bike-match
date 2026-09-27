@@ -316,11 +316,12 @@
       "dimensions": "{{width}} × {{height}} px",
       "lowResolutionWarning": "Esta imagen mide menos de {{minimumPixels}} px en su lado más largo. Si puedes, usa una foto más grande: con imágenes pequeñas el marcado es menos fiable.",
       "suspensionLegend": "Tipo de suspensión",
-      "suspensionHelp": "Elige el sistema de suspensión que se ve en tu foto lateral. Las roldanas, los frenos flotantes y otros sistemas aún no están disponibles.",
+      "suspensionHelp": "Elige el sistema de suspensión que se ve en tu foto lateral. En una cuatro barras, fíjate en qué empuja el amortiguador: la bieleta, una extensión o los tirantes. Las roldanas, los frenos flotantes y otros sistemas aún no están disponibles.",
       "suspensionLayouts": {
         "singlePivot": "Monopivote",
         "horstLink": "Cuatro barras (Horst link)",
         "horstLinkYoke": "Cuatro barras (Horst link con extensión del amortiguador)",
+        "horstLinkSeatstay": "Cuatro barras (Horst link, amortiguador empujado por los tirantes)",
         "dualLink": "Doble bieleta / punto de giro virtual"
       },
       "comingSoon": "Próximamente",
@@ -395,6 +396,10 @@
         "shockYokeEye": {
           "label": "Ojo del amortiguador en la extensión",
           "description": "El tornillo real de anclaje del amortiguador en la extensión. No marques aquí el pivote extensión-bieleta."
+        },
+        "shockSeatstay": {
+          "label": "Anclaje del amortiguador al tirante",
+          "description": "El centro del tornillo del amortiguador unido al tirante, normalmente en su prolongación más allá de la bieleta."
         },
         "bottomBracket": {
           "label": "Eje del pedalier",

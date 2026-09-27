@@ -14,10 +14,11 @@ Proyecto final de un bootcamp Java. Versión publicada: https://bikematch.onrend
 
 MVP completo y publicado (ver [Despliegue](#despliegue)):
 
-- **Motor cinemático** para monopivote, cuatro barras (Horst link) y Horst link con
-  extensión del amortiguador. El monopivote se validó con una foto real contra Linkage
+- **Motor cinemático** para monopivote, cuatro barras (Horst link), Horst link con
+  extensión del amortiguador y Horst link con el amortiguador empujado por los tirantes
+  ([modelo](docs/modelo-horst-tirantes.md)). El monopivote se validó con una foto real contra Linkage
   Design ([#54](https://github.com/DvToledo199/bike-match/issues/54)); la validación externa
-  de las dos variantes de cuatro barras sigue abierta
+  de las variantes de cuatro barras sigue abierta
   ([#222](https://github.com/DvToledo199/bike-match/issues/222),
   [#237](https://github.com/DvToledo199/bike-match/issues/237)).
 - **Asistente**: foto, marcado de puntos, tipo de bici y medidas, y gráficas al momento,

@@ -126,3 +126,18 @@ it('switches to the ten-point rigid-yoke Horst link guide', () => {
   expect(marks.YOKE_ROCKER_PIVOT).toBeTruthy()
   expect(marks.SHOCK_YOKE_EYE).toBeTruthy()
 })
+
+it('asks for the shock mount on the seatstay instead of the rocker in the seatstay-driven guide', () => {
+  render(<MarkerTest suspensionLayout="HORST_LINK_SEATSTAY" />)
+  const marker = screen.getByRole('application', { name: 'Bike photo used to mark suspension points' })
+
+  for (let index = 0; index < 9; index++) {
+    fireEvent.keyDown(marker, { key: 'ArrowRight', shiftKey: true })
+    fireEvent.keyDown(marker, { key: 'Enter' })
+  }
+
+  expect(screen.getByText('9 of 9 points marked')).toBeTruthy()
+  const marks = JSON.parse(screen.getByLabelText('Stored marks').textContent)
+  expect(marks.SHOCK_SEATSTAY).toBeTruthy()
+  expect(marks.SHOCK_ROCKER).toBeUndefined()
+})

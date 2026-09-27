@@ -66,3 +66,14 @@ it('offers a separate layout for a Horst link with a rigid yoke', () => {
   fireEvent.click(horstLinkYoke)
   expect(onSuspensionLayoutChange).toHaveBeenCalledWith('HORST_LINK_YOKE')
 })
+
+it('offers a separate layout for a Horst link whose seatstays drive the shock', () => {
+  const onSuspensionLayoutChange = vi.fn()
+  render(<PhotoStep suspensionLayout="HORST_LINK" updateWizardData={vi.fn()}
+    onSuspensionLayoutChange={onSuspensionLayoutChange} />)
+
+  const seatstayDriven = screen.getByRole('radio', { name: 'Four-bar (Horst link, shock driven by the seatstays)' })
+  expect(seatstayDriven.disabled).toBe(false)
+  fireEvent.click(seatstayDriven)
+  expect(onSuspensionLayoutChange).toHaveBeenCalledWith('HORST_LINK_SEATSTAY')
+})

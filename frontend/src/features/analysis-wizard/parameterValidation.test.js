@@ -48,3 +48,12 @@ it('uses the physical shock eye instead of the yoke pivot to calibrate a yoke Ho
 
   expect(getCalibration(points, 200, 'HORST_LINK_YOKE')).toMatchObject({ isValid: true, mmPerPixel: 2 })
 })
+
+it('calibrates a seatstay-driven Horst link from the shock mount on the seatstay', () => {
+  const points = {
+    SHOCK_FRAME: { x: 10, y: 10 },
+    SHOCK_SEATSTAY: { x: 110, y: 10 },
+  }
+
+  expect(getCalibration(points, 200, 'HORST_LINK_SEATSTAY')).toMatchObject({ isValid: true, mmPerPixel: 2 })
+})

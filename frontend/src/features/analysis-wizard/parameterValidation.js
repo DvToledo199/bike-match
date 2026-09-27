@@ -56,6 +56,7 @@ export function getCalibration(points, eyeToEyeMm, suspensionLayout = 'SINGLE_PI
     SINGLE_PIVOT: points.SHOCK_SWINGARM,
     HORST_LINK: points.SHOCK_ROCKER,
     HORST_LINK_YOKE: points.SHOCK_YOKE_EYE,
+    HORST_LINK_SEATSTAY: points.SHOCK_SEATSTAY,
   }[suspensionLayout]
 
   if (!Number.isFinite(eyeToEye) || eyeToEye <= 0 || !shockFrame || !movingShockEye) {

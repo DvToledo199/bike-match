@@ -16,7 +16,7 @@ MVP completo y publicado (ver [Despliegue](#despliegue)):
 
 - **Motor cinemático** para monopivote, cuatro barras (Horst link), Horst link con
   extensión del amortiguador y Horst link con el amortiguador empujado por los tirantes
-  ([modelo](docs/modelo-horst-tirantes.md)). El monopivote se validó con una foto real contra Linkage
+  ([modelos](docs/modelos-cuatro-barras.md)). El monopivote se validó con una foto real contra Linkage
   Design ([#54](https://github.com/DvToledo199/bike-match/issues/54)); la validación externa
   de las variantes de cuatro barras sigue abierta
   ([#222](https://github.com/DvToledo199/bike-match/issues/222),

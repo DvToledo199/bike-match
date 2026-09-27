@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useWizardState from './useWizardState.js'
 import usePreview from './usePreview.js'
@@ -25,13 +25,38 @@ function AnalysisWizard({ active = true, session = null, onSaved = () => {} }) {
   const previousStep = useRef(activeStepIndex)
   const [saveLocked, setSaveLocked] = useState(false)
   const [saveKey, setSaveKey] = useState(0)
+  const [savedBikeId, setSavedBikeId] = useState(null)
+  const previousUsername = useRef(session?.username ?? null)
+  const username = session?.username ?? null
 
   function startNewAnalysis() {
     cancelPreview()
     resetWizard()
     setSaveLocked(false)
     setSaveKey((key) => key + 1)
+    setSavedBikeId(null)
   }
+
+  function handleSaved(bikeId) {
+    setSavedBikeId(bikeId)
+    onSaved(bikeId)
+  }
+
+  // Reads the latest startNewAnalysis without making the effects below re-run when it changes.
+  const clearAnalysis = useEffectEvent(() => startNewAnalysis())
+
+  // The draft stays in memory so that logging in halfway keeps the photo and the marks. Once the
+  // bike is saved, the analysis is finished: coming back to the wizard starts a new one.
+  useEffect(() => {
+    if (!active && savedBikeId !== null) clearAnalysis()
+  }, [active, savedBikeId])
+
+  // Logging out or switching account clears the previous account's analysis, so the next
+  // person does not find it; logging in during a guest draft keeps it.
+  useEffect(() => {
+    if (previousUsername.current !== null && previousUsername.current !== username) clearAnalysis()
+    previousUsername.current = username
+  }, [username])
 
   useEffect(() => {
     if (active && previousStep.current !== activeStepIndex) {
@@ -95,7 +120,7 @@ function AnalysisWizard({ active = true, session = null, onSaved = () => {} }) {
       <div className={styles.panel} ref={panelRef} tabIndex={-1} aria-labelledby="wizard-title">
         <div id="save-analysis-panel" className={styles.savePanel} tabIndex={-1} hidden={!isLastStep || !data || isLoading || Boolean(error)}>
           <SaveAnalysisPanel key={saveKey} session={session} wizardData={wizardData}
-            onLockedChange={setSaveLocked} onSaved={onSaved} onStartNew={startNewAnalysis} />
+            onLockedChange={setSaveLocked} onSaved={handleSaved} onStartNew={startNewAnalysis} />
         </div>
         {activeStep.id === 'photo' ? (
           <PhotoStep

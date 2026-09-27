@@ -469,7 +469,7 @@
       "description": "Read each curve with its units, inspect an exact value with the pointer, or check its start and end values below.",
       "curveLabel": "Kinematics curve",
       "referenceSetup": "Reference setup: {{wheels}} · {{chainring}}/{{sprocket}}T · centre-of-gravity height {{height}} m.",
-      "referenceLimit": "Estimates using nominal tyres and a reference rider position, not a personalized ride prediction or a laboratory measurement. External validation of kickback, anti-squat and anti-rise is still in progress. Direct-chain single pivots only.",
+      "referenceLimit": "Estimates using nominal tyres and a reference rider position, not a personalized ride prediction or a laboratory measurement. External validation of kickback, anti-squat and anti-rise is still in progress. Direct chain drives only, without an idler.",
       "percentageAxis": "Reference response (%)",
       "percentageSummary": "Starts at {{start}}% and ends at {{end}}%. Dashed line: 100% reference, not a score.",
       "antiSquat": {

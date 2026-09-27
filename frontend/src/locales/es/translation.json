@@ -267,7 +267,7 @@
     "description": "Descubre los análisis de suspensión públicos que comparte la comunidad de BikeMatch.",
     "filterLabel": "Categoría de bici",
     "loading": "Cargando el catálogo público…",
-    "waking": "Despertando el servidor… Tras un rato sin visitas, la primera puede tardar hasta un minuto.",
+    "waking": "Despertando el servidor… Tras un rato sin visitas, la primera puede tardar un par de minutos.",
     "retry": "Reintentar",
     "empty": "Aún no se ha publicado ninguna bici. Analiza la tuya, guárdala y solicita su publicación para compartirla aquí.",
     "openDetail": "Ver análisis",

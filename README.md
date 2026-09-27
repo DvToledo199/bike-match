@@ -199,10 +199,16 @@ si cambia, hay que volver a desplegar la web.
 
 **Límites del plan gratuito y decisiones**
 
-- La API se duerme tras 15 minutos sin visitas. La primera petición después tarda cerca de
-  un minuto en despertarla; las siguientes van a velocidad normal.
-- El contenedor tiene 512 MB. La máquina virtual de Java limita su memoria al 75 % y usa el
-  recolector más ligero; en local, con ese mismo límite, la API arranca usando unos 350 MB.
+- La API se duerme tras 15 minutos sin visitas, y arrancarla en el plan gratuito llevaba unos
+  dos minutos y medio (Render registró 143,7 s). Para que no llegue a dormirse, el flujo
+  [`keep-api-awake.yml`](.github/workflows/keep-api-awake.yml) consulta `/api/health` cada
+  diez minutos; las 750 horas mensuales del plan cubren un servicio encendido todo el mes, y
+  los flujos programados son gratuitos en un repositorio público. Si aun así se duerme, la
+  web espera hasta tres minutos y el catálogo avisa de que el servidor está despertando.
+- El contenedor tiene 512 MB y una décima de CPU. Java limita su memoria al 75 %, usa el
+  recolector más ligero y solo el compilador JIT rápido: con tan poca CPU, el compilador
+  optimizador compite con la aplicación mientras arranca. En una prueba local con ese mismo
+  límite, el arranque pasó de 314 s a 170 s, y la API arranca usando unos 350 MB.
 - La base de datos de Neon es accesible desde internet, con conexión cifrada obligatoria y
   contraseña. La alternativa privada dentro de Render caduca a los 30 días en el plan
   gratuito, así que se descartó.

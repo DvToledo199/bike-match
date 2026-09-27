@@ -3,10 +3,10 @@ import { ApiError, requestApi } from './apiClient.js'
 
 const validSources = ['RULES', 'AI']
 
-// Generating with an external provider takes longer than a normal request: the browser waits
-// past the backend's worst case (GEMINI_TIMEOUT, 60 s) instead of reporting a failure while the
-// server is still working.
-const generateTimeoutMs = 75000
+// Generating can mean waking the API (about two and a half minutes on the free host) and then
+// waiting for Gemini (GEMINI_TIMEOUT, 60 s): the browser waits for both instead of reporting a
+// failure while the server is still working.
+const generateTimeoutMs = 240000
 
 // The explanation follows the interface language unless the caller asks for another one.
 function interfaceLanguage() {

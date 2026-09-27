@@ -1,0 +1,21 @@
+name: Keep API awake
+
+# On Render's free plan the API goes to sleep after 15 minutes without requests, and waking it
+# takes more than two minutes, so the first visitor would wait or see an error. A request every
+# ten minutes keeps it awake. The free plan's 750 monthly instance hours cover one service
+# running all month, and scheduled workflows are free on a public repository.
+on:
+  schedule:
+    - cron: "4-59/10 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping the API health endpoint
+        # Waits long enough for a sleeping API to wake up; fails the run if it never answers.
+        run: curl --fail --silent --show-error --max-time 240 https://bikematch-api.onrender.com/api/health

@@ -1,21 +1,40 @@
 # BikeMatch
 
-MVP de un bootcamp Java: foto lateral de una bici → seis puntos → medidas → curvas
-de leverage, kickback, trayectoria del eje, anti-squat y anti-rise de referencia.
-Los descriptores alimentan una explicación breve y controlada. El backend ya tiene
-registro/login JWT, control de acceso por roles y persistencia de bicicletas, fotos,
-puntos, resultados e interpretaciones.
+BikeMatch explica cómo trabaja la suspensión trasera de una bici de montaña a partir de
+una foto lateral. Se marcan los pivotes sobre la foto (6, 9 o 10 puntos según la
+suspensión), se indican el tipo de bici y unas pocas medidas, y el backend calcula las
+curvas de relación de palanca, pedal kickback, trayectoria del eje, anti-squat y anti-rise.
+Un resumen en palabras sencillas, generado con Gemini mediante Spring AI y con un texto por
+reglas como respaldo, cuenta qué significan. Las bicis se guardan en privado y pueden
+publicarse en un catálogo comunitario, previa moderación.
+
+Proyecto final de un bootcamp Java. Versión publicada: https://bikematch.onrender.com
 
 ## Estado
 
-Sprint 1 completado: motor monopivote simple y asistente React operativos, incluida
-la validación manual de una foto real contra Linkage Design ([#54](https://github.com/DvToledo199/bike-match/issues/54)).
-Sprint 2 en curso: el backend ya permite registrar, iniciar sesión, crear una bicicleta,
-subir su foto y finalizar un análisis persistente. El frontend continúa usando el preview
-público, que no guarda la foto ni datos en la base de datos. PostgreSQL es necesario para
-arrancar Spring y Flyway.
-No soporta monopivotes con bieleta que modifica el accionamiento del amortiguador,
-cuatro barras ni pivotes virtuales. Son estimaciones, no mediciones de laboratorio.
+MVP completo y publicado (ver [Despliegue](#despliegue)):
+
+- **Motor cinemático** para monopivote, cuatro barras (Horst link) y Horst link con
+  extensión del amortiguador. El monopivote se validó con una foto real contra Linkage
+  Design ([#54](https://github.com/DvToledo199/bike-match/issues/54)); la validación externa
+  de las dos variantes de cuatro barras sigue abierta
+  ([#222](https://github.com/DvToledo199/bike-match/issues/222),
+  [#237](https://github.com/DvToledo199/bike-match/issues/237)).
+- **Asistente**: foto, marcado de puntos, tipo de bici y medidas, y gráficas al momento,
+  sin necesidad de cuenta.
+- **Cuentas y roles**: registro y login con JWT; usuario, moderador y administrador.
+- **Mis bicis**: guardar el análisis con su foto (Cloudinary), pedir su publicación o
+  borrarla.
+- **Comunidad**: catálogo público por categorías, moderación (aprobar, rechazar y retirar
+  con aviso al dueño) y administración de cuentas y roles.
+- **Explicación**: Gemini mediante Spring AI; si no responde, un texto por reglas lo
+  sustituye y la web lo indica.
+- **Idiomas**: interfaz y explicación en inglés y en español.
+
+No soporta monopivotes con bieleta que modifica el accionamiento del amortiguador, pivotes
+virtuales, roldanas ni frenos flotantes. Los resultados son estimaciones geométricas a
+partir de una foto, no mediciones de laboratorio; el detalle está en las
+[limitaciones](docs/limitaciones-y-mejoras.md).
 
 ## Arranque local
 
@@ -43,9 +62,9 @@ npm run dev
 ```
 
 Web: http://localhost:5173. Health: http://localhost:8080/api/health.
-API y PostgreSQL escuchan solo en loopback por defecto. Para desplegar habrá que
-configurar `SERVER_ADDRESS`, `CORS_ALLOWED_ORIGINS`, secretos y TLS: **esto no es un
-despliegue de producción**. Cambiar una contraseña en `.env` no la cambia dentro de
+API y PostgreSQL escuchan solo en loopback por defecto. La versión publicada configura
+`SERVER_ADDRESS`, `CORS_ALLOWED_ORIGINS` y los secretos en Render: ver
+[Despliegue](#despliegue). Cambiar una contraseña en `.env` no la cambia dentro de
 un volumen PostgreSQL ya inicializado; no borres ese volumen sin proteger sus datos.
 
 Si falla la conexión durante el asistente público, comprueba Docker y health. El botón
@@ -74,7 +93,8 @@ El `api_secret` es un secreto: no lo compartas ni lo subas al repositorio.
 
 El análisis de una foto es deliberadamente público: una persona puede probar
 BikeMatch sin crear una cuenta, pero no se guarda ni la foto ni el resultado. Registro,
-login, health y `POST /api/kinematics/preview` no requieren token. Las demás rutas
+login, health, `POST /api/kinematics/preview`, el catálogo público y la ficha y la
+explicación de una bici pública no requieren token. Las demás rutas
 privadas requieren `Authorization: Bearer <JWT>`.
 
 - Sin token o con un token inválido/caducado: `401 Unauthorized`.

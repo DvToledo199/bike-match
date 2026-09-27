@@ -112,6 +112,66 @@
   font-weight: 600;
 }
 
+.wideField {
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.wideField > legend {
+  margin-bottom: var(--space-xs);
+  padding: 0;
+}
+
+.choiceCards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.choiceCard {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  cursor: pointer;
+}
+
+.choiceCard input {
+  grid-row: span 2;
+  margin: 0;
+  accent-color: var(--color-primary);
+}
+
+.choiceCard:has(input:checked) {
+  border-color: var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+}
+
+.choiceCard:has(input:focus-visible) {
+  outline: 3px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.choiceCard:has(input[aria-invalid='true']) {
+  border-color: var(--color-danger);
+}
+
+.choiceName {
+  font-weight: 700;
+}
+
+.choiceDetail {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
 .calibrationHint {
   padding: var(--space-sm);
   border-left: 3px solid var(--color-primary);
@@ -131,7 +191,8 @@
     padding: var(--space-md);
   }
 
-  .fieldGrid {
+  .fieldGrid,
+  .choiceCards {
     grid-template-columns: 1fr;
   }
 

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getCalibration, getParameterErrors, parameterFields } from './parameterValidation.js'
-import { bikeTypeNames } from '../../models/bikeTypes.js'
+import { bikeTypeNames, bikeTypes } from '../../models/bikeTypes.js'
 import { wheelConfigurations } from '../../models/wheelConfigurations.js'
 import styles from './ParameterStep.module.css'
 
@@ -49,7 +49,41 @@ function ParameterField({ field, error, onBlur, onChange, value }) {
   )
 }
 
-/** A drop-down question: the bike type or the wheel setup. */
+/** The bike type as cards: the name stands out and the gearing it stands for sits below in small print. */
+function BikeTypeField({ value, error, onChange, onBlur }) {
+  const { t } = useTranslation()
+  const helpId = 'parameter-bikeType-help'
+  const errorId = 'parameter-bikeType-error'
+
+  return (
+    <fieldset className={`${styles.field} ${styles.wideField}`}>
+      <legend className={styles.label}>{t('wizard.parameters.bikeType.label')}</legend>
+      <p className={styles.helpText} id={helpId}>{t('wizard.parameters.bikeType.help')}</p>
+      <div className={styles.choiceCards}>
+        {bikeTypeNames.map((type) => {
+          const nameId = `parameter-bikeType-${type}`
+          const gearingId = `${nameId}-gearing`
+          return (
+            <label key={type} className={styles.choiceCard}>
+              <input type="radio" name="bikeType" value={type} checked={value === type}
+                onChange={onChange} onBlur={onBlur} aria-invalid={Boolean(error)} aria-labelledby={nameId}
+                aria-describedby={error ? `${gearingId} ${helpId} ${errorId}` : `${gearingId} ${helpId}`} />
+              <span id={nameId} className={styles.choiceName}>{t(`saveAnalysis.categories.${type}`)}</span>
+              <span id={gearingId} className={styles.choiceDetail}>
+                {t('wizard.parameters.bikeType.gearing', {
+                  chainring: bikeTypes[type].chainringTeeth, sprocket: bikeTypes[type].sprocketTeeth,
+                })}
+              </span>
+            </label>
+          )
+        })}
+      </div>
+      {error && <p id={errorId} className={styles.error} role="alert">{t(`wizard.parameters.errors.${error}`)}</p>}
+    </fieldset>
+  )
+}
+
+/** A drop-down question: the wheel setup. */
 function ChoiceField({ name, translationKey, optionKey, options, value, error, onChange, onBlur }) {
   const { t } = useTranslation()
   const fieldId = `parameter-${name}`
@@ -118,9 +152,8 @@ function ParameterStep({ parameters, points, suspensionLayout, updateWizardData 
       </div>
 
       <div className={styles.fieldGrid}>
-          <ChoiceField name="bikeType" translationKey="wizard.parameters.bikeType"
-            optionKey="saveAnalysis.categories" options={bikeTypeNames} value={parameters.bikeType}
-            error={getVisibleError('bikeType')} onChange={handleChange} onBlur={handleBlur} />
+          <BikeTypeField value={parameters.bikeType} error={getVisibleError('bikeType')}
+            onChange={handleChange} onBlur={handleBlur} />
           <ChoiceField name="wheelConfiguration" translationKey="wizard.parameters.wheels"
             optionKey="wizard.parameters.wheels.options" options={wheelConfigurations}
             value={parameters.wheelConfiguration} error={getVisibleError('wheelConfiguration')}

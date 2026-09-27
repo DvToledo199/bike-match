@@ -27,15 +27,18 @@ it('offers exactly three explicit wheel choices and keeps the other parameters',
 it('asks for the bike type instead of chainring, sprocket and sag', () => {
   const updateWizardData = vi.fn()
   render(<ParameterStep parameters={{ bikeType: '', wheelConfiguration: '' }} points={{}} updateWizardData={updateWizardData} />)
-  const select = screen.getByLabelText('Bike type')
-  expect(within(select).getAllByRole('option').map((option) => option.textContent))
-    .toEqual(['Select bike type', 'Enduro', 'E-Enduro', 'Downhill'])
-  expect(screen.getByText(/Enduro 32\/52, E-Enduro 34\/52, Downhill 36\/25/)).toBeTruthy()
+  expect(within(screen.getByRole('group', { name: 'Bike type' })).getAllByRole('radio').map((radio) => radio.value))
+    .toEqual(['ENDURO', 'E_ENDURO', 'DOWNHILL'])
+  expect(screen.getByRole('radio', { name: 'Enduro', description: /Chainring 32 · cog 52/ })).toBeTruthy()
+  expect(screen.getByRole('radio', { name: 'E-Enduro', description: /Chainring 34 · cog 52/ })).toBeTruthy()
   expect(screen.queryByLabelText(/chainring/i)).toBeNull()
   expect(screen.queryByLabelText(/sprocket/i)).toBeNull()
   expect(screen.queryByLabelText('Sag')).toBeNull()
-  fireEvent.change(select, { target: { value: 'DOWNHILL' } })
+  const downhill = screen.getByRole('radio', { name: 'Downhill', description: /Chainring 36 · cog 25/ })
+  fireEvent.click(downhill)
   expect(updateWizardData).toHaveBeenCalledWith({ parameters: { bikeType: 'DOWNHILL', wheelConfiguration: '' } })
+  fireEvent.blur(downhill)
+  expect(screen.getByRole('alert').textContent).toContain('Select the type of bike.')
 })
 
 it('shows five labelled graphs, endpoint summaries and honest reference conditions', () => {

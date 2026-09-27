@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getPointDefinitions, hasAllPoints } from './pointDefinitions.js'
 import styles from './PointMarker.module.css'
@@ -47,11 +47,8 @@ function PointMarker({ photo, points, suspensionLayout, updateWizardData }) {
       ? currentType : pointDefinitions[0].type)
   }, [pointDefinitions])
 
-  // Read inside the gesture listeners without re-attaching them on every zoom step.
-  const isZoomedIn = useEffectEvent(() => zoom > minimumZoom)
-
-  // Map-like gestures: pinch to zoom, two-finger swipe to move. Chrome and Firefox report a pinch as a wheel
-  // event with ctrlKey (as Ctrl + mouse wheel does); Safari reports it as its own gesture events instead.
+  // The wheel zooms around the cursor. A trackpad pinch also zooms the photo instead of the page: Chrome and
+  // Firefox report it as a wheel event with ctrlKey, Safari as its own gesture events.
   useEffect(() => {
     const marker = markerRef.current
     let gestureScale = null
@@ -60,25 +57,17 @@ function PointMarker({ photo, points, suspensionLayout, updateWizardData }) {
       setView((current) => zoomAt(photo, current, current.zoom * factor, anchor, aspect))
     }
     const wheel = (event) => {
-      const bounds = marker.getBoundingClientRect()
-      if (!bounds.width || !bounds.height) return
-      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? bounds.height : 1
-      if (event.ctrlKey || event.metaKey) {
-        event.preventDefault()
-        // Safari may repeat its pinch as wheel events; the gesture events already zoom.
-        if (gestureScale === null) zoomBy(event, bounds, Math.exp(-clamp(event.deltaY * unit, -50, 50) * 0.01))
-        return
-      }
-      // Without zoom there is nothing to move, so the page scrolls as usual.
-      if (!isZoomedIn()) return
+      if (!event.deltaY) return
       event.preventDefault()
-      setView((current) => {
-        const box = getViewBox(photo, current.zoom, current.center, aspect)
-        return constrainView(photo, { zoom: current.zoom, center: {
-          x: current.center.x + event.deltaX * unit / bounds.width * box.width,
-          y: current.center.y + event.deltaY * unit / bounds.height * box.height,
-        } }, aspect)
-      })
+      const bounds = marker.getBoundingClientRect()
+      // Safari may repeat its pinch as wheel events; the gesture events already zoom.
+      if (!bounds.width || !bounds.height || gestureScale !== null) return
+      const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? bounds.height : 1)
+      // A pinch sends many small steps; a mouse notch fewer, larger ones.
+      const factor = event.ctrlKey || event.metaKey
+        ? Math.exp(-clamp(delta, -50, 50) * 0.01)
+        : Math.exp(-clamp(delta, -200, 200) * 0.003)
+      zoomBy(event, bounds, factor)
     }
     const gestureStart = (event) => {
       event.preventDefault()

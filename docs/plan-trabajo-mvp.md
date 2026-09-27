@@ -1,10 +1,9 @@
 # Plan de trabajo — MVP análisis de cinemática MTB
 
-Documento de trabajo. Orden operativo: qué cerrar antes de codificar, cómo trabajar, en qué orden construir y qué vigilar.
-
-> Actualización de producto, 9 de septiembre de 2026: el resumen básico con IA es
-> prioritario al cierre de Sprint 2. Cuestionario y chat son ampliaciones separadas.
-> Detalle vigente: [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md), épica #10.
+Plan inicial, escrito antes de programar (julio de 2026): qué cerrar antes de codificar,
+cómo trabajar, en qué orden construir y qué vigilar. Se conserva como registro de cómo se
+planificó el MVP. Lo que cambió al construirlo, y por qué, está en la
+[sección 12](#12-plan-frente-a-realidad).
 
 ---
 
@@ -88,7 +87,7 @@ Backend y frontend avanzan juntos, historia a historia. Nunca "todo el backend y
 
 **Bucle por cada historia de usuario:**
 1. Mover la tarjeta en el GitHub Project → crear **issue** → crear **branch** desde main.
-2. Escribir el **contrato JSON** del endpoint (request/response, códigos de error) ANTES de codificar. Vive en `docs/api-contracts.md` o directamente como anotaciones OpenAPI.
+2. Escribir el **contrato JSON** del endpoint (request/response, códigos de error) ANTES de codificar. Vive en las anotaciones OpenAPI (Swagger).
 3. **Backend:** migración → dominio → servicio → controller con validación → tests (unit + aceptación del endpoint).
 4. **Frontend con IA:** darle el contrato + un boceto de la pantalla como especificación. Revisar el código generado.
 5. Prueba manual de punta a punta (front real contra back real).
@@ -221,18 +220,18 @@ mostrar números por sí solo no cumple el objetivo de ayudar a principiantes.
 
 ## 10. Cosas que se suelen olvidar (checklist)
 
-- [ ] `.env.example` con todas las variables (BD, JWT secret, Cloudinary, API IA) y `.env` en `.gitignore`.
-- [ ] **CORS** configurado para el origen del front en dev (localhost:5173) y en producción.
-- [ ] **Seed de datos por migración o runner: al menos el usuario MODERATOR inicial** (sin él no se puede aprobar nada en la demo) y 2–3 bicis de muestra para que el catálogo no salga vacío.
-- [ ] Handler global de excepciones + `@Valid` en todos los DTOs de entrada.
-- [ ] Límite de tamaño de subida (`spring.servlet.multipart.max-file-size`) y validación de tipo de imagen.
+- [x] `.env.example` con todas las variables (BD, JWT secret, Cloudinary, API IA) y `.env` en `.gitignore`.
+- [x] **CORS** configurado para el origen del front en dev (localhost:5173) y en producción.
+- [x] **Cuentas iniciales de moderador y administrador** desde variables de entorno, con la contraseña como hash BCrypt. Las bicis del catálogo se publican con la propia aplicación, no por migración.
+- [x] Handler global de excepciones + `@Valid` en todos los DTOs de entrada.
+- [x] Límite de tamaño de subida (`spring.servlet.multipart.max-file-size`) y validación de tipo de imagen.
 - [x] JaCoCo configurado con umbral del 60% para que la CI falle si baja.
-- [ ] Paginación en catálogo y rankings.
-- [ ] Índices en BD para las consultas de ranking (category, status, votos).
-- [ ] Timestamps en UTC.
+- [x] Paginación en el catálogo (sin rankings, que quedaron fuera).
+- [x] Índices en BD para el catálogo público y las bicis de cada usuario.
+- [x] Timestamps en UTC.
 - [x] Instrucción en el README de cómo autenticarse desde Swagger UI (botón Authorize + token) — lo pide el enunciado.
-- [ ] Actuator health check para el despliegue.
-- [ ] El enunciado del proyecto guardado en `/docs` del repo, para consultarlo (tú o la IA) durante todo el desarrollo.
+- [x] Health check para el despliegue: `GET /api/health`, propio y sin Actuator.
+- [x] El enunciado del proyecto guardado en `/docs` del repo, para consultarlo (tú o la IA) durante todo el desarrollo.
 
 ---
 
@@ -251,3 +250,57 @@ mostrar números por sí solo no cumple el objetivo de ayudar a principiantes.
 - Su solver es un **grafo genérico de puntos+barras** resuelto numéricamente (numpy/scipy). Elegante, pero más difícil de implementar, testear y explicar. Para este proyecto: **solvers explícitos por topología** (más simples, más defendibles en una entrevista, y la UI guiada ya obliga a elegir topología). La puerta a generalizar queda abierta.
 - Artefactos de build **comiteados** en el repo (`build/`, `dist/`, `egg-info/`) y documentación casi nula. Justo lo contrario de lo que pide el enunciado: `.gitignore` correcto y README cuidado.
 - Monolito de escritorio con la lógica pegada a la GUI vs. nuestra separación API / front.
+
+---
+
+## 12. Plan frente a realidad
+
+Revisado el 27 de septiembre de 2026, al cerrar el MVP.
+
+**Calendario.** El plan preveía unas cuatro semanas. El proyecto empezó el 9 de julio y el
+MVP se cerró el 27 de septiembre:
+
+| Hito | Plan | Real |
+|---|---|---|
+| Esqueleto, CI y tablero | Días 1–3 | 13 de julio |
+| Motor monopivote validado | Semana 1 | Motor a finales de julio, endpoint el 4 de septiembre y demo con foto real el 7 |
+| Cuentas, guardado y explicación | Semana 2 | Del 7 al 15 de septiembre |
+| Moderación y mínimos del enunciado | Semana 3 | Moderación el 14, paneles el 20 y cobertura el 27 de septiembre |
+| Despliegue | Día 3 | 24 de septiembre |
+| Cuatro barras | Semana 4, si había tiempo | Del 16 al 27 de septiembre, en tres variantes |
+
+**Qué costó más de lo previsto.**
+- **El motor.** Validarlo con bicis reales y entender la sensibilidad del marcado (el
+  kickback cambia unos 1,6° por píxel de error en el pivote) llevó semanas de ajustes y tests.
+- **El despliegue.** El plan lo quería el día 3 y se hizo al final. El arranque en frío del
+  plan gratuito, de más de dos minutos, obligó a ajustar la JVM y a mantener la API despierta.
+- **La autenticación** (JWT y roles), que se aprendió y se escribió paso a paso.
+
+**Qué se añadió sin estar en el plan.**
+- Rol de administrador con su panel, y retirada de bicis con aviso al dueño.
+- Explicación con Gemini mediante Spring AI, con un texto por reglas de reserva.
+- Interfaz y explicación en español.
+- Anti-squat, anti-rise y kickback con piñón, adelantados desde la fase 4.
+- Tres variantes de cuatro barras en lugar de una.
+- Tipo de bici en lugar de plato, piñón y sag.
+
+**Qué quedó fuera,** siguiendo el orden de recorte de la sección 9: cuestionario de
+personalización, comparador (#11), votos (#9) y rankings (#4), y también comentarios (#86)
+y perfiles (#87). La lista de innegociables se cumplió completa.
+
+**Decisiones que cambiaron.**
+- **Arquitectura.** No se aplicó una arquitectura hexagonal completa. El backend se organiza
+  por funcionalidades (`auth`, `bike`, `moderation`, `interpretation`, `user`…), cada una con
+  controlador → servicio → repositorio. El motor es un dominio puro sin Spring, y solo hay
+  puertos (interfaces) donde hay servicios externos: `ImageStorage` (Cloudinary) e
+  `InterpretationProvider` (reglas o Gemini). Es la "hexagonal aplicada con criterio, no
+  ceremonia en cada tabla" de la sección 1.5.
+- **Roles:** `USER`, `MODERATOR` y `ADMIN`.
+- **Modelo de datos:** `users`, `bikes`, `kinematics_results` (1:1 con cada bici),
+  `kinematics_interpretations` (explicaciones por idioma) y `bike_removal_notices`. Sin
+  votos no hay tabla N:M.
+- **Despliegue:** Render (web y API) y Neon (PostgreSQL), en planes gratuitos.
+- **Validación externa:** con las curvas publicadas de bicis reales, en lugar de fixtures
+  exportados de un programa.
+- **Datos por bici:** el tipo de bici sustituye a cassette, plato y piñón, el sag es fijo y
+  no se pide la geometría.

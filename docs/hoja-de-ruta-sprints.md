@@ -1,26 +1,13 @@
 # Hoja de ruta por sprints — mini-tareas ordenadas
 
-> Estado revisado el 14 de septiembre de 2026. Sprint actual: **2**. Sprint 1 y su
-> demo real contra referencia (#54) están completados. El despliegue y la validación
-> de las historias no se dan por hechos. La visión comunitaria está en
-> [`vision-producto-v2.md`](vision-producto-v2.md). Identidad, seguridad y persistencia
-> del análisis ya están en backend y en las vistas de Mis bicis y detalle. El guardado
-> desde el asistente (#161) conecta esas vistas; quedan pruebas reales y despliegue.
+> **Estado final, 27 de septiembre de 2026: MVP entregado y desplegado.** Esta hoja se
+> conserva como registro de cómo se trabajó. Lo que no se hizo está en «Después del MVP»,
+> con su issue. La comparación entre lo planificado y lo real está en la sección 12 de
+> [`plan-trabajo-mvp.md`](plan-trabajo-mvp.md).
 
 **Regla de oro contra la saturación:** solo existe el sprint actual. No mires los demás. Haz la primera tarea sin marcar, márcala, pasa a la siguiente. Si una tarea te lleva más de un día, pártela en dos.
 
 **Si un sprint se retrasa 2–3 días:** se come el colchón del Sprint 4, nunca los Sprints 2 y 3.
-
-**Actualización de producto (9 de septiembre):** la explicación básica con IA (#10)
-se incorpora al cierre de Sprint 2, después de guardado/permisos y junto al detalle.
-Cuestionario y chat se separan; ver [`contrato-interpretacion-cinematica.md`](contrato-interpretacion-cinematica.md).
-
-**Ampliación aprobada (10 de septiembre):** antes de persistir resultados se
-incorporan condiciones de referencia, anti-squat/anti-rise monopivote (#108),
-kickback cog-aware (#31) y selector de ruedas/gráficas (#109). Se pausa #94 sin
-mezclar sus cambios; después se retoma seguridad. La comparación externa estricta
-sigue pendiente en #31. Modelo, fuentes y mejoras:
-[`modelo-referencia-cinematica.md`](modelo-referencia-cinematica.md).
 
 ---
 
@@ -34,7 +21,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [x] Confirmar stack exacto: versión de Spring Boot que usa el curso, Java 21, React + Vite
 
 ### Planificación
-- [ ] Repasar las 8+2 historias de usuario del plan, retocarlas a tu gusto y pasarlas al formato del curso
+- [x] Repasar las 8+2 historias de usuario del plan, retocarlas a tu gusto y pasarlas al formato del curso (issues #2–#11)
 - [ ] Validar las historias antes de programar, como exige el enunciado
 
 ### Repo y tablero
@@ -47,8 +34,8 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [x] docker-compose con Postgres + la app conecta + migración V1 (tabla users vacía vale)
 - [x] Crear el front con Vite: una página que llama a `GET /api/health` del back y muestra la respuesta (aquí se resuelve CORS)
 - [x] GitHub Actions: workflow que ejecuta `mvn verify` en cada push
-- [ ] Desplegar el back y el front: pendiente separado en #82; proveedor por decidir
-- [ ] Todo esto en una branch, con su issue y su PR mergeada
+- [x] Desplegar el back y el front: se hizo al final, en Render y Neon (#82)
+- [x] Todo esto en una branch, con su issue y su PR mergeada (#20, #21)
 
 **Hecho cuando:** las historias están validadas y una URL pública responde.
 
@@ -56,7 +43,7 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 
 ## Sprint 1 — El motor y la pantalla de marcado (semana 1)
 
-**Objetivo:** demo de punta a punta con UNA bici real: foto → marcar puntos → curvas correctas. (La "parte difícil primero" que dijo el profe.)
+**Objetivo:** demo de punta a punta con UNA bici real: foto → marcar puntos → curvas correctas. (La parte difícil, primero.)
 
 - [x] Elegir la bici de validación (un monopivote sencillo) y sacar sus curvas de BikeChecker → esa es la "verdad" contra la que testear
 - [x] Modelo de entrada del motor en Java: punto 2D, tipos de punto, parámetros (carrera, plato, rueda) — dominio puro, sin Spring
@@ -81,7 +68,6 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
 - [x] Motor de referencia: ruedas 29/mullet/27,5 y anti-squat/anti-rise (#108)
 - [x] Kickback cog-aware con tests analíticos; sin declarar paridad externa (#31)
 - [x] Selector de ruedas, cinco gráficas y condiciones/versiones API (#109)
-- [ ] Contraste externo con coordenadas/CG/ruedas/marcha conocidos (#31)
 
 - [x] Confirmar email de acceso + username público y consolidar el contrato de identidad
 - [x] Migraciones: users, bikes, kinematics_results (#92, #118)
@@ -113,21 +99,17 @@ sigue pendiente en #31. Modelo, fuentes y mejoras:
   - [x] Caché versionada, permisos de lectura/generación y límite de peticiones MVP
 - [x] Texto sencillo junto a las gráficas del detalle (#105)
 - [x] Guardado desde el asistente sin perder el análisis al iniciar sesión (#161)
-- [ ] Prueba real: subida a Cloudinary, explicación por reglas/Gemini y comprensión del texto (#170)
+- [x] Prueba real: subida a Cloudinary, explicación por reglas/Gemini y comprensión del texto (#170)
   - [x] Bloques 0–4: configuración de Cloudinary, cuenta, guardado, marcado y moderación
-  - [ ] Bloque 5: explicación con Gemini
+  - [x] Bloque 5: explicación con Gemini
   - [x] Tests con base de datos propia (#178)
   - [x] Backend: punto final del resumen, fecha de solicitud en moderación y log de fallos de Cloudinary (#179)
   - [x] Frontend: foto al guardar y sesión iniciada tras registrarse (#180)
   - [x] Borrar una bici: el dueño (#181, #182) y el moderador, con aviso al dueño (#183, #184)
   - [x] README y limitaciones: Cloudinary, moderador inicial y traducción automática (#185)
   - [x] Interfaz y explicación en español, con selector de idioma (#210)
-  - [ ] Decidir si el registro pide repetir correo y contraseña
-  - [ ] Recuperar la contraseña, pendiente de elegir cómo enviar correos (#186)
-  - [ ] Botón «Denunciar foto»: opciones y decisión en #167
 - [x] Navegación de inicio, controles de marcado y formulario compacto (#158–#160)
 - [x] Portada comunitaria centrada en fotos reales del catálogo público (#169)
-  Ver [`diseno-y-prueba-frontend.md`](diseno-y-prueba-frontend.md) para límites y mejoras pendientes.
 
 **Hecho cuando:** en la URL pública alguien se registra, crea una bici y la ve en
 "mis bicis" con una explicación comprensible. La indisponibilidad del proveedor de
@@ -141,14 +123,12 @@ IA no bloquea los resultados; su integración se valida con ejemplos reales.
 
 - [x] Publicar bici (PRIVATE → PENDING) desde backend (#132)
 - [x] Cola de moderación + aprobar/rechazar (solo MODERATOR) + tests de autorización (un USER recibe 403) (#134, #135)
-- [ ] Votos (uno por usuario y bici) + rankings por categoría
-- [ ] Comentarios en bicicletas públicas
-- [ ] Perfil público y rango basado en contribuciones aprobadas
-- [ ] Front (IA): botón publicar, vista de moderación, votar, página de rankings
+- [x] Front: botón publicar y paneles de moderación y administración (#146, #238, #243)
+- [x] Retirar una bici con motivo y aviso al dueño; rol de administrador para gestionar moderadores
 - [x] Cobertura ≥60% con JaCoCo (rellenar huecos con tests útiles, no de relleno): 95,0 % de líneas y 72,9 % de ramas; el build falla por debajo del 60 %
-- [ ] README completo siguiendo punto por punto la lista del enunciado
-- [ ] Repasar el checklist "cosas que se olvidan" del plan (.env.example, CORS de producción, límites de subida…)
-- [ ] Despliegue final verificado, Swagger probado en producción
+- [x] README completo siguiendo punto por punto la lista del enunciado
+- [x] Repasar el checklist "cosas que se olvidan" del plan (.env.example, CORS de producción, límites de subida…)
+- [x] Despliegue final verificado, Swagger probado en producción
 
 **Hecho cuando:** revisas los requisitos del enunciado uno a uno y todos están en verde.
 
@@ -158,13 +138,27 @@ IA no bloquea los resultados; su integración se valida con ejemplos reales.
 
 En este orden; lo que no salga, al README como trabajo futuro (queda bien, es visión):
 
-- [ ] Solver de 4 barras (Horst link) + fixture de Linkage
-- [ ] Personalización con cuestionario opcional de estilo/peso (#10, segundo bloque), reutilizando el resumen y contexto de Sprint 2
-- [ ] Traducción de la UI al español (archivo i18n → tarea de una tarde)
-- [ ] Comparador de dos bicis
-- [ ] Extras: caché en rankings, actuator/health, mejoras de CI/CD
+- [x] Solver de 4 barras (Horst link), en tres variantes: amortiguador en la bieleta, con extensión y empujado por los tirantes (#19, #288)
+- [x] Traducción de la UI y de la explicación al español (#210)
+- [x] Extras: health check propio, cobertura en CI y API despierta con un flujo programado
 
-## Después del MVP — modelo de producto
+## Después del MVP
+
+Lo que no entró, en el orden en que se recortó:
+
+- [ ] Personalización con cuestionario opcional de estilo/peso (#10, segundo bloque)
+- [ ] Comparador de 2 a 4 bicis, con comparación por IA (#11)
+- [ ] Votos (uno por usuario y bici) y rankings por categoría (#9, #4)
+- [ ] Comentarios en bicicletas públicas (#86)
+- [ ] Perfil público y rango basado en contribuciones aprobadas (#87)
+- [ ] Validación externa de las cuatro barras y del kickback (#222, #237, #31)
+- [ ] Recuperar la contraseña y confirmar el correo (#186, #257)
+- [ ] Derechos de las fotos publicadas: decisión y asesoramiento (#167)
+- [ ] Buscar y paginar cuentas en el panel de administración (#254)
+- [ ] Explicación en el idioma de quien la lee (#264)
+- [ ] Mover la foto con dos dedos en el trackpad sin perder el zoom con la rueda (#300)
+
+Modelo de producto:
 
 - [ ] Validar la regla gratuita de dos bicicletas privadas como máximo
 - [ ] Diseñar planes y permisos antes de integrar un proveedor de pagos

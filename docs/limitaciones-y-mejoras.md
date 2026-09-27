@@ -209,7 +209,7 @@ GitHub cuando aplica).
   El último paso ya no muestra avance: al calcular aparecen las curvas directamente.
   Se mantienen volver a parámetros y reintentar en caso de error. La futura ficha
   #3 agrupará título, foto, datos, gráficas y explicación/IA en la misma pantalla,
-  sin un segundo botón para ver resultados (ver `vision-producto-v2.md`).
+  sin un segundo botón para ver resultados (ver `proyecto-cinematica-bicis.md`).
 - **Antes de publicar:** configurar secretos, TLS, CORS y límites de tamaño/tasa
   de peticiones, y repetir la revisión de seguridad. El aislamiento local y cero
   avisos conocidos no certifican un despliegue público como seguro.

@@ -399,9 +399,8 @@ estricto sigue abierto en #31.
 ## Seguimiento
 
 Una tarea = una issue = una rama = un PR pequeño. Código y commits en inglés;
-explicaciones de aprendizaje en español. La evolución comunitaria se mantiene en una
-[visión de producto separada](docs/vision-producto-v2.md) para no mezclarla con la V1.
+explicaciones de aprendizaje en español.
 
+- [La idea y el producto](docs/proyecto-cinematica-bicis.md)
 - [Hoja de ruta](docs/hoja-de-ruta-sprints.md)
-- [Visión de producto V2](docs/vision-producto-v2.md)
 - [Limitaciones](docs/limitaciones-y-mejoras.md)

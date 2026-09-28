@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { createAnalysisSaver } from '../../services/saveAnalysis.js'
+import { modelYearOptions } from '../../models/modelYears.js'
 import styles from './SaveAnalysisPanel.module.css'
 
 export default function SaveAnalysisPanel({ session, wizardData, onLockedChange, onSaved, onStartNew }) {
@@ -69,14 +70,18 @@ export default function SaveAnalysisPanel({ session, wizardData, onLockedChange,
         <form onSubmit={handleSave}>
           <fieldset className={styles.fields} disabled={busy || Boolean(checkpoint.bikeId) || checkpoint.uncertainCreate}>
             <legend>{t('saveAnalysis.details')}</legend>
-            {['brand', 'model', 'modelYear'].map((name) => <label key={name}>
+            {['brand', 'model'].map((name) => <label key={name}>
               <span>{t(`saveAnalysis.fields.${name}`)}</span>
-              <input name={name} value={metadata[name]} onChange={update} required={name !== 'modelYear'}
-                type={name === 'modelYear' ? 'number' : 'text'}
-                maxLength={name === 'brand' ? 80 : name === 'model' ? 100 : undefined}
-                min={name === 'modelYear' ? 1900 : undefined} max={name === 'modelYear' ? 2100 : undefined}
-                step={name === 'modelYear' ? 1 : undefined} />
+              <input name={name} value={metadata[name]} onChange={update} required type="text"
+                maxLength={name === 'brand' ? 80 : 100} />
             </label>)}
+            <label>
+              <span>{t('saveAnalysis.fields.modelYear')}</span>
+              <select name="modelYear" value={metadata.modelYear} onChange={update}>
+                <option value="">{t('saveAnalysis.fields.modelYearUnknown')}</option>
+                {modelYearOptions().map((year) => <option key={year} value={year}>{year}</option>)}
+              </select>
+            </label>
           </fieldset>
           <p className={styles.note}>{t('saveAnalysis.photoNotice')}</p>
           {error && <p className={styles.error} role="alert">{t(`saveAnalysis.errors.${error}`)}</p>}

@@ -22,7 +22,7 @@
 
 ### Planificación
 - [x] Repasar las 8+2 historias de usuario del plan, retocarlas a tu gusto y pasarlas al formato del curso (issues #2–#11)
-- [ ] Validar las historias antes de programar, como exige el enunciado
+- [x] Validar las historias antes de programar, como exige el enunciado
 
 ### Repo y tablero
 - [x] Crear el repo (carpetas: `/backend`, `/frontend`, `/docs`, `/docker`)

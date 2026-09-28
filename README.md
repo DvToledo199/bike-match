@@ -279,7 +279,7 @@ GitHub Actions, cada ejecución lo muestra en el resumen y lo adjunta como
 
 `POST /api/kinematics/preview` es público y solo calcula. Recibe seis tipos de punto
 únicos, coordenadas finitas y medidas dentro de los límites del formulario. Los
-datos inválidos se rechazan con HTTP 400; ejemplo en [la guía frontend](docs/frontend-arranque.md).
+datos inválidos se rechazan con HTTP 400; el esquema completo está en Swagger.
 La foto debe ser lateral, nivelada y con suspensión extendida; puede mirar a ambos
 lados. Selector Full 29/Mullet/Full 27,5, sin pedir peso. El cálculo ampliado incluye
 piñón, radios nominales, CG de referencia y corrección de inclinación teniendo en

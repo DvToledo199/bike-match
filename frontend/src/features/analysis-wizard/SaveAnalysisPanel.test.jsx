@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, expect, it, vi } from 'vitest'
 import SaveAnalysisPanel from './SaveAnalysisPanel.jsx'
 
@@ -36,4 +36,23 @@ it('passes metadata to the workflow and opens the saved bike', async () => {
   await waitFor(() => expect(onSaved).toHaveBeenCalledWith(42))
   expect(onLockedChange).toHaveBeenCalledWith(true)
   expect(screen.getByRole('link', { name: 'Open saved bike' }).getAttribute('href')).toBe('#/bikes/42')
+})
+
+it('offers the model year as an optional list from next year back to 2000', async () => {
+  save.mockResolvedValue({ bikeId: 42, explanationReady: true })
+  render(<SaveAnalysisPanel session={{ username: 'rider' }} wizardData={{}} onSaved={vi.fn()} onLockedChange={vi.fn()} />)
+  const year = screen.getByLabelText('Model year (optional)')
+  const options = within(year).getAllByRole('option').map((option) => option.textContent)
+  const nextYear = new Date().getFullYear() + 1
+  expect(options.slice(0, 2)).toEqual(['Not specified', String(nextYear)])
+  expect(options.at(-1)).toBe('2000')
+  expect(year.value).toBe('')
+
+  fireEvent.change(screen.getByLabelText('Brand'), { target: { value: 'Orange' } })
+  fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'Stage 6' } })
+  fireEvent.change(year, { target: { value: String(nextYear - 1) } })
+  fireEvent.click(screen.getByRole('button', { name: 'Save bike' }))
+
+  await waitFor(() => expect(save).toHaveBeenCalledOnce())
+  expect(save.mock.calls[0][0].metadata.modelYear).toBe(String(nextYear - 1))
 })

@@ -1,222 +1,180 @@
 # Limitaciones conocidas y mejoras pendientes
 
-Registro vivo de los **compromisos técnicos** que se asumen en la versión actual
-(MVP del curso) y de lo que habría que revisar o mejorar para una versión "seria".
-La idea es no perder de vista ningún atajo: cada entrada dice **qué** se dejó pasar,
-**por qué** se aceptó ahora, qué **impacto** tiene y **dónde** se sigue (issue de
+Registro vivo de los **compromisos técnicos** que se asumen en la versión actual y de lo
+que habría que revisar o mejorar para una versión "seria". Cada entrada dice **qué** se
+dejó pasar, **por qué** se aceptó, qué **impacto** tiene y **dónde** se sigue (issue de
 GitHub cuando aplica).
 
 > Convención: cada vez que se toma un atajo consciente, se añade aquí una entrada.
-> Es la referencia interna del proyecto para las mejoras técnicas pendientes.
 
 ---
 
 ## Motor de cinemática
 
-### Ampliación del 10/09/2026 — referencia, no medición personalizada
+### Sistemas no soportados
+- **Qué:** solo monopivote simple y tres variantes de cuatro barras. Quedan fuera los
+  monopivotes con bieleta que cambia el accionamiento del amortiguador, los pivotes
+  virtuales de dos bieletas cortas, el pivote alto con polea y los frenos flotantes.
+- **Impacto:** si se marcan con otro sistema, el cálculo suele rechazarse con un error 400
+  o da cifras que no representan la bici.
+- **Mejora:** cada sistema necesita su propio modelo y una bici de referencia.
 
-- Selector Full 29/Mullet/Full 27,5; radios nominales y CG de referencia 1100 mm.
-- Cinco curvas, kickback cog-aware y normalización de inclinación consciente de
-  radios distintos. Versiones/condiciones incluidas en la API.
-- Pendiente: export o fixture externo con geometría y condiciones conocidas para
-  contraste estricto (issue #31); validación física de CG/ruedas reales, neumáticos,
-  dinámica de horquilla/rueda libre y otros montajes. No afirmar paridad con Linkage.
-- Documentación y fórmulas: [`modelo-referencia-cinematica.md`](modelo-referencia-cinematica.md).
-- Los apartados 1–3 siguientes explican las decisiones y pruebas históricas de V1;
-  su tolerancia ±30% no valida las curvas añadidas ni justifica ignorar el piñón.
-- Las dos Orange conservan recorrido y leverage dentro del ±3% en V2. Kickback:
-  Surge mejora (35,86° frente a ≈34°); Stage 6 discrepa (28,79° frente a ≈22°).
-  No se atribuye automáticamente a error de marcado: queda investigarlo en #31.
-  La tabla original Stage 6 sí da 32/50, CDG 1065 y sag 25% F+R; ver comparación
-  completa y condiciones todavía no reproducidas en el documento del modelo.
+### Validación externa incompleta
+- **Qué:** el monopivote cuadra con curvas publicadas de dos bicis (recorrido y extremos
+  del LR dentro del ±3 %). El kickback con piñón cuadra en una y difiere en otra (28,8°
+  frente a unos 22°). Las cuatro barras se han contrastado con recorridos declarados y con
+  la curva de un fabricante, pero no de forma sistemática.
+- **Impacto:** los resultados son estimaciones de referencia, no una precisión certificada.
+- **Dónde:** kickback en #31; cuatro barras en #222 y #237. Datos completos en
+  [`modelo-referencia-cinematica.md`](modelo-referencia-cinematica.md).
 
-### 1. Validación del pedal kickback con tolerancia ±30%
-- **Qué:** el test `surgeKickbackMatchesTheReference` valida el kickback contra la
-  gráfica de BikeChecker con una banda ancha del **±30%**, no con el ±3% del leverage.
-- **Por qué ahora:** el kickback es hípersensible al marcado del pivote (ver punto 3),
-  así que una foto marcada a mano no puede clavarlo con precisión.
-- **Impacto:** el kickback es una estimación aproximada; en producto se presenta como
-  banda ("medio/alto/…"), no como cifra exacta.
-- **Dónde:** issue #31.
+### Sensibilidad al marcado
+- **Qué:** mover el pivote principal unos 5 px cambió el kickback de una bici de 19° a 35°
+  (~1,6° por píxel); el crecimiento de cadena depende directamente del arco pivote → eje.
+- **Por qué:** es inherente a marcar a mano sobre una foto. Se mitiga con zoom, ajuste con
+  teclado, aviso de baja resolución y una cruz visible por punto (se descartó promediar
+  varios clics).
+- **Impacto:** el kickback es la cifra más frágil. Objetivo orientativo: ≤ ~1,3 mm por
+  píxel de foto.
 
-### 2. Modelo de kickback simplificado (v1)
-- **Qué:** el crecimiento de cadena se calcula como el cambio de la distancia recta
-  pedalier→eje; se desprecian el enrollado en el piñón y el *wheel wind-up*. El número
-  lo fija solo el plato; el piñón se registra como condición de cálculo, no influye.
-- **Motivo histórico:** mantener un modelo defendible para el curso. La suposición
-  de que el ruido siempre tapaba el piñón no estaba suficientemente demostrada.
-- **Impacto actual:** solo las peticiones legacy sin ruedas conservan este método;
-  el frontend usa ahora el cálculo cog-aware. Su contraste externo sigue pendiente.
-- **Dónde:** issue #31 (modelo *cog-aware* validado).
+### Calibración con una sola referencia corta
+- **Qué:** la escala sale del ojo a ojo del amortiguador. No pide puntos extra y es igual en
+  todas las tallas, pero es una referencia corta.
+- **Impacto:** un error de marcado en sus anclajes escala las cifras absolutas (recorrido,
+  kickback, retroceso) y también el valor del LR, porque la carrera se introduce aparte en
+  milímetros. La progresión y la forma no cambian. El recorrido se contrasta con el
+  declarado (±10 %).
+- **Mejora:** ofrecer referencias más largas (distancia entre ejes, vainas) o usar la
+  distancia entre ejes por defecto.
 
-### 3. Sensibilidad extrema al marcado del pivote principal
-- **Qué:** mover el pivote principal ~5 px cambia el kickback de la Surge de 19° a 35°
-  (~1,6°/px). El crecimiento de cadena depende directo del arco pivote→eje.
-- **Por qué ahora:** es inherente a marcar a mano sobre foto; para la v1 se asume.
-- **Impacto:** limita la precisión del kickback (y del crecimiento de cadena). Se agrava
-  con fotos de referencia pequeñas (la Surge es 500×280 px, ~3,9 mm/px).
-- **Dónde:** ensayo de sensibilidad completado.
-  **Conclusión acotada:** el ensayo demuestra sensibilidad al marcado, pero no
-  descarta errores o limitaciones del motor en comparaciones externas. Se aplican
-  mejor foto, zoom y corrección visual. Se descartó promediar cinco
-  clics: un punto se marca una vez, con cruz visible y deshacer inmediato.
-  Objetivo orientativo: mm/px ≤ ~1,3. Relacionado con #31 y #54.
+### Condiciones de referencia, no personales
+- **Qué:** ruedas con radio nominal, centro de gravedad a 1100 mm, suelo plano, cuadro fijo,
+  cadena directa sin polea y foto lateral sin perspectiva (se corrige una inclinación de
+  hasta 15°).
+- **Impacto:** anti-squat y anti-rise son tendencias comparables entre bicis, no el
+  comportamiento de una persona concreta. Por encima de 10 mm de retroceso del eje la cifra
+  no se interpreta (base de conocimiento, sección 4).
+- **Mejora:** medidas reales de neumáticos y un centro de gravedad configurable, con una
+  explicación clara antes de personalizarlo.
 
-### 4. Guard numérico del `acos` — corregido
-- El solver tolera solo ruido de coma flotante; rechaza geometría imposible.
-  La auditoría añadió controles de longitudes, divisores y resultados finitos,
-  puntos completos y errores HTTP 400 explicados (#33).
-- Esto no identifica todos los errores humanos que aún forman una geometría
-  matemáticamente posible: sigue siendo necesaria la revisión visual.
+### Forma de la curva por tercios fijos
+- **Qué:** la forma se lee en tres tercios fijos del recorrido; no se detecta el punto exacto
+  donde cambia la pendiente y un bache local dentro de un tercio se promedia.
+- **Por qué:** los tercios son robustos al ruido del marcado; detectar el punto exacto daría
+  falsos positivos con fotos normales.
+- **Dónde:** #35.
 
-### 5. Clasificación de forma por tercios fijos (v1)
-- **Qué:** la forma de la curva se lee en tres tercios fijos (inicial/medio/final). El punto
-  de transición real (dónde cambia de verdad la pendiente) no se detecta con precisión, y una
-  jorobita local dentro de un tercio se promedia.
-- **Por qué ahora:** los tercios son robustos al ruido de marcado y captan lo importante
-  (incluida la zona de tope = tercio final); detectar el punto exacto punto-a-punto sería
-  sensible al ruido → falsos positivos.
-- **Impacto:** la forma es correcta "a grandes rasgos"; no da el % exacto donde ocurre el
-  cambio ni caza micro-tramos.
-- **Dónde:** issue #35 (transición variable + inflexiones + robustez al ruido, para fotos
-  de más resolución).
+### Dos fórmulas para la progresión
+- **Qué:** el motor calcula la progresión total respecto al LR final. Muchos fabricantes la
+  publican respecto al LR inicial, así que la misma curva da cifras distintas (35 % frente a
+  26 %).
+- **Impacto:** comparar un porcentaje de BikeMatch con uno publicado puede confundir; los LR
+  inicial y final sí son comparables.
+- **Dónde:** conversión en la base de conocimiento, sección 3.
 
-### 6. Calibración con una sola referencia (eye-to-eye) en la v1
-- **Qué:** la conversión px→mm usa solo el **eye-to-eye del amortiguador**. No requiere
-  puntos extra y es igual en todas las tallas, pero es una referencia **corta** → más
-  sensible al error de marcado en la escala.
-- **Por qué ahora:** simple y sin puntos extra. La escala afecta recorrido, kickback
-  y retroceso, y **también puede cambiar leverage y el tramo de curva**, porque la
-  carrera se introduce aparte en mm y no se escala con la foto. El recorrido se
-  contrasta además con el declarado (#17).
-- **Impacto:** menor precisión de escala que con una referencia larga.
-- **Dónde:** mejora futura en #6 (crear bici): ofrecer varias referencias
-  (**vainas / wheelbase / amortiguador**, como BikeChecker) o usar la **wheelbase** por
-  defecto (más larga = más precisa, y fácil de encontrar en la ficha).
+### Kickback con el valor absoluto del giro
+- **Qué:** el kickback máximo usa `Math.abs` y podría contar un giro de bielas hacia delante
+  como retroceso.
+- **Dónde:** #228.
 
 ---
 
-## API REST
+## API y datos
 
 ### Fuente inmutable del análisis guardado
+- **Decisión:** al guardar el primer análisis, foto y puntos quedan bloqueados; repetir el
+  marcado crea otra bici. El cálculo y ambos guardados comparten transacción, y subir foto o
+  finalizar toman un bloqueo de escritura sobre esa bici.
+- **Mejora futura:** editar medidas o desarrollo y recalcular el resultado sin tocar la
+  fuente; una bici pública debería volver entonces a moderación.
 
-- **Decisión:** mientras una bicicleta no tenga resultado se puede corregir su foto. Al
-  guardar el primer análisis, foto y puntos quedan bloqueados; repetir el marcado crea
-  otra bicicleta/análisis. El preview público sigue siendo editable porque no persiste.
-- **Persistencia:** los puntos usan el sistema de coordenadas de la imagen original y
-  guardan ancho, alto y versión. PostgreSQL conserva junto a ellos un único resultado
-  actual. El cálculo y ambos guardados comparten transacción.
-- **Concurrencia:** subir foto y finalizar toman un bloqueo de escritura sobre esa bici,
-  para que dos peticiones simultáneas no puedan saltarse la regla.
-- **Recalcular:** foto y puntos son la fuente; curvas y explicación son derivados. Una
-  futura edición de medidas/desarrollo actualizará el resultado y sus textos, pero una
-  bici pública deberá volver a moderación.
+### La respuesta del motor reutiliza sus records
+- **Qué:** `PreviewResponse` agrupa directamente los records del motor en lugar de copiarlos
+  a DTOs propios.
+- **Por qué:** en la salida no hay nada que validar ni traducir y el único consumidor es la
+  propia web (YAGNI).
+- **Impacto:** renombrar un campo del motor cambia el JSON y obliga a tocar la web a la vez.
+- **Mejora:** DTOs de respuesta si la API se abre a terceros.
 
-### Entrega de fotos privadas mediante URL
+### Formato de los errores de seguridad
+- **Qué:** los 401 y 403 de Spring Security usan la respuesta de error estándar de Spring
+  Boot, mientras el resto de errores usan `ProblemDetail`.
+- **Dónde:** #202, junto con documentar en Swagger las operaciones de token opcional.
 
-- **Qué:** la aplicación protege la relación bici-foto por propietario, pero Cloudinary
-  entrega actualmente una URL HTTPS normal. Quien conozca exactamente esa URL podría
-  abrirla fuera de BikeMatch.
-- **Mejora futura:** si la privacidad estricta lo exige, usar recursos autenticados,
-  URLs firmadas de corta duración o servir la imagen mediante el backend.
+### Roles y tokens
+- **Qué:** un cambio de rol no revoca los JWT ya emitidos: las sesiones abiertas conservan
+  sus permisos hasta caducar. Y la regla de no degradar a otro administrador solo está en
+  la web; el backend solo impide cambiar el propio rol.
+- **Impacto:** no es una escalada de privilegios (la ruta exige `ADMIN`), pero ambas reglas
+  deberían vivir en el backend. Ver [`panel-administracion.md`](panel-administracion.md).
 
-### 7. La respuesta reutiliza los records del dominio (sin DTOs de salida)
-- **Qué:** `PreviewResponse` agrupa directamente los records del motor (series de
-  curvas, descriptores, `TravelCheck`) en lugar de copiarlos a DTOs de respuesta propios.
-- **Por qué ahora:** en la salida no hay nada que validar ni traducir, y la serialización
-  a JSON ya entrega una copia desprendida (los records son inmutables y el front recibe
-  texto, no el objeto Java). Con un único consumidor controlado (el propio front), una capa
-  de DTOs de salida sería aislamiento para un problema que aún no existe (YAGNI).
-- **Impacto:** el contrato JSON queda atado a la forma interna del motor; renombrar un campo
-  del dominio cambia el JSON y obliga a tocar el front a la vez.
-- **Dónde:** mejora futura si la API se abre a consumidores externos → introducir DTOs de
-  respuesta como capa de traducción estable entre el dominio y el contrato público.
+### Cuentas
+- **Qué:** no se confirma el correo al registrarse ni se puede recuperar la contraseña.
+- **Dónde:** #257 y #186 (necesitan enviar correos).
 
 ---
 
-## Fotos subidas por los usuarios
+## Fotos
 
 ### Derechos de las fotos publicadas: solo un aviso
-- **Qué:** la aplicación no comprueba de quién es la foto. Se limita a avisar, al
-  elegirla y al solicitar la publicación, de que para publicar una bici la foto debe
-  ser propia o tener permiso de su autor. Para el análisis privado vale cualquier foto.
-- **Por qué ahora:** es un proyecto de curso. Resolverlo de verdad necesita
-  asesoramiento legal y un proceso de moderación y retirada de fotos que aún no existe.
-- **Impacto:** un usuario puede publicar una foto que no es suya. El aviso demuestra
-  buena fe, pero no elimina por sí solo la responsabilidad de publicarla.
-- **Dónde:** aviso en #174; asesoramiento y solución definitiva en #167.
+- **Qué:** la aplicación no comprueba de quién es la foto; avisa al elegirla y al pedir la
+  publicación de que debe ser propia o con permiso de su autor.
+- **Por qué:** resolverlo de verdad necesita asesoramiento legal y un proceso de retirada.
+- **Dónde:** #167. La moderación sí puede retirar una bici con aviso al dueño.
 
-### Borrar una bici: la foto se elimina después de la base de datos
-- **Qué:** al borrar una bici se eliminan primero sus filas en la base de datos y,
-  una vez confirmado, su foto en Cloudinary. Si Cloudinary falla en ese momento, la
-  bici ya no existe pero su foto sigue almacenada; el fallo queda en el log.
-- **Por qué ahora:** es preferible una foto huérfana a una bici a medias que el
-  usuario ya no podría ver ni volver a borrar.
-- **Impacto:** puede quedar alguna foto sin bici en Cloudinary, ocupando espacio.
-- **Mejora futura:** una tarea periódica que localice y borre fotos sin bici asociada.
-- **Dónde:** #181.
+### Fotos privadas accesibles por su URL
+- **Qué:** la aplicación protege la relación bici-foto por propietario, pero Cloudinary
+  entrega una URL HTTPS normal: quien conozca exactamente esa URL podría abrirla.
+- **Mejora:** recursos autenticados, URLs firmadas de corta duración o servir la imagen desde
+  el backend.
 
-### Clave de Cloudinary con un rol amplio
-- **Qué:** en local, la clave de Cloudinary de BikeMatch tiene un rol de administración
-  completo (Master Admin), aunque el backend solo necesita subir y borrar imágenes.
-- **Por qué ahora:** una clave sin rol no podía subir fotos y la prueba manual necesitaba
-  avanzar. La clave solo vive en el `.env` local, que no se sube al repositorio.
-- **Impacto:** si la clave se filtrara, permitiría gestionar toda la cuenta de Cloudinary,
-  no solo las fotos de BikeMatch.
-- **Mejora futura:** antes de desplegar, usar un rol a medida con permisos de subida y
-  borrado (limitado a la carpeta `bikematch/` si el plan lo permite) y rotar la clave.
-- **Dónde:** #170, #185.
+### Fotos huérfanas al borrar
+- **Qué:** al borrar una bici se eliminan primero sus datos y, después, su foto. Si Cloudinary
+  falla en ese momento, la foto queda almacenada y el fallo queda en el log.
+- **Por qué:** es preferible una foto huérfana a una bici a medias que ya no se puede borrar.
+- **Mejora:** una tarea periódica que borre las fotos sin bici. Dónde: #181.
+
+### Permisos de la clave de Cloudinary
+- **Qué:** en las pruebas locales la clave tenía un rol de administración completo, aunque el
+  backend solo necesita subir y borrar imágenes. No se ha comprobado el rol de la clave de
+  producción.
+- **Mejora:** usar una clave con un rol a medida (subir y borrar, limitado a la carpeta
+  `bikematch/` si el plan lo permite) y rotarla.
+
+---
+
+## Explicación con IA
+
+- **Cuota y disponibilidad de Gemini:** en horas de alta demanda o con la cuota consumida,
+  Gemini no responde. Se guarda el texto por reglas, la web lo indica y permite reintentar;
+  no hay reintentos automáticos para no gastar cuota.
+- **Idioma:** la explicación se genera en el idioma del propietario. Quien visita la bici en
+  el otro idioma no la ve hasta que se genere también en el suyo (#264).
+- **Una sola instancia:** el límite de 30 s entre generaciones vive en memoria del backend;
+  con varias instancias habría que sustituirlo por una cuota compartida.
+- **Sin explicación en el análisis anónimo:** solo se genera sobre bicis guardadas, para que
+  una visita no pueda disparar llamadas de pago sin límite.
+
+---
+
+## Despliegue
+
+- **Plan gratuito de Render:** la API se duerme tras 15 minutos sin visitas y tarda unos dos
+  minutos y medio en despertar. Un flujo programado de GitHub Actions la mantiene despierta y
+  la web espera hasta 3 minutos (4 al generar la explicación). Con 512 MB y una décima de
+  CPU, la JVM se ajustó para arrancar antes.
+- **Base de datos accesible desde internet:** Neon exige conexión cifrada y contraseña. La
+  alternativa privada dentro de Render caduca a los 30 días en el plan gratuito.
 
 ---
 
 ## Interfaz web
 
-### Traducción automática del navegador
-- **Qué:** la interfaz está en inglés y no impide que el navegador la traduzca.
-- **Por qué ahora:** en la prueba manual (#170) la traducción de Safari funcionó sin
-  fallos visibles. Bloquearla dejaría sin ayuda a quien no lee inglés.
-- **Impacto:** un traductor cambia por su cuenta los textos de la página. En la misma
-  prueba, el panel de Cloudinary dejó de funcionar al traducirlo; con el traductor de
-  Chrome, que aquí no se ha probado, otras aplicaciones React han mostrado errores
-  parecidos.
-- **Mejora futura:** la solución de fondo es ofrecer la interfaz en español; los textos
-  ya están centralizados en los ficheros de traducción de react-i18next.
-- **Estado:** resuelto en #210. La interfaz y la explicación están en inglés y en español,
-  con un selector de idioma en la cabecera; la web se abre en el idioma del navegador y
-  recuerda la elección.
-- **Dónde:** #170, #185, #210.
-
----
-
-## Alcance (decisiones de producto, no atajos)
-
-- **Orientación:** izquierda/derecha y corrección de inclinación de hasta 15° con
-  las ruedas seleccionadas; se descuenta la diferencia de radios para mullet.
-  Se asume suelo plano y suspensión extendida. No corrige perspectiva ni distingue
-  giro de cámara de bicicleta sobre pendiente; radios nominales introducen error.
-  Los clientes legacy sin ruedas conservan la normalización antigua sin rotación.
-- **Prueba final con foto real — completada (#54):** se marcó manualmente una
-  Orange Stage 6 29'' 2020 en la aplicación, a partir de una foto lateral real.
-  El cálculo devolvió 149,0 mm de recorrido frente a 150 mm declarados (0,7 % de
-  diferencia), y un leverage ratio de 2,75 → 2,66. La referencia de
-  [Linkage Design](https://linkagedesign.blogspot.com/2019/11/orange-stage-6-29-2020.html)
-  describe la misma bici como casi lineal, 2,775 → 2,675, y cita 22° de
-  pedal kickback; BikeMatch obtuvo 20,9°. La coincidencia entra holgadamente
-  en la tolerancia del ±3 % para recorrido y leverage; el kickback queda como
-  validación orientativa por su sensibilidad al marcado.
-- **Acción final duplicada en resultados — corregida (#113):** se detectó que
-  `View results` no hacía nada y su arreglo se aplazó.
-  El último paso ya no muestra avance: al calcular aparecen las curvas directamente.
-  Se mantienen volver a parámetros y reintentar en caso de error. La futura ficha
-  #3 agrupará título, foto, datos, gráficas y explicación/IA en la misma pantalla,
-  sin un segundo botón para ver resultados (ver `proyecto-cinematica-bicis.md`).
-- **Antes de publicar:** configurar secretos, TLS, CORS y límites de tamaño/tasa
-  de peticiones, y repetir la revisión de seguridad. El aislamiento local y cero
-  avisos conocidos no certifican un despliegue público como seguro.
-- **Rendimiento:** gráficas en la carga inicial (~190 kB gzip de JS) para evitar
-  reintentos atrapados por imports diferidos. Se mantiene el aviso de tamaño de Vite.
-
-- **Anti-squat / anti-rise:** fuera de V1 histórica; incorporadas como estimaciones
-  de referencia en `monopivot-reference-v2`. El CG no se detecta en la fotografía.
-- **Solo monopivote en la v1:** los sistemas de 4 barras (Horst link) llegan después
-  (issue #19).
+- **Borrador en memoria:** el análisis sin guardar se conserva al navegar por la web, pero se
+  pierde al recargar la página.
+- **Trackpad:** la rueda del ratón y el pellizco hacen zoom; mover la foto con dos dedos
+  necesita distinguir el ratón del trackpad (#300).
+- **Móvil:** la interfaz se adapta a pantallas estrechas, pero el marcado táctil y la prueba
+  en dispositivos quedan para #162.
+- **Rendimiento:** las gráficas se cargan con la aplicación (~190 kB comprimidos) para evitar
+  que un import diferido fallido atrape el reintento; Vite avisa del tamaño.

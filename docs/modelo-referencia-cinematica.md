@@ -173,7 +173,7 @@ No presentar las tres curvas ampliadas como precisión certificada de Linkage.
   entre ejes). Evitar inferir inclinación de ejes sin descontar ruedas mullet (#97).
 - CG configurable/perfiles de postura: revisión física y explicación clara antes
   de personalizar; el peso por sí solo no localiza el CG.
-- Monopivotes con bieleta, pivotes virtuales, frenos flotantes y roldanas (#98): modelo
+- Monopivotes con bieleta, pivotes virtuales, frenos flotantes y roldanas: modelo
   explícito y fixture propio para cada uno; no activarlos por parecido visual.
 - Kickback dinámico: velocidad, rueda libre, contacto/deslizamiento y horquilla;
   la curva cuasiestática no equivale a lo que siempre siente el ciclista rodando.

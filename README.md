@@ -10,22 +10,25 @@ publicarse en un catálogo comunitario, previa moderación.
 
 Proyecto final de un bootcamp Java. Versión publicada: https://bikematch.onrender.com
 
-## Estado
+**Problema que resuelve.** Los programas que calculan la cinemática de una suspensión
+exigen mucho al aficionado: marcar a mano los puntos sin guía y, sobre todo, interpretar
+solo unas gráficas técnicas. BikeMatch guía el marcado y traduce el resultado a lenguaje
+normal. La idea completa está en [la idea y el producto](docs/proyecto-cinematica-bicis.md).
 
-MVP completo y publicado (ver [Despliegue](#despliegue)):
+## Funcionalidades
 
-- **Motor cinemático** para monopivote, cuatro barras (Horst link), Horst link con
-  extensión del amortiguador y Horst link con el amortiguador empujado por los tirantes
-  ([modelos](docs/modelos-cuatro-barras.md)). El monopivote se validó con una foto real contra Linkage
-  Design ([#54](https://github.com/DvToledo199/bike-match/issues/54)); la validación externa
-  de las variantes de cuatro barras sigue abierta
+- **Motor cinemático** para monopivote y tres variantes de cuatro barras (Horst link):
+  amortiguador en la bieleta, con extensión rígida del amortiguador y empujado por los
+  tirantes ([modelos](docs/modelos-cuatro-barras.md)). El monopivote se validó con una foto
+  real frente a curvas publicadas ([#54](https://github.com/DvToledo199/bike-match/issues/54));
+  la validación sistemática de las cuatro barras sigue abierta
   ([#222](https://github.com/DvToledo199/bike-match/issues/222),
   [#237](https://github.com/DvToledo199/bike-match/issues/237)).
-- **Asistente**: foto, marcado de puntos, tipo de bici y medidas, y gráficas al momento,
-  sin necesidad de cuenta.
+- **Asistente**: foto, marcado guiado de puntos, tipo de bici y medidas, y gráficas al
+  momento, sin necesidad de cuenta.
 - **Cuentas y roles**: registro y login con JWT; usuario, moderador y administrador.
-- **Mis bicis**: guardar el análisis con su foto (Cloudinary), pedir su publicación o
-  borrarla.
+- **Mis bicis**: guardar el análisis con su foto (Cloudinary), pedir su publicación desde la
+  lista o desde la ficha, y borrarla.
 - **Comunidad**: catálogo público por categorías, moderación (aprobar, rechazar y retirar
   con aviso al dueño) y administración de cuentas y roles.
 - **Explicación**: Gemini mediante Spring AI; si no responde, un texto por reglas lo
@@ -33,20 +36,77 @@ MVP completo y publicado (ver [Despliegue](#despliegue)):
 - **Idiomas**: interfaz y explicación en inglés y en español.
 
 No soporta monopivotes con bieleta que modifica el accionamiento del amortiguador, pivotes
-virtuales, roldanas ni frenos flotantes. Los resultados son estimaciones geométricas a
-partir de una foto, no mediciones de laboratorio; el detalle está en las
+virtuales, pivote alto con polea ni frenos flotantes. Los resultados son estimaciones
+geométricas a partir de una foto, no mediciones de laboratorio; el detalle está en las
 [limitaciones](docs/limitaciones-y-mejoras.md).
+
+## Historias de usuario
+
+Tablero del proyecto (backlog, prioridad y estado):
+https://github.com/users/DvToledo199/projects/2
+
+| Historia | Estado |
+|---|---|
+| [#2](https://github.com/DvToledo199/bike-match/issues/2) Catálogo público con filtros por categoría | Hecha |
+| [#3](https://github.com/DvToledo199/bike-match/issues/3) Detalle de bici: gráficas, números y explicación | Hecha |
+| [#5](https://github.com/DvToledo199/bike-match/issues/5) Registro, login JWT y roles | Hecha |
+| [#6](https://github.com/DvToledo199/bike-match/issues/6) Crear bici: foto, calibración y marcado guiado | Hecha |
+| [#7](https://github.com/DvToledo199/bike-match/issues/7) Guardar bici en privado o publicarla | Hecha |
+| [#8](https://github.com/DvToledo199/bike-match/issues/8) Moderación: aprobar o rechazar bicis pendientes | Hecha |
+| [#10](https://github.com/DvToledo199/bike-match/issues/10) Explicación sencilla con IA | Hecha (la personalización por cuestionario, pendiente) |
+| [#9](https://github.com/DvToledo199/bike-match/issues/9) Votar bicis públicas | Futuro |
+| [#4](https://github.com/DvToledo199/bike-match/issues/4) Rankings por categoría | Futuro |
+| [#11](https://github.com/DvToledo199/bike-match/issues/11) Comparador de bicis | Futuro |
+
+Las historias se desglosaron en issues técnicas más pequeñas (motor, persistencia,
+seguridad, pantallas…).
+
+## Stack
+
+| Parte | Tecnologías |
+|---|---|
+| Backend | Java 21, Spring Boot **3.5.16** (la versión del curso), Spring Web, Spring Security con JWT (jjwt), Spring Data JPA, Bean Validation, springdoc-openapi (Swagger UI), Spring AI con Google GenAI (Gemini), SDK de Cloudinary |
+| Base de datos | PostgreSQL 16 con Flyway |
+| Frontend | React 19 + Vite (JavaScript), react-i18next, Recharts, CSS Modules |
+| Pruebas | JUnit 5, Mockito, MockMvc, JaCoCo; Vitest y Testing Library |
+| Infraestructura | Docker Compose (PostgreSQL local), GitHub Actions, Render (web y API) y Neon (PostgreSQL) |
+
+## Arquitectura
+
+Monorepo: `backend/` (API REST), `frontend/` (web), `docker/` (PostgreSQL local) y `docs/`.
+
+**Backend.** Organizado por funcionalidades (`auth`, `bike`, `moderation`, `user`,
+`interpretation`, `kinematics`…), cada una con su controlador → servicio → repositorio.
+Los controladores validan la entrada con `@Valid`, y un manejador global
+(`ApiExceptionHandler`) convierte los errores en respuestas `ProblemDetail` coherentes
+(400, 404, 409, 429…). Los 401 y 403 de Spring Security usan de momento la respuesta de
+error estándar de Spring Boot; unificarlos está pendiente en
+[#202](https://github.com/DvToledo199/bike-match/issues/202). Dos piezas merecen mención:
+
+- **El motor** (`kinematics`) es un dominio puro, sin Spring ni base de datos: recibe
+  puntos en milímetros y devuelve curvas y descriptores. Se prueba de forma aislada. Ver
+  [fundamentos del motor](docs/fundamentos-motor-cinematica.md).
+- **Los servicios externos** se usan a través de interfaces: `ImageStorage` (implementada
+  con Cloudinary) e `InterpretationProvider` (reglas o Gemini). Cambiar de proveedor no
+  toca el resto del código.
+
+**Modelo de datos.** `users` (1:N) `bikes` (1:1) `kinematics_results`, que tiene una
+explicación por idioma en `kinematics_interpretations`; `bike_removal_notices` guarda los
+avisos de bicis retiradas para su dueño. Los puntos marcados se guardan como JSON en `bikes`.
+
+**Frontend.** Una carpeta por funcionalidad en `frontend/src/features`, las llamadas a la
+API en `frontend/src/services` y los textos en los archivos de traducción. Detalle en el
+[README del frontend](frontend/README.md).
 
 ## Arranque local
 
-Requisitos: Java 21, Node 24.15+ o Node 26, npm y Docker con Compose. Spring Boot
-permanece en **3.5.16**, la versión del curso.
+Requisitos: Java 21, Node 24.15+ o Node 26, npm y Docker con Compose.
 
-Crea `.env` copiando `.env.example` y `frontend/.env` copiando
-`frontend/.env.example`, **solo si no existen**. No sobrescribas credenciales.
-Los valores de ejemplo son exclusivamente locales. Usa entradas `KEY=value`, sin
-`export` ni comillas: Spring importa el `.env` raíz cuando se arranca desde la raíz
-o desde `backend/`. Las variables del entorno tienen prioridad.
+Crea `.env` copiando `.env.example` y `frontend/.env` copiando `frontend/.env.example`,
+**solo si no existen**. No sobrescribas credenciales. Los valores de ejemplo son
+exclusivamente locales. Usa entradas `KEY=value`, sin `export` ni comillas: Spring importa
+el `.env` raíz cuando se arranca desde la raíz o desde `backend/`. Las variables del
+entorno tienen prioridad.
 
 ```bash
 # Terminal 1, desde la raíz
@@ -63,15 +123,29 @@ npm run dev
 ```
 
 Web: http://localhost:5173. Health: http://localhost:8080/api/health.
-API y PostgreSQL escuchan solo en loopback por defecto. La versión publicada configura
-`SERVER_ADDRESS`, `CORS_ALLOWED_ORIGINS` y los secretos en Render: ver
-[Despliegue](#despliegue). Cambiar una contraseña en `.env` no la cambia dentro de
-un volumen PostgreSQL ya inicializado; no borres ese volumen sin proteger sus datos.
 
-Si falla la conexión durante el asistente público, comprueba Docker y health. El botón
-de reintento conserva tus marcas. Recargar o cerrar la pestaña **sí las pierde**: ese
-preview solo vive en memoria. Con sesión iniciada, el asistente guarda la bici en
-"Mis bicis" con su foto y su análisis.
+**Migraciones.** Flyway aplica las migraciones de `backend/src/main/resources/db/migration`
+(V1 a V11) cada vez que arranca el backend, y Hibernate solo valida el esquema
+(`ddl-auto=validate`): no se crea ni se modifica ninguna tabla a mano.
+
+API y PostgreSQL escuchan solo en loopback por defecto. Cambiar una contraseña en `.env`
+no la cambia dentro de un volumen PostgreSQL ya inicializado; no borres ese volumen sin
+proteger sus datos. Recargar la página durante el asistente **pierde el análisis no
+guardado**, que solo vive en memoria.
+
+### Variables de entorno
+
+Todas están en `.env.example`, con comentarios:
+
+| Variables | Para qué |
+|---|---|
+| `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `DB_HOST`, `DB_PORT` | Base de datos local |
+| `SERVER_ADDRESS`, `CORS_ALLOWED_ORIGINS` | Dónde escucha la API y qué web puede llamarla |
+| `JWT_SECRET_BASE64`, `JWT_EXPIRATION` | Firma y caducidad de los tokens |
+| `INITIAL_MODERATOR_*`, `INITIAL_ADMIN_*` | Cuentas iniciales opcionales (ver *Cuentas iniciales*) |
+| `CLOUDINARY_URL` | Subida de fotos |
+| `INTERPRETATION_PROVIDER`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `GEMINI_TIMEOUT`, `INTERPRETATION_GENERATION_COOLDOWN` | Explicación: `rules` o Gemini |
+| `VITE_API_URL` (en `frontend/.env`) | Dirección de la API para la web |
 
 ### Fotos con Cloudinary
 
@@ -82,8 +156,7 @@ en el `.env` raíz:
    la clave Root de la cuenta.
 2. Asigna a esa clave un **rol con permiso para subir y borrar imágenes**. Sin rol,
    Cloudinary responde `Request forbidden due to missing permissions`: la foto no se
-   guarda y el motivo queda en el log del backend. En la prueba local se usó Master
-   Admin; restringirlo queda anotado en las [limitaciones](docs/limitaciones-y-mejoras.md).
+   guarda y el motivo queda en el log del backend.
 3. Copia la variable completa, `cloudinary://<api_key>:<api_secret>@<cloud_name>`, y
    sustituye los marcadores que muestra el panel (`<your_api_key>`, `<your_api_secret>`)
    por los valores de la clave. Si queda algún marcador, la subida falla.
@@ -92,24 +165,25 @@ El `api_secret` es un secreto: no lo compartas ni lo subas al repositorio.
 
 ## Autenticación y roles
 
-El análisis de una foto es deliberadamente público: una persona puede probar
-BikeMatch sin crear una cuenta, pero no se guarda ni la foto ni el resultado. Registro,
-login, health, `POST /api/kinematics/preview`, el catálogo público y la ficha y la
-explicación de una bici pública no requieren token. Las demás rutas
-privadas requieren `Authorization: Bearer <JWT>`.
+El análisis de una foto es deliberadamente público: una persona puede probar BikeMatch
+sin crear una cuenta, pero no se guarda ni la foto ni el resultado. Registro, login,
+health, `POST /api/kinematics/preview`, el catálogo público y la ficha y la explicación de
+una bici pública no requieren token. Las demás rutas privadas requieren
+`Authorization: Bearer <JWT>`.
+
+| Rol | Puede |
+|---|---|
+| `USER` | Analizar, guardar sus bicis, pedir su publicación, borrarlas y ver sus avisos |
+| `MODERATOR` | Además, aprobar, rechazar o retirar bicis (`/api/moderation/**`) |
+| `ADMIN` | Además, ver las cuentas y conceder o retirar el rol de moderador (`/api/admin/**`) |
 
 - Sin token o con un token inválido/caducado: `401 Unauthorized`.
 - Token válido sin el permiso requerido: `403 Forbidden`.
-- `/api/admin/**` exige `ROLE_ADMIN`.
-- `/api/moderation/**` acepta `ROLE_MODERATOR` o `ROLE_ADMIN`: un administrador puede
-  hacer también el trabajo de moderación.
-- El resto de rutas privadas solo exigen estar identificado.
 
-La sesión es *stateless*: el backend no guarda una sesión web. En cada petición
-privada, el filtro verifica firma, caducidad, ID y rol del JWT antes de llegar al
-controlador.
+La sesión es *stateless*: el backend no guarda una sesión web. En cada petición privada,
+el filtro verifica firma, caducidad, ID y rol del JWT antes de llegar al controlador.
 
-### Cuentas iniciales locales
+### Cuentas iniciales
 
 La aplicación puede sembrar al arrancar dos cuentas opcionales, una moderadora y una
 administradora. Cada una necesita **sus tres** variables en el `.env` local, que Git
@@ -121,13 +195,8 @@ ignora:
 | Administrador | `INITIAL_ADMIN_EMAIL`, `INITIAL_ADMIN_USERNAME`, `INITIAL_ADMIN_PASSWORD_HASH` |
 
 Existen porque ninguna de las dos se puede crear desde la aplicación: el registro da
-siempre de alta usuarios normales, y solo un administrador puede cambiarle el rol a
-otra persona. Sin esta siembra, una base de datos nueva no tendría a nadie con
-permisos.
-
-El moderador revisa las bicis pendientes y puede retirarlas. El administrador consulta
-las cuentas (`GET /api/admin/users`) y concede o retira el rol de moderador
-(`PUT /api/admin/users/{userId}/role`), además de poder moderar.
+siempre de alta usuarios normales, y solo un administrador puede cambiarle el rol a otra
+persona. Sin esta siembra, una base de datos nueva no tendría a nadie con permisos.
 
 El tercer valor debe ser un **hash BCrypt**, no una contraseña. Con Docker instalado
 puedes generar uno sin que la contraseña se muestre por pantalla:
@@ -142,41 +211,64 @@ En macOS, `htpasswd` ya viene instalado y no hace falta Docker:
 htpasswd -nBC 12 moderator
 ```
 
-El comando pide la contraseña de forma oculta y muestra `moderator:$2...`; se copia
-solo la parte que empieza por `$2`.
+El comando pide la contraseña de forma oculta y muestra `moderator:$2...`; se copia solo
+la parte que empieza por `$2`.
 
-Al arrancar, la aplicación crea cada cuenta si no existe. Con sus tres variables vacías
-no hace nada. Una configuración incompleta, un hash que no sea BCrypt o un conflicto
-con una cuenta que ya existe **detienen el arranque**: así no se crea una cuenta
-insegura, y nadie asciende a un usuario existente con solo editar una variable.
+Al arrancar, la aplicación crea cada cuenta si no existe. Con sus tres variables vacías no
+hace nada. Una configuración incompleta, un hash que no sea BCrypt o un conflicto con una
+cuenta que ya existe **detienen el arranque**: así no se crea una cuenta insegura, y nadie
+asciende a un usuario existente con solo editar una variable.
 
 Para iniciar sesión se usa el correo y la **contraseña que se escribió al generar el
-hash**, nunca el hash, que solo sirve para que el backend la compruebe. Si la cuenta ya
-existe, cambiar estas variables no la modifica.
-
-El esquema sigue perteneciendo a Flyway: esto es un dato inicial local, no una
-contraseña dentro de una migración versionada.
+hash**, nunca el hash. Si la cuenta ya existe, cambiar estas variables no la modifica. El
+esquema sigue perteneciendo a Flyway: esto es un dato inicial, no una contraseña dentro de
+una migración.
 
 ## Documentación de la API (Swagger)
 
-Con el backend arrancado, la documentación está en:
+| | Local | Publicada |
+|---|---|---|
+| Swagger UI | http://localhost:8080/swagger-ui.html | https://bikematch-api.onrender.com/swagger-ui.html |
+| OpenAPI (JSON) | http://localhost:8080/v3/api-docs | https://bikematch-api.onrender.com/v3/api-docs |
 
-- Swagger UI: http://localhost:8080/swagger-ui.html
-- Especificación OpenAPI (JSON): http://localhost:8080/v3/api-docs
-
-Las dos son públicas. Las operaciones marcadas con un candado piden un JWT. Health,
-preview, registro, login y catálogo no lo necesitan. La ficha y la explicación de una
-bici pública tampoco, pero sí las de una bici privada, que solo ve su propietario.
-
-Para probar una operación protegida:
+Las operaciones marcadas con un candado piden un JWT. Para probar una operación protegida:
 
 1. Crea una cuenta con `POST /api/auth/register`, o usa una que ya exista.
 2. Ejecuta `POST /api/auth/login` y copia el valor de `accessToken` de la respuesta.
 3. Pulsa **Authorize**, pega el token (sin escribir `Bearer`) y confirma.
 4. Desde ese momento, Swagger UI envía `Authorization: Bearer <token>` en cada petición.
 
-La moderación exige una cuenta con rol `MODERATOR` o `ADMIN`, y las rutas de
-administración exigen `ADMIN` (ver el apartado anterior).
+**Endpoints principales** (el detalle de cada esquema y respuesta está en Swagger):
+
+| Ruta | Acceso | Qué hace |
+|---|---|---|
+| `POST /api/auth/register`, `POST /api/auth/login` | Público | Crear cuenta y obtener el JWT |
+| `POST /api/kinematics/preview` | Público | Calcula las curvas sin guardar nada |
+| `GET /api/bikes?page=&category=` | Público | Catálogo de bicis públicas, 12 por página |
+| `GET /api/bikes/{id}` | Pública: todos; si no, su dueño | Ficha completa con el resultado guardado |
+| `GET` / `POST /api/bikes/{id}/interpretation?language=` | Leer: como la ficha; generar: el dueño | Explicación en `en` o `es` |
+| `POST /api/bikes`, `POST /api/bikes/{id}/photo`, `POST /api/bikes/{id}/analysis` | Usuario / dueño | Guardar una bici, su foto y su análisis |
+| `GET /api/my-bikes` | Usuario | Resúmenes de sus bicis |
+| `POST /api/bikes/{id}/publish` | Dueño | Pedir la publicación (pasa a `PENDING`) |
+| `DELETE /api/bikes/{id}` | Dueño | Borrado definitivo, foto incluida |
+| `GET /api/my-notices`, `POST /api/my-notices/{id}/dismiss` | Usuario | Avisos de bicis retiradas |
+| `GET /api/moderation/pending`, `POST /api/moderation/{id}/approve \| reject \| remove` | `MODERATOR` o `ADMIN` | Cola de moderación y decisiones |
+| `GET /api/admin/users`, `PUT /api/admin/users/{id}/role` | `ADMIN` | Cuentas y rol de moderador |
+
+Tras guardar el primer análisis, la foto y los puntos de una bici quedan bloqueados:
+volver a marcar crea otra bici. Una ficha nunca devuelve los puntos de marcado, el correo
+ni datos de autenticación.
+
+## Explicación con IA
+
+La explicación la genera el backend a petición del propietario y se guarda por idioma;
+una visita pública solo la lee y nunca llama al proveedor. El modo por defecto es `rules`,
+determinista y sin coste. Gemini se activa con `INTERPRETATION_PROVIDER=google-genai`,
+`GEMINI_API_KEY` y `GEMINI_MODEL` (por ejemplo, `gemini-3.6-flash`), con un solo intento y
+60 s como máximo. Si falla, se guarda el texto por reglas con `fallback=true` y la web avisa
+y permite reintentar. Al proveedor solo viajan cifras y clasificaciones del motor: nunca
+foto, puntos, correo ni contraseña. Contrato, versiones y reglas en
+[explicación con IA](docs/contrato-interpretacion-cinematica.md).
 
 ## Despliegue
 
@@ -196,7 +288,7 @@ La versión publicada usa dos servicios con plan gratuito sin fecha de caducidad
 
 [`render.yaml`](render.yaml) describe los dos servicios de Render (un *Blueprint*): al
 conectarlo, Render crea la API y la web y pide los valores secretos, que no están en el
-repositorio.
+repositorio. Cada fusión en `main` vuelve a desplegar.
 
 **El Dockerfile** tiene dos etapas. La primera compila el jar con el Maven del proyecto;
 la segunda solo lleva Java y ese jar, sin Maven ni el código fuente, y lo ejecuta con un
@@ -213,19 +305,19 @@ corren en CI en cada pull request.
 | `CORS_ALLOWED_ORIGINS` | Dirección de la web publicada |
 | `CLOUDINARY_URL` | Credenciales de Cloudinary para las fotos |
 | `INTERPRETATION_PROVIDER`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Explicación con Gemini |
-| `INITIAL_ADMIN_EMAIL`, `INITIAL_ADMIN_USERNAME`, `INITIAL_ADMIN_PASSWORD_HASH` | Primer administrador; la contraseña solo como hash BCrypt (ver *Cuentas iniciales locales*) |
+| `INITIAL_ADMIN_EMAIL`, `INITIAL_ADMIN_USERNAME`, `INITIAL_ADMIN_PASSWORD_HASH` | Primer administrador; la contraseña solo como hash BCrypt |
 
 La web solo necesita `VITE_API_URL`, la dirección de la API. Vite la incorpora al compilar:
 si cambia, hay que volver a desplegar la web.
 
 **Límites del plan gratuito y decisiones**
 
-- La API se duerme tras 15 minutos sin visitas, y arrancarla en el plan gratuito llevaba unos
-  dos minutos y medio (Render registró 143,7 s). Para que no llegue a dormirse, el flujo
-  [`keep-api-awake.yml`](.github/workflows/keep-api-awake.yml) consulta `/api/health` cada
-  diez minutos; las 750 horas mensuales del plan cubren un servicio encendido todo el mes, y
-  los flujos programados son gratuitos en un repositorio público. Si aun así se duerme, la
-  web espera hasta tres minutos y el catálogo avisa de que el servidor está despertando.
+- La API se duerme tras 15 minutos sin visitas, y arrancarla en el plan gratuito llevaba
+  unos dos minutos y medio (Render registró 143,7 s). Para que no llegue a dormirse, el
+  flujo [`keep-api-awake.yml`](.github/workflows/keep-api-awake.yml) consulta `/api/health`
+  cada diez minutos; las 750 horas mensuales del plan cubren un servicio encendido todo el
+  mes. Si aun así se duerme, la web espera hasta tres minutos y el catálogo avisa de que el
+  servidor está despertando.
 - El contenedor tiene 512 MB y una décima de CPU. Java limita su memoria al 75 %, usa el
   recolector más ligero y solo el compilador JIT rápido: con tan poca CPU, el compilador
   optimizador compite con la aplicación mientras arranca. En una prueba local con ese mismo
@@ -246,161 +338,58 @@ si cambia, hay que volver a desplegar la web.
 npm test
 npm run lint
 npm run build
-npm audit
 ```
 
-Los tests del backend usan su propia base de datos, `bikematch_test`, para no modificar
-nunca los datos de desarrollo. En un volumen de Docker nuevo se crea automáticamente; si tu
-volumen ya existía, créala una sola vez:
+**Backend** (364 tests en 71 clases):
+
+- **Unitarios:** el motor (geometría, solvers, curvas y descriptores, con bicis reales como
+  referencia) y los servicios, con dobles de sus dependencias.
+- **Aceptación de la API** (MockMvc sobre cada controlador): respuestas correctas, validación,
+  códigos de error y permisos (`401`/`403`) de cada endpoint.
+- **Persistencia** contra PostgreSQL real: migraciones, restricciones y consultas.
+- **Arranque completo** de la aplicación y de su documentación OpenAPI.
+
+Los tests usan su propia base de datos, `bikematch_test`, para no modificar nunca los datos
+de desarrollo. En un volumen de Docker nuevo se crea automáticamente; si tu volumen ya
+existía, créala una sola vez:
 
 ```bash
 docker exec bikematch-postgres sh -c 'createdb -U "$POSTGRES_USER" bikematch_test'
 ```
 
-Para usar otro nombre, define `POSTGRES_TEST_DB`. El siguiente `docker compose up -d`
-recrea el contenedor para montar el script de inicio, sin tocar el volumen de datos.
+Para usar otro nombre, define `POSTGRES_TEST_DB`.
 
-GitHub Actions ejecuta Java y, por separado, tests/lint/build del frontend.
+**Cobertura** con JaCoCo: **95,0 % de líneas** y 73,4 % de ramas. El enunciado pide un
+mínimo del 60 %, y `./mvnw verify` **falla por debajo** de ese umbral, también en CI. El
+informe se genera en `backend/target/site/jacoco/index.html`; en GitHub Actions, cada
+ejecución lo muestra en el resumen y lo adjunta como `backend-coverage-report`.
 
-**Cobertura del backend** con JaCoCo: **95,0 % de líneas** y 72,9 % de ramas, con 352
-tests. El enunciado pide un mínimo del 60 %, y `./mvnw verify` **falla por debajo** de ese
-umbral, también en CI. El informe se genera en `backend/target/site/jacoco/index.html`; en
-GitHub Actions, cada ejecución lo muestra en el resumen y lo adjunta como
-`backend-coverage-report`.
+**Frontend** (225 tests con Vitest y Testing Library): pasos del asistente, marcado,
+validación de respuestas, guardado y reintentos, permisos de cada pantalla y paridad de
+las claves de traducción.
 
-## Organización y contrato
+## Flujo de trabajo
 
-- `backend/`: DTOs/API Spring y motor geométrico Java independiente de Spring.
-- `frontend/src/features/analysis-wizard/`: pasos, estado y gráficas.
-- `frontend/src/services/`: peticiones, timeout, cancelación y validación de respuestas.
-- `frontend/src/styles/tokens.css`: colores y medidas; modos claro y oscuro.
-- `frontend/src/locales/en/translation.json`: textos de la interfaz.
-- `docker/`: PostgreSQL local; Flyway es el único dueño del esquema.
+- Una tarea = una issue = una rama = un PR pequeño con `Closes #N`, integrado solo cuando
+  la CI pasa. Las historias grandes se desglosan en issues técnicas.
+- El [tablero](https://github.com/users/DvToledo199/projects/2) mueve cada issue por
+  Backlog → Ready → In progress → In review → Done.
+- GitHub Actions ejecuta en cada pull request los tests y la cobertura del backend y, por
+  separado, los tests, el lint y el build del frontend. Render despliega al fusionar en `main`.
+- Código, API, base de datos y commits en inglés; textos de la interfaz en los archivos de
+  traducción (inglés y español).
 
-`POST /api/kinematics/preview` es público y solo calcula. Recibe seis tipos de punto
-únicos, coordenadas finitas y medidas dentro de los límites del formulario. Los
-datos inválidos se rechazan con HTTP 400; el esquema completo está en Swagger.
-La foto debe ser lateral, nivelada y con suspensión extendida; puede mirar a ambos
-lados. Selector Full 29/Mullet/Full 27,5, sin pedir peso. El cálculo ampliado incluye
-piñón, radios nominales, CG de referencia y corrección de inclinación teniendo en
-cuenta ruedas distintas. Versiones y supuestos viajan con los resultados.
-
-El flujo persistente requiere JWT: `POST /api/bikes` guarda los metadatos privados,
-`POST /api/bikes/{id}/photo` adjunta la foto y `POST /api/bikes/{id}/analysis` recibe
-las dimensiones naturales y los seis puntos, calcula las curvas y guarda fuente y
-resultado en una misma transacción. Desde entonces foto y puntos quedan bloqueados;
-volver a marcarlos crea otra bicicleta/análisis. Los parámetros técnicos podrán tener
-un flujo de edición y recálculo posterior sin modificar esa fuente.
-
-`GET /api/my-bikes` requiere JWT y devuelve únicamente los resúmenes de las bicicletas
-del usuario autenticado, ordenados de más reciente a más antigua. No expone puntos ni
-curvas: esos datos pertenecen a la pantalla de detalle.
-
-`GET /api/bikes/{id}` devuelve la ficha completa. Una bici `PUBLIC` se puede consultar
-sin iniciar sesión; una bici `PRIVATE`, `PENDING` o `REJECTED` solo se devuelve a su
-propietario autenticado. La respuesta incluye la foto, los metadatos, el username público
-del propietario y el resultado guardado con sus curvas, descriptores y capacidades. No
-devuelve los puntos internos de marcado, el correo ni ningún dato de autenticación.
-
-La explicación básica se genera y se reutiliza desde el backend. `POST
-/api/bikes/{id}/interpretation?language=en` solo lo puede pedir el propietario de la
-bici y devuelve un resumen junto con 2–4 cifras que lo respaldan. `GET
-/api/bikes/{id}/interpretation?language=en` permite leer una explicación ya guardada
-si la bici es pública o si quien consulta es su propietario; una visita pública no
-genera una llamada al proveedor. `language` admite `en` y `es`, y la web envía el idioma
-elegido en la interfaz. El modo predeterminado es `rules`, determinista y sin
-coste externo. Gemini se activa únicamente con `INTERPRETATION_PROVIDER=google-genai`,
-`GEMINI_API_KEY` y `GEMINI_MODEL` en el entorno del backend, y se llama mediante Spring AI
-(`ChatClient` con el módulo de Google GenAI); si falla, se guarda una
-explicación por reglas identificada como `source=RULES` y la respuesta lleva
-`fallback=true`: la web avisa de que la IA no ha respondido, muestra ese texto como
-descripción aproximada y permite volver a intentarlo. No se envían foto, puntos,
-correo, contraseña ni perfil personal al proveedor. Los modelos `gemini-2.5-*` ya no
-están disponibles para cuentas nuevas: usa el identificador que devuelva la lista de
-modelos de tu clave, por ejemplo `gemini-3.6-flash`.
-
-El contexto que recibe el proveedor lleva, además de las cifras, la forma de la curva de
-palanca (banda de progresión, tendencia de cada tercio y LR inicial, en sag y final) y
-las condiciones del cálculo (categoría, sag y desarrollo). Con eso, el texto sigue la
-estructura de la [base de conocimiento](docs/base-conocimiento-cinematica.md): carácter
-de la bici, cifras que lo sostienen, pedaleo, frenada y para quién encaja. No recomienda
-amortiguador, muelle, aire ni espaciadores, y están prohibidas las marcas, las presiones,
-los clics, las garantías y cualquier suposición sobre el peso o el reglaje de quien
-consulta. La advertencia sobre el alcance del análisis no forma parte del texto: la web
-la muestra una sola vez, al pie de cada explicación.
-
-La caché se versiona por resultado, contexto, reglas, idioma, proveedor y prompt.
-Generar solo reutiliza la explicación del proveedor configurado: con Gemini activo, una
-bici que solo tiene texto por reglas vuelve a pedírsela a Gemini. Leer devuelve la que
-haya guardada, sea del proveedor elegido o del respaldo. Al generar, el navegador espera
-hasta 75 segundos, por encima del máximo del proveedor (`GEMINI_TIMEOUT`: 60 segundos
-en total y un solo intento, sin los reintentos que Spring AI y el cliente de Google harían
-por defecto). Las
-peticiones que tendrían que llamar al proveedor tienen además un enfriamiento local
-configurable (`INTERPRETATION_GENERATION_COOLDOWN`, 30 segundos por defecto); el
-resumen y el contexto tienen límites de tamaño y la respuesta externa se valida como
-texto plano con evidencias conocidas. El límite local deberá sustituirse por una
-cuota compartida si el backend se despliega en varias instancias.
-
-`GET /api/bikes?page=0&category=ENDURO` es el catálogo público. No necesita JWT, solo
-devuelve bicicletas `PUBLIC` y responde con páginas de 12 tarjetas (`items`, `page`,
-`totalPages` y `hasNext`). La categoría es opcional y admite `ENDURO`, `E_ENDURO` o
-`DOWNHILL`. El catálogo no incluye curvas ni datos privados: para eso se abre la ficha.
-
-La pantalla de catálogo del frontend usa `listPublicBikes()` para cargar esas páginas,
-permite filtrar por categoría y abre la ficha pública reutilizando `getBikeDetail(id)`.
-
-Después del login, el cliente HTTP del frontend añade automáticamente el JWT guardado
-en la sesión del navegador a las peticiones privadas. La pantalla de "Mis bicis" usa
-`listMyBikes()` para los resúmenes; al abrir una tarjeta, la ficha usa
-`getBikeDetail(id)` y reutiliza las gráficas con el resultado guardado. Cada tarjeta
-permite borrar la bici tras confirmarlo (`deleteBike(id)`). Encima de las tarjetas
-aparecen los avisos de bicis retiradas por moderación (`listMyNotices()`), que el
-usuario puede descartar (`dismissNotice(id)`).
-
-`POST /api/bikes/{id}/publish` requiere JWT y permite al propietario pedir la
-publicación de una bici privada. La bici pasa a `PENDING`, pendiente de moderación;
-otro usuario recibe `403` y una bici inexistente recibe `404`.
-
-`DELETE /api/bikes/{id}` requiere JWT y permite al propietario borrar su bici en
-cualquier estado, también si ya es pública. El borrado es definitivo: desaparecen la
-ficha, los puntos, el resultado, la explicación y la foto de Cloudinary. Una bici de
-otro usuario o inexistente recibe `404`.
-
-La moderación requiere un JWT de una cuenta con rol `MODERATOR`:
-
-- `GET /api/moderation/pending` devuelve la cola de bicicletas pendientes, con sus
-  datos de identificación y el username de quien la solicitó, sin exponer puntos ni
-  resultados completos.
-- `POST /api/moderation/{id}/approve` cambia una bici `PENDING` a `PUBLIC`.
-- `POST /api/moderation/{id}/reject` cambia una bici `PENDING` a `REJECTED`.
-- `POST /api/moderation/{id}/remove` retira una bici `PENDING`, `PUBLIC` o `REJECTED`:
-  la borra por completo, igual que el borrado del propietario, y deja a su dueño un
-  aviso con el motivo. El motivo va en el cuerpo (`{"reason": "..."}`), es obligatorio
-  y admite 500 caracteres como máximo. Las bicis privadas no llegan a moderación y
-  reciben `404`.
-
-Una cuenta `USER` recibe `403` en estas rutas. Una bicicleta inexistente devuelve
-`404`; al aprobar o rechazar una que ya no estaba pendiente, devuelve `409` y no se
-modifica.
-
-`GET /api/my-notices` requiere JWT y devuelve los avisos que el usuario aún no ha
-descartado: sus bicis retiradas por moderación, con marca, modelo, motivo y fecha, de
-la más reciente a la más antigua. `POST /api/my-notices/{id}/dismiss` descarta un
-aviso; uno de otro usuario o inexistente recibe `404`. El aviso por correo queda para
-más adelante.
-
-Son **estimaciones bajo condiciones de referencia**, no medidas individuales ni
-validación de campo. Los clientes sin ruedas conservan el cálculo V1 (sin curvas
-anti ni efecto del piñón). Fuentes, fórmulas, límites y mejoras futuras:
-[modelo de referencia](docs/modelo-referencia-cinematica.md). El contraste externo
-estricto sigue abierto en #31.
-
-## Seguimiento
-
-Una tarea = una issue = una rama = un PR pequeño. Código y commits en inglés;
-explicaciones de aprendizaje en español.
+## Documentación
 
 - [La idea y el producto](docs/proyecto-cinematica-bicis.md)
-- [Hoja de ruta](docs/hoja-de-ruta-sprints.md)
-- [Limitaciones](docs/limitaciones-y-mejoras.md)
+- [Plan de trabajo](docs/plan-trabajo-mvp.md) y [hoja de ruta](docs/hoja-de-ruta-sprints.md)
+- [Fundamentos del motor](docs/fundamentos-motor-cinematica.md),
+  [modelos de cuatro barras](docs/modelos-cuatro-barras.md) y
+  [modelo de referencia](docs/modelo-referencia-cinematica.md)
+- [Base de conocimiento](docs/base-conocimiento-cinematica.md) y
+  [explicación con IA](docs/contrato-interpretacion-cinematica.md)
+- [Panel de moderación](docs/panel-moderacion.md) y
+  [panel de administración](docs/panel-administracion.md)
+- [Limitaciones y mejoras](docs/limitaciones-y-mejoras.md)
+- [README del frontend](frontend/README.md)
+- [Enunciado del proyecto](docs/enunciado.md)

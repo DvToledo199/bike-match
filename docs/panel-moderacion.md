@@ -3,7 +3,7 @@
 Ruta: `#/moderation`. El menú la muestra a `MODERATOR` y `ADMIN`.
 No modifica el backend, el asistente de análisis ni la interpretación por IA.
 
-## Cómo explicarlo en clase
+## Cómo funciona
 
 1. `useAppRoute.js` lee la ruta y `App.jsx` muestra `ModerationPage`, pasándole
    la sesión actual.

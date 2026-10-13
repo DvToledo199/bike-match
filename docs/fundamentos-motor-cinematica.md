@@ -4,8 +4,7 @@ Este documento explica **cómo BikeMatch obtiene las curvas de comportamiento de
 suspensión a partir de una única fotografía**, y por qué el método es matemáticamente
 sólido. Está dirigido a lectores sin conocimientos de bicicletas (evaluadores,
 desarrolladores). La interpretación de los resultados (qué significa cada número) se
-documenta aparte, en `base-conocimiento-cinematica.md`. Cada sección está pensada
-para poder usarse como material de presentación.
+documenta aparte, en `base-conocimiento-cinematica.md`.
 
 ---
 
